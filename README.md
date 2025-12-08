@@ -1,73 +1,34 @@
-# React + TypeScript + Vite
+### レジアプリケーション
+TypeScript + React を用いて制作した，同人誌即売会などのイベント現場での運用を想定したレジアプリケーションです
+基本的なレジ機能に加え，売上履歴の管理や商品管理機能を実装しています．
+将来的にはイベント単位での集計や，時間ごとの頒布数の推移をグラフ表示することで，次回イベント時の頒布物発注数や頒布時間の参考となるデータを可視化できるアプリに拡張予定です．
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 制作目的
+- モダンな Web 技術（TypeScript / React）を用いた 実践的なアプリケーション開発経験の習得
+- 創作活動を支えるツールの制作を通じて，自身および他者の創作活動の支援につながるプロダクトの開発を目指す
 
-Currently, two official plugins are available:
+### 主な機能
+- レジ機能
+  - 商品の選択・カート追加
+  - 合計金額の自動計算
+  - 会計処理
+  - 売上履歴の保存・一覧表示
+  - 売上ごとの詳細表示
+- 商品管理
+  - 商品の追加
+  - 商品情報（名称・価格）および在庫数の編集
+  - 商品の削除
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 使用技術
+- **TypeScript**
+  - 静的型付けによる安全性の高い実装を行い、  
+    バグの抑制および保守性・拡張性を意識した設計を実施
 
-## React Compiler
+- **React**
+  - コンポーネント指向に基づく画面構成を採用し，UIの再利用性と拡張性を考慮した実装
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 今後の課題
+- イベント単位での商品管理および売上履歴管理機能の追加
+- グラフにヨル頒布推移の可視化機能の実装
+- コンポーネント分割によるコード構造の整理・保守性向上
+- 入力値管理やバリデーション処理の強化による意図しない挙動の防止・データ整合性の向上
