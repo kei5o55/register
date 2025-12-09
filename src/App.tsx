@@ -49,6 +49,16 @@ function App() {
 
   const handleAddToCart = (itemId: string) => {
     setCart((prev) => {
+      const item = getItemById(itemId);
+
+      const currentInCart = prev.find((c) => c.itemId === itemId)?.quantity ?? 0;
+      
+      const remainingStock = item.stock -currentInCart;
+      if (remainingStock <= 0) {
+        alert("在庫が足りません");
+        return prev;
+      }
+
       const existing = prev.find((c) => c.itemId === itemId);
       if (existing) {
         return prev.map((c) =>
