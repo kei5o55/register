@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { HomeScreen } from "./components/HomeScreen";
+import { HistoryScreen } from "./components/HistoryScreen";
+import { SaleDetailScreen } from "./components/SaleDetailScreen";
+
 type SaleItem = {
   itemId: string;
   name: string;     // 当時の名前
@@ -165,14 +168,14 @@ function App() {
           <button onClick={() => setScreen("home")}>ホーム</button>
           <button onClick={() => setScreen("register")}>レジ</button>
           <button onClick={() => setScreen("history")}>売上履歴</button>
-          <button onClick={() => setScreen("items")}>商品管理</button>
+          <button onClick={() => setScreen("items")}>頒布物管理</button>
         </nav>
       </header>
 
-      {screen === "home" && (
-        <HomeScreen
-          onGoRegister={() => setScreen("register")}
-          onGoHistory={() => setScreen("history")}
+      {screen === "home" && (//ホーム画面を表示
+        <HomeScreen//ホーム画面コンポーネントを呼び出し
+          onGoRegister={() => setScreen("register")}//レジ画面へ遷移する関数を渡す
+          onGoHistory={() => setScreen("history")}//売上履歴画面へ遷移する関数を渡す
         />
       )}
 
@@ -218,24 +221,6 @@ function App() {
   );
 }
 
-type HomeProps = {
-  onGoRegister: () => void;
-  onGoHistory: () => void;
-};
-
-function HomeScreen({ onGoRegister, onGoHistory }: HomeProps) {
-  return (
-    <div>
-      <h2>ホーム</h2>
-      <p>同人即売会用のWebレジアプリです。</p>
-      <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
-        <button onClick={onGoRegister}>レジ画面を開く</button>
-        <button onClick={onGoHistory}>売上履歴を見る</button>
-      </div>
-    </div>
-  );
-}
-
 type RegisterProps = {
   items: Item[];
   cart: CartItem[];
@@ -256,7 +241,7 @@ function RegisterScreen({
   return (
     <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
       <div style={{ flex: 1 }}>
-        <h2>商品一覧</h2>
+        <h2>頒布物一覧</h2>
         <ul>
           {items.map((item) => (
             <li key={item.id} style={{ marginBottom: 8 }}>
@@ -300,76 +285,6 @@ function RegisterScreen({
   );
 }
 
-type HistoryProps = {
-  sales: Sale[];
-  onSelectSale: (id: string) => void;
-};
-
-function HistoryScreen({ sales, onSelectSale }: HistoryProps) {
-  return (
-    <div>
-      <h2>売上履歴</h2>
-      {sales.length === 0 ? (
-        <p>まだ売上はありません</p>
-      ) : (
-        <ul>
-          {sales.map((sale) => (
-            <li key={sale.id} style={{ marginBottom: 8 }}>
-              <button onClick={() => onSelectSale(sale.id)}>
-                {sale.datetime} - {sale.total} 円
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-type SaleDetailProps = {
-  sale: Sale;
-  onBack: () => void;
-};
-
-function SaleDetailScreen({ sale, onBack }: SaleDetailProps) {
-  return (
-    <div>
-      <h2>売上詳細</h2>
-      <p>日時: {sale.datetime}</p>
-      <p>合計金額: {sale.total} 円</p>
-
-      <h3>内訳</h3>
-      {sale.items.length === 0 ? (
-        <p>内訳データがありません</p>
-      ) : (
-        <table border={1} cellPadding={4} style={{ borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th>商品名</th>
-              <th>単価</th>
-              <th>数量</th>
-              <th>小計</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sale.items.map((item) => (
-              <tr key={item.itemId}>
-                <td>{item.name}</td>
-                <td>{item.price} 円</td>
-                <td>{item.quantity}</td>
-                <td>{item.price * item.quantity} 円</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      <button style={{ marginTop: 16 }} onClick={onBack}>
-        履歴一覧に戻る
-      </button>
-    </div>
-  );
-}
 
 type ItemsScreenProps = {
   items: Item[];
@@ -407,11 +322,11 @@ function ItemsScreen({
 
   return (
     <div>
-      <h2>商品管理</h2>
+      <h2>頒布物管理</h2>
 
-      <h3>既存商品</h3>
+      <h3>既存頒布物</h3>
       {items.length === 0 ? (
-        <p>商品が登録されていません</p>
+        <p>頒布物が登録されていません</p>
       ) : (
         <table
           border={1}
@@ -420,7 +335,7 @@ function ItemsScreen({
         >
           <thead>
             <tr>
-              <th>商品名</th>
+              <th>頒布物</th>
               <th>価格(円)</th>
               <th>在庫</th>
               <th>操作</th>
@@ -464,10 +379,10 @@ function ItemsScreen({
         </table>
       )}
 
-      <h3>新規商品を追加</h3>
+      <h3>新規頒布物を追加</h3>
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <input
-          placeholder="商品名"
+          placeholder="頒布物名"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />

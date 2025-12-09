@@ -1,9 +1,12 @@
+// src/components/HistoryScreen.tsx
+import type { Sale } from "../types";
+
 type HistoryProps = {
   sales: Sale[];
   onSelectSale: (id: string) => void;
 };
 
-function HistoryScreen({ sales, onSelectSale }: HistoryProps) {
+export function HistoryScreen({ sales, onSelectSale }: HistoryProps) {
   return (
     <div>
       <h2>売上履歴</h2>
