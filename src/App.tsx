@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { HomeScreen } from "./components/HomeScreen";
 type SaleItem = {
   itemId: string;
   name: string;     // 当時の名前
