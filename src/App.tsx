@@ -2,6 +2,7 @@ import { useState } from "react";
 import { HomeScreen } from "./components/HomeScreen";
 import { HistoryScreen } from "./components/HistoryScreen";
 import { SaleDetailScreen } from "./components/SaleDetailScreen";
+import { RegisterScreen } from "./components/RegisterScreen";
 
 type SaleItem = {
   itemId: string;
@@ -36,6 +37,8 @@ const initialItems: Item[] = [
   { id: "2", name: "既刊 B", price: 700, stock: 15 },
   { id: "3", name: "グッズ C", price: 300, stock: 30 },
 ];
+
+
 
 function App() {
   const [screen, setScreen] = useState<Screen>("home");
@@ -151,6 +154,15 @@ function App() {
     setCart((prev) => prev.filter((c) => c.itemId !== id));
   };
 
+  //いったん追加
+  const getRemainingStock = (itemId: string) => {
+    const item = getItemById(itemId);
+    const cartItem = cart.find((c) => c.itemId === itemId);
+    const used = cartItem ? cartItem.quantity : 0;
+    return item.stock - used;
+  };
+
+
   return (
     <div style={{ padding: 16, maxWidth: 900, margin: "0 auto" }}>
       <header
@@ -187,6 +199,7 @@ function App() {
           onAddToCart={handleAddToCart}
           onCheckout={handleCheckout}
           getItemById={getItemById}
+          getRemainingStock={getRemainingStock}
         />
       )}
 
@@ -221,7 +234,7 @@ function App() {
   );
 }
 
-type RegisterProps = {
+/*type RegisterProps = {
   items: Item[];
   cart: CartItem[];
   totalPrice: number;
@@ -283,7 +296,7 @@ function RegisterScreen({
       </div>
     </div>
   );
-}
+}*/
 
 
 type ItemsScreenProps = {
