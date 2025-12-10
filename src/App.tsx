@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import type { Item, CartItem, Sale } from "./types";
+import { loadItems, saveItems, loadSales, saveSales } from "./storage";
+
 import { HomeScreen } from "./components/HomeScreen";
 import { HistoryScreen } from "./components/HistoryScreen";
 import { SaleDetailScreen } from "./components/SaleDetailScreen";
@@ -10,25 +13,6 @@ type SaleItem = {
   name: string;     // 当時の名前
   price: number;    // 当時の価格
   quantity: number; // 売れた数
-};
-
-type Item = {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-};
-
-type CartItem = {
-  itemId: string;
-  quantity: number;
-};
-
-type Sale = {
-  id: string;
-  datetime: string;
-  total: number;
-  items: SaleItem[]; // ← ここに内訳を持たせる
 };
 
 type Screen = "home" | "register" | "history" | "saleDetail" | "items";
@@ -43,10 +27,18 @@ const initialItems: Item[] = [
 
 function App() {
   const [screen, setScreen] = useState<Screen>("home");
-  const [items, setItems] = useState<Item[]>(initialItems);
+  const [items, setItems] = useState<Item[]>(() => loadItems(initialItems)); 
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [sales, setSales] = useState<Sale[]>([]);
+  const [sales, setSales] = useState<Sale[]>(() => loadSales());
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
+
+  useEffect(() => {
+    saveItems(items);
+  }, [items]);
+
+  useEffect(() => {
+    saveSales(sales);
+  }, [sales]);
 
   const selectedSale = selectedSaleId
     ? sales.find((s) => s.id === selectedSaleId) ?? null
