@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Item, CartItem, Sale } from "./types";
+import type { Item, CartItem, Sale, Event } from "./types";
 import { loadItems, saveItems, loadSales, saveSales } from "./storage";
 
 import { HomeScreen } from "./components/HomeScreen";
@@ -7,6 +7,8 @@ import { HistoryScreen } from "./components/HistoryScreen";
 import { SaleDetailScreen } from "./components/SaleDetailScreen";
 import { RegisterScreen } from "./components/RegisterScreen";
 import { ItemsScreen } from "./components/ItemScreen";
+import { EventListScreen } from "./components/EventListScreen";
+
 
 type SaleItem = {
   itemId: string;
@@ -15,13 +17,20 @@ type SaleItem = {
   quantity: number; // 売れた数
 };
 
-type Screen = "home" | "register" | "history" | "saleDetail" | "items";
+type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events";
 
-const initialItems: Item[] = [
+const initialItems: Item[] = [//仮データ
   { id: "1", name: "新刊 A", price: 500, stock: 20 },
   { id: "2", name: "既刊 B", price: 700, stock: 15 },
   { id: "3", name: "グッズ C", price: 300, stock: 30 },
 ];
+
+const initialEvents: Event[] = [{//仮データ
+  id: "e1",
+  name: "コミックマーケット○○",
+  date: "20xx-2-2",
+   memo: "同人即売イベント"
+},];
 
 
 
@@ -30,6 +39,7 @@ function App() {
   const [items, setItems] = useState<Item[]>(() => loadItems(initialItems)); 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<Sale[]>(() => loadSales());
+  const [events, setEvents] = useState<Event[]>(initialEvents);
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -156,6 +166,8 @@ function App() {
   };
 
 
+
+
   return (
     <div style={{ padding: 16, maxWidth: 900, margin: "0 auto" }}>
       <header
@@ -174,6 +186,7 @@ function App() {
           <button onClick={() => setScreen("register")}>レジ</button>
           <button onClick={() => setScreen("history")}>売上履歴</button>
           <button onClick={() => setScreen("items")}>頒布物管理</button>
+          <button onClick={() => setScreen("events")}>イベント履歴</button>
         </nav>
       </header>
 
@@ -221,6 +234,16 @@ function App() {
           onChangeStock={handleChangeItemStock}
           onAddItem={handleAddItem}
           onDeleteItem={handleDeleteItem}
+        />
+      )}
+
+      {screen === "events" && (
+        <EventListScreen
+          events={events}
+          onSelectEvent={(id) => {
+            console.log("イベント詳細へ:",id);
+            //将来的にイベント詳細画面へ遷移する処理を追加予定
+          }}
         />
       )}
     </div>
