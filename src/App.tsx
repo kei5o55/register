@@ -1,7 +1,9 @@
+//src/App.tsx
 import { useState, useEffect } from "react";
 import type { Item, CartItem, Sale, Event } from "./types";
 import { loadItems, saveItems, loadSales, saveSales } from "./storage";
 
+//コンポーネントのインポート
 import { HomeScreen } from "./components/HomeScreen";
 import { HistoryScreen } from "./components/HistoryScreen";
 import { SaleDetailScreen } from "./components/SaleDetailScreen";
@@ -10,14 +12,14 @@ import { ItemsScreen } from "./components/ItemScreen";
 import { EventListScreen } from "./components/EventListScreen";
 
 
-type SaleItem = {
+type SaleItem = {//販売された商品の情報を表す型
   itemId: string;
   name: string;     // 当時の名前
   price: number;    // 当時の価格
   quantity: number; // 売れた数
 };
 
-type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events";
+type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events";//画面の種類を定義
 
 const initialItems: Item[] = [//仮データ
   { id: "1", name: "新刊 A", price: 500, stock: 20 },
