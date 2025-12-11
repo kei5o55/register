@@ -23,6 +23,7 @@ export type Sale = {
   datetime: string;
   total: number;
   items: SaleItem[];
+  eventId: string;//Eventidごとに売上を紐づけるためのフィールド
 };
 
 export type Event = {

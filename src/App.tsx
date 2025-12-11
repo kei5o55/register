@@ -43,12 +43,13 @@ function App() {
   const [sales, setSales] = useState<Sale[]>(() => loadSales());
   const [events, setEvents] = useState<Event[]>(initialEvents);
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
+  const [currentEventId, setCrurrentEventId] = useState<string | null>(null);
 
-  useEffect(() => {
+  useEffect(() => {//商品データの保存(itemsが変化したときに実行)
     saveItems(items);
   }, [items]);
 
-  useEffect(() => {
+  useEffect(() => {//販売データの保存(salesが変化したときに実行)
     saveSales(sales);
   }, [sales]);
 
@@ -106,6 +107,7 @@ function App() {
       datetime: now.toLocaleString(),
       total,
       items: saleItems,
+      eventId: currentEventId!,//選択されたイベントID
     };
 
     setSales((prev) => [sale, ...prev]);
@@ -157,6 +159,21 @@ function App() {
     setItems((prev) => prev.filter((item) => item.id !== id));
     // カート内の商品も削除
     setCart((prev) => prev.filter((c) => c.itemId !== id));
+  };
+
+  const handleAddEvent=(name:string,date:string,memo?:string)=>{//いったん追加
+    const newEvent:Event={
+      id:crypto.randomUUID(),
+      name,
+      date,
+      memo,
+    };
+    setEvents((prev) => [...prev, newEvent]);
+  };
+
+  const handleDeleteEvent=(id:string)=>{
+    setEvents((prev) => prev.filter((event) => event.id !== id));
+    setSales((prev) => prev.filter((sale) => sale.eventId !== id));
   };
 
   //いったん追加
@@ -242,10 +259,13 @@ function App() {
       {screen === "events" && (
         <EventListScreen
           events={events}
-          onSelectEvent={(id) => {
-            console.log("イベント詳細へ:",id);
+          onSelectEvent={(id) => 
+            //console.log("イベント詳細へ:",id);
+            setCrurrentEventId(id)
             //将来的にイベント詳細画面へ遷移する処理を追加予定
-          }}
+          }
+          onAddEvent={handleAddEvent}
+          onDeleteEvent={handleDeleteEvent}
         />
       )}
     </div>
