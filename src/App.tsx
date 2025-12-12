@@ -176,6 +176,11 @@ function App() {
     setCart((prev) => prev.filter((c) => c.itemId !== id));
   };
 
+  const handleDeleteSale = (id: string) => {
+    if (!confirm("この売上履歴を削除しますか？")) return;
+    setSales((prev) => prev.filter((s) => s.id !== id));
+  };
+
   const handleAddEvent=(name:string,date:string,memo?:string)=>{//いったん追加
     const newEvent:Event={
       id:crypto.randomUUID(),
@@ -257,6 +262,10 @@ function App() {
         <SaleDetailScreen
           sale={selectedSale}
           onBack={() => setScreen("history")}
+          onDelete={() => {
+            handleDeleteSale(selectedSale.id);
+            setScreen("history");
+          }}
         />
       )}
 

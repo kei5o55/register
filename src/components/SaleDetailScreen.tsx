@@ -4,9 +4,10 @@ import type { Sale } from "../types";
 type SaleDetailProps = {
   sale: Sale;
   onBack: () => void;
+  onDelete: () => void;
 };
 
-export function SaleDetailScreen({ sale, onBack }: SaleDetailProps) {
+export function SaleDetailScreen({ sale, onBack ,onDelete}: SaleDetailProps) {
   return (
     <div>
       <h2>売上詳細</h2>
@@ -41,6 +42,10 @@ export function SaleDetailScreen({ sale, onBack }: SaleDetailProps) {
 
       <button style={{ marginTop: 16 }} onClick={onBack}>
         履歴一覧に戻る
+      </button>
+      
+      <button onClick={onDelete} style={{color: "red"}}>
+            この売り上げを削除
       </button>
     </div>
   );
