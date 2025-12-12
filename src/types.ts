@@ -23,6 +23,14 @@ export type Sale = {
   datetime: string;
   total: number;
   items: SaleItem[];
+  eventId: string;//Eventidごとに売上を紐づけるためのフィールド
 };
 
-export type Screen = "home" | "register" | "history" | "saleDetail" | "items";
+export type Event = {
+  id: string;
+  name: string;// イベント名
+  date: string;// 開催日
+  memo?: string;// メモ
+}
+
+export type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events";

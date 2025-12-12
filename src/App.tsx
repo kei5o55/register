@@ -1,27 +1,39 @@
+//src/App.tsx
 import { useState, useEffect } from "react";
-import type { Item, CartItem, Sale } from "./types";
+import type { Item, CartItem, Sale, Event } from "./types";
 import { loadItems, saveItems, loadSales, saveSales } from "./storage";
 
+//コンポーネントのインポート
 import { HomeScreen } from "./components/HomeScreen";
 import { HistoryScreen } from "./components/HistoryScreen";
 import { SaleDetailScreen } from "./components/SaleDetailScreen";
 import { RegisterScreen } from "./components/RegisterScreen";
 import { ItemsScreen } from "./components/ItemScreen";
+import { EventListScreen } from "./components/EventListScreen";
+import { EventHistoryScreen } from "./components/EventHistoryScreen";
 
-type SaleItem = {
+
+type SaleItem = {//販売された商品の情報を表す型
   itemId: string;
   name: string;     // 当時の名前
   price: number;    // 当時の価格
   quantity: number; // 売れた数
 };
 
-type Screen = "home" | "register" | "history" | "saleDetail" | "items";
+type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events" | "eventHistory";//画面の種類を定義
 
-const initialItems: Item[] = [
+const initialItems: Item[] = [//仮データ
   { id: "1", name: "新刊 A", price: 500, stock: 20 },
   { id: "2", name: "既刊 B", price: 700, stock: 15 },
   { id: "3", name: "グッズ C", price: 300, stock: 30 },
 ];
+
+const initialEvents: Event[] = [{//仮データ
+  id: "e1",
+  name: "コミックマーケット○○",
+  date: "20xx-2-2",
+   memo: "同人即売イベント"
+},];
 
 
 
@@ -30,13 +42,24 @@ function App() {
   const [items, setItems] = useState<Item[]>(() => loadItems(initialItems)); 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<Sale[]>(() => loadSales());
+  const [events, setEvents] = useState<Event[]>(initialEvents);
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
+  const [currentEventId, setCurrentEventId] = useState<string | null>(null);
+  const [selectedEventIdForHistory,setSelectedEventIdForHistory]= useState<string | null>(null);
 
-  useEffect(() => {
+  const selectedEventForHistory = selectedEventIdForHistory
+  ? events.find((e) =>e.id === selectedEventIdForHistory) ?? null
+  : null;
+
+  const selectedEventSales = selectedEventForHistory
+  ? sales.filter((s) => s.eventId === selectedEventForHistory.id)
+  : [];
+
+  useEffect(() => {//商品データの保存(itemsが変化したときに実行)
     saveItems(items);
   }, [items]);
 
-  useEffect(() => {
+  useEffect(() => {//販売データの保存(salesが変化したときに実行)
     saveSales(sales);
   }, [sales]);
 
@@ -76,6 +99,11 @@ function App() {
   const handleCheckout = () => {
     if (cart.length === 0) return;
 
+    if (!currentEventId){
+      alert("イベントを選択してください");
+      return;
+    }
+
     const total = totalPrice;
     const now = new Date();
 
@@ -94,6 +122,7 @@ function App() {
       datetime: now.toLocaleString(),
       total,
       items: saleItems,
+      eventId: currentEventId,//選択されたイベントID(紐づけ)
     };
 
     setSales((prev) => [sale, ...prev]);
@@ -147,6 +176,26 @@ function App() {
     setCart((prev) => prev.filter((c) => c.itemId !== id));
   };
 
+  const handleDeleteSale = (id: string) => {
+    if (!confirm("この売上履歴を削除しますか？")) return;
+    setSales((prev) => prev.filter((s) => s.id !== id));
+  };
+
+  const handleAddEvent=(name:string,date:string,memo?:string)=>{//いったん追加
+    const newEvent:Event={
+      id:crypto.randomUUID(),
+      name,
+      date,
+      memo,
+    };
+    setEvents((prev) => [...prev, newEvent]);
+  };
+
+  const handleDeleteEvent=(id:string)=>{
+    setEvents((prev) => prev.filter((event) => event.id !== id));
+    setSales((prev) => prev.filter((sale) => sale.eventId !== id));
+  };
+
   //いったん追加
   const getRemainingStock = (itemId: string) => {
     const item = getItemById(itemId);
@@ -154,6 +203,8 @@ function App() {
     const used = cartItem ? cartItem.quantity : 0;
     return item.stock - used;
   };
+
+
 
 
   return (
@@ -174,6 +225,7 @@ function App() {
           <button onClick={() => setScreen("register")}>レジ</button>
           <button onClick={() => setScreen("history")}>売上履歴</button>
           <button onClick={() => setScreen("items")}>頒布物管理</button>
+          <button onClick={() => setScreen("events")}>イベント履歴</button>
         </nav>
       </header>
 
@@ -210,6 +262,10 @@ function App() {
         <SaleDetailScreen
           sale={selectedSale}
           onBack={() => setScreen("history")}
+          onDelete={() => {
+            handleDeleteSale(selectedSale.id);
+            setScreen("history");
+          }}
         />
       )}
 
@@ -223,6 +279,36 @@ function App() {
           onDeleteItem={handleDeleteItem}
         />
       )}
+
+      {screen === "events" && (
+        <EventListScreen
+          events={events}
+          currentEventId={currentEventId}
+          onSelectCurrentEvent={(id)=>{
+            setCurrentEventId(id);
+          }}
+          onOpenEventHistory={(id) => {
+            setSelectedEventIdForHistory(id);
+            setScreen("eventHistory");
+            //将来的にイベント詳細画面へ遷移する処理を追加予定
+          }}
+          onAddEvent={handleAddEvent}
+          onDeleteEvent={handleDeleteEvent}
+        />
+      )}
+
+      {screen ==="eventHistory" &&
+        selectedEventForHistory &&(
+          <EventHistoryScreen
+          event={selectedEventForHistory}
+          sales={selectedEventSales}
+          onBack={() => setScreen("events")}
+          onSelectSale={(id) =>{
+            setSelectedSaleId(id);
+            setScreen("saleDetail");
+          }}
+          />
+        )}
     </div>
   );
 }
