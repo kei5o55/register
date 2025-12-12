@@ -3,14 +3,18 @@ import type { Event } from "../types";
 
 type EventListProps = {
   events: Event[];
-  onSelectEvent: (id: string) => void;
+  currentEventId: string | null;
+  onSelectCurrentEvent: (id: string) => void;
+  onOpenEventHistory: (id: string) => void;
   onDeleteEvent: (id: string) => void;
   onAddEvent: (name: string, date: string, memo: string) => void;
 };
 
 export function EventListScreen({
   events,
-  onSelectEvent,
+  currentEventId,
+  onSelectCurrentEvent,
+  onOpenEventHistory,
   onDeleteEvent,
   onAddEvent,
 }: EventListProps) {
@@ -32,7 +36,7 @@ export function EventListScreen({
   return (
     <div>
       <h2>イベント履歴</h2>
-      <p>参加したイベントごとの記録を一覧表示します。</p>
+      <p>レジで使用するイベントを選択できます。</p>
 
       {events.length === 0 ? (
         <p>まだイベントが登録されていません。</p>
@@ -44,6 +48,7 @@ export function EventListScreen({
         >
           <thead>
             <tr>
+              <th>使用</th>
               <th>開催日</th>
               <th>イベント名</th>
               <th>メモ</th>
@@ -53,19 +58,34 @@ export function EventListScreen({
           <tbody>
             {events.map((event) => (
               <tr key={event.id}>
+                <td style={{ textAlign: "center" }}>
+                  <input
+                    type="radio"
+                    name="currentEvent"
+                    checked={currentEventId === event.id}
+                    onChange={() => onSelectCurrentEvent(event.id)}
+                  />
+                </td>
                 <td>{event.date}</td>
-                <td>{event.name}</td>
+                <td>
+                  {event.name}
+                  {currentEventId === event.id && (
+                    <strong style={{ marginLeft: 8, color: "green" }}>
+                      （現在のイベント）
+                    </strong>
+                  )}
+                </td>
                 <td>{event.memo ?? "-"}</td>
                 <td>
-                  <button onClick={() => onSelectEvent(event.id)}>
-                    詳細を見る
+                  <button onClick={() => onOpenEventHistory(event.id)}>
+                    売上履歴
                   </button>
                   <button
                     style={{ marginLeft: 8 }}
                     onClick={() => {
                       if (
                         window.confirm(
-                          `"${event.name}" を削除しますか？関連する売上履歴も消える可能性があります。`
+                          `"${event.name}" を削除しますか？関連する売上履歴も削除されます。`
                         )
                       ) {
                         onDeleteEvent(event.id);
@@ -87,7 +107,6 @@ export function EventListScreen({
           type="date"
           value={newDate}
           onChange={(e) => setNewDate(e.target.value)}
-          placeholder="開催日"
         />
         <input
           type="text"

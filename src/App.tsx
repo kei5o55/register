@@ -10,6 +10,7 @@ import { SaleDetailScreen } from "./components/SaleDetailScreen";
 import { RegisterScreen } from "./components/RegisterScreen";
 import { ItemsScreen } from "./components/ItemScreen";
 import { EventListScreen } from "./components/EventListScreen";
+import { EventHistoryScreen } from "./components/EventHistoryScreen";
 
 
 type SaleItem = {//販売された商品の情報を表す型
@@ -19,7 +20,7 @@ type SaleItem = {//販売された商品の情報を表す型
   quantity: number; // 売れた数
 };
 
-type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events";//画面の種類を定義
+type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events" | "eventHistory";//画面の種類を定義
 
 const initialItems: Item[] = [//仮データ
   { id: "1", name: "新刊 A", price: 500, stock: 20 },
@@ -43,7 +44,16 @@ function App() {
   const [sales, setSales] = useState<Sale[]>(() => loadSales());
   const [events, setEvents] = useState<Event[]>(initialEvents);
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
-  const [currentEventId, setCrurrentEventId] = useState<string | null>(null);
+  const [currentEventId, setCurrentEventId] = useState<string | null>(null);
+  const [selectedEventIdForHistory,setSelectedEventIdForHistory]= useState<string | null>(null);
+
+  const selectedEventForHistory = selectedEventIdForHistory
+  ? events.find((e) =>e.id === selectedEventIdForHistory) ?? null
+  : null;
+
+  const selectedEventSales = selectedEventForHistory
+  ? sales.filter((s) => s.eventId === selectedEventForHistory.id)
+  : [];
 
   useEffect(() => {//商品データの保存(itemsが変化したときに実行)
     saveItems(items);
@@ -89,6 +99,11 @@ function App() {
   const handleCheckout = () => {
     if (cart.length === 0) return;
 
+    if (!currentEventId){
+      alert("イベントを選択してください");
+      return;
+    }
+
     const total = totalPrice;
     const now = new Date();
 
@@ -107,7 +122,7 @@ function App() {
       datetime: now.toLocaleString(),
       total,
       items: saleItems,
-      eventId: currentEventId!,//選択されたイベントID
+      eventId: currentEventId,//選択されたイベントID(紐づけ)
     };
 
     setSales((prev) => [sale, ...prev]);
@@ -259,15 +274,32 @@ function App() {
       {screen === "events" && (
         <EventListScreen
           events={events}
-          onSelectEvent={(id) => 
-            //console.log("イベント詳細へ:",id);
-            setCrurrentEventId(id)
+          currentEventId={currentEventId}
+          onSelectCurrentEvent={(id)=>{
+            setCurrentEventId(id);
+          }}
+          onOpenEventHistory={(id) => {
+            setSelectedEventIdForHistory(id);
+            setScreen("eventHistory");
             //将来的にイベント詳細画面へ遷移する処理を追加予定
-          }
+          }}
           onAddEvent={handleAddEvent}
           onDeleteEvent={handleDeleteEvent}
         />
       )}
+
+      {screen ==="eventHistory" &&
+        selectedEventForHistory &&(
+          <EventHistoryScreen
+          event={selectedEventForHistory}
+          sales={selectedEventSales}
+          onBack={() => setScreen("events")}
+          onSelectSale={(id) =>{
+            setSelectedSaleId(id);
+            setScreen("saleDetail");
+          }}
+          />
+        )}
     </div>
   );
 }
