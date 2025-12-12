@@ -81,7 +81,7 @@ export function EventListScreen({
                     売上履歴
                   </button>
                   <button
-                    style={{ marginLeft: 8 }}
+                    style={{ marginLeft: 8,color:"red" }}
                     onClick={() => {
                       if (
                         window.confirm(
