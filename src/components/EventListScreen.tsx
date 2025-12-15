@@ -5,7 +5,8 @@ type EventListProps = {
   events: Event[];
   currentEventId: string | null;
   onSelectCurrentEvent: (id: string) => void;
-  onOpenEventHistory: (id: string) => void;
+  //onOpenEventHistory: (id: string) => void;
+  onOpenEventDetail: (id: string) => void;
   onDeleteEvent: (id: string) => void;
   onAddEvent: (name: string, date: string, memo: string) => void;
 };
@@ -14,7 +15,8 @@ export function EventListScreen({
   events,
   currentEventId,
   onSelectCurrentEvent,
-  onOpenEventHistory,
+  //onOpenEventHistory,
+  onOpenEventDetail,
   onDeleteEvent,
   onAddEvent,
 }: EventListProps) {
@@ -77,7 +79,7 @@ export function EventListScreen({
                 </td>
                 <td>{event.memo ?? "-"}</td>
                 <td>
-                  <button onClick={() => onOpenEventHistory(event.id)}>
+                  <button onClick={() => onOpenEventDetail(event.id)}>
                     売上履歴
                   </button>
                   <button

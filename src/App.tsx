@@ -11,6 +11,7 @@ import { RegisterScreen } from "./components/RegisterScreen";
 import { ItemsScreen } from "./components/ItemScreen";
 import { EventListScreen } from "./components/EventListScreen";
 import { EventHistoryScreen } from "./components/EventHistoryScreen";
+import { EventDetailScreen } from "./components/EventDetailScreen";
 
 
 type SaleItem = {//販売された商品の情報を表す型
@@ -20,7 +21,7 @@ type SaleItem = {//販売された商品の情報を表す型
   quantity: number; // 売れた数
 };
 
-type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events" | "eventHistory";//画面の種類を定義
+type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events" | "eventHistory" | "eventDetail";//画面の種類を定義
 
 const initialItems: Item[] = [//仮データ
   { id: "1", name: "新刊 A", price: 500, stock: 20 },
@@ -46,14 +47,13 @@ function App() {
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
   const [currentEventId, setCurrentEventId] = useState<string | null>(null);
   const [selectedEventIdForHistory,setSelectedEventIdForHistory]= useState<string | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
-  const selectedEventForHistory = selectedEventIdForHistory
-  ? events.find((e) =>e.id === selectedEventIdForHistory) ?? null
-  : null;
+  const selectedEventForHistory = selectedEventIdForHistory ? events.find(e => e.id === selectedEventIdForHistory) ?? null : null;
+  const selectedEventSalesForHistory = selectedEventForHistory ? sales.filter(s => s.eventId === selectedEventForHistory.id) : [];
+  const selectedEvent =selectedEventId ? events.find(e => e.id === selectedEventId) ?? null : null;
+  const selectedEventSalesForDetail = selectedEvent ? sales.filter(s => s.eventId === selectedEvent.id) : [];
 
-  const selectedEventSales = selectedEventForHistory
-  ? sales.filter((s) => s.eventId === selectedEventForHistory.id)
-  : [];
 
   useEffect(() => {//商品データの保存(itemsが変化したときに実行)
     saveItems(items);
@@ -287,9 +287,14 @@ function App() {
           onSelectCurrentEvent={(id)=>{
             setCurrentEventId(id);
           }}
-          onOpenEventHistory={(id) => {
+          /*onOpenEventHistory={(id) => {
             setSelectedEventIdForHistory(id);
             setScreen("eventHistory");
+            //将来的にイベント詳細画面へ遷移する処理を追加予定
+          }}*/
+         onOpenEventDetail={(id) => {
+            setSelectedEventId(id);
+            setScreen("eventDetail");
             //将来的にイベント詳細画面へ遷移する処理を追加予定
           }}
           onAddEvent={handleAddEvent}
@@ -301,12 +306,20 @@ function App() {
         selectedEventForHistory &&(
           <EventHistoryScreen
           event={selectedEventForHistory}
-          sales={selectedEventSales}
+          sales={selectedEventSalesForHistory}
           onBack={() => setScreen("events")}
           onSelectSale={(id) =>{
             setSelectedSaleId(id);
             setScreen("saleDetail");
           }}
+          />
+        )}
+
+        {screen ==="eventDetail" && selectedEvent &&(
+          <EventDetailScreen
+          event={selectedEvent}
+          sales={selectedEventSalesForDetail}
+          onBack={()=> setScreen("events")}
           />
         )}
     </div>
