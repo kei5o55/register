@@ -287,16 +287,14 @@ function App() {
           onSelectCurrentEvent={(id)=>{
             setCurrentEventId(id);
           }}
-          /*onOpenEventHistory={(id) => {
+          onOpenEventHistory={(id) => {
             setSelectedEventIdForHistory(id);
             setScreen("eventHistory");
-            //将来的にイベント詳細画面へ遷移する処理を追加予定
-          }}*/
-         onOpenEventDetail={(id) => {
+          }}
+         /*onOpenEventDetail={(id) => {
             setSelectedEventId(id);
             setScreen("eventDetail");
-            //将来的にイベント詳細画面へ遷移する処理を追加予定
-          }}
+          }}*/
           onAddEvent={handleAddEvent}
           onDeleteEvent={handleDeleteEvent}
         />
@@ -311,6 +309,10 @@ function App() {
           onSelectSale={(id) =>{
             setSelectedSaleId(id);
             setScreen("saleDetail");
+          }}
+          onOpenEventDetail={(id) => {
+            setSelectedEventId(id);
+            setScreen("eventDetail");
           }}
           />
         )}

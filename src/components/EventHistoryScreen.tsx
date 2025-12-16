@@ -6,6 +6,7 @@ type EventHistoryScreenProps = {
   event: Event;
   sales: Sale[];                // すでにフィルタ済みの配列をもらう
   onBack: () => void;
+  onOpenEventDetail: (id: string) => void;
   onSelectSale: (id: string) => void;
 };
 
@@ -14,6 +15,7 @@ export function EventHistoryScreen({
   sales,
   onBack,
   onSelectSale,
+  onOpenEventDetail,
 }: EventHistoryScreenProps) {
   return (
     <div>
@@ -25,6 +27,10 @@ export function EventHistoryScreen({
 
       {/* 既存の HistoryScreen をそのまま再利用 */}
       <HistoryScreen sales={sales} onSelectSale={onSelectSale} />
+
+      <button onClick={() => onOpenEventDetail(event.id)}>
+        売上詳細
+      </button>
 
       <button style={{ marginTop: 16 }} onClick={onBack}>
         イベント一覧に戻る
