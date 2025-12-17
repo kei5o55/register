@@ -41,7 +41,7 @@ export function SaleDetailScreen({ sale, onBack ,onDelete}: SaleDetailProps) {
       )}
 
       <button style={{ marginTop: 16 }} onClick={onBack}>
-        履歴一覧に戻る
+        戻る
       </button>
       
       <button onClick={onDelete} style={{color: "red"}}>

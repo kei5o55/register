@@ -1,8 +1,7 @@
 #root {
-  max-width: 1280px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }
 
 .logo {
@@ -40,3 +39,78 @@
 .read-the-docs {
   color: #888;
 }
+.btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+}
+
+.btn-primary {
+  border-color: transparent;
+  background: #2563eb;
+  color: white;
+}
+
+.btn-danger {
+  border-color: transparent;
+  background: #dc2626;
+  color: white;
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  background: white;
+}
+
+.listItem:hover {
+  background: #f9fafb;
+}
+
+.listMain {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.total {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.chevron {
+  color: #9ca3af;
+  font-size: 20px;
+}
+

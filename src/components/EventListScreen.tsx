@@ -6,6 +6,7 @@ type EventListProps = {
   currentEventId: string | null;
   onSelectCurrentEvent: (id: string) => void;
   onOpenEventHistory: (id: string) => void;
+  //onOpenEventDetail: (id: string) => void;
   onDeleteEvent: (id: string) => void;
   onAddEvent: (name: string, date: string, memo: string) => void;
 };
@@ -15,6 +16,7 @@ export function EventListScreen({
   currentEventId,
   onSelectCurrentEvent,
   onOpenEventHistory,
+  //onOpenEventDetail,
   onDeleteEvent,
   onAddEvent,
 }: EventListProps) {
@@ -112,7 +114,7 @@ export function EventListScreen({
           type="text"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          placeholder="イベント名（例: コミティア148）"
+          placeholder="イベント名（例: コミティア●●●）"
         />
         <textarea
           value={newMemo}
