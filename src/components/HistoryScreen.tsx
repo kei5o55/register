@@ -9,7 +9,10 @@ type HistoryProps = {
 export function HistoryScreen({ sales, onSelectSale }: HistoryProps) {
   return (
     <div>
-      <h2>売上履歴</h2>
+      <div className="pageHeader">
+        <h2>売上履歴（{sales.length}件）</h2>
+      </div>
+
       {sales.length === 0 ? (
         <p>まだ売上はありません</p>
       ) : (

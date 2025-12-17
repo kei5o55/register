@@ -27,14 +27,15 @@ export function EventHistoryScreen({
 
       {/* 既存の HistoryScreen をそのまま再利用 */}
       <HistoryScreen sales={sales} onSelectSale={onSelectSale} />
+      <button style={{ marginTop: 16 }} onClick={onBack}>
+              戻る
+      </button>
 
       <button onClick={() => onOpenEventDetail(event.id)}>
-        売上詳細
+        売上集計
       </button>
 
-      <button style={{ marginTop: 16 }} onClick={onBack}>
-        イベント一覧に戻る
-      </button>
+      
     </div>
   );
 }

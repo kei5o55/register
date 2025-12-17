@@ -114,7 +114,7 @@ export function EventListScreen({
           type="text"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          placeholder="イベント名（例: コミティア148）"
+          placeholder="イベント名（例: コミティア●●●）"
         />
         <textarea
           value={newMemo}
