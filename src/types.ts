@@ -17,6 +17,13 @@ export type CartItem = {
   itemId: string;
   quantity: number;
 };
+export type Bandel = {
+  BandleId: string;
+  itemId: string[];
+  naem:string;
+  price: number;
+  stock: number;
+};
 
 export type Sale = {
   id: string;

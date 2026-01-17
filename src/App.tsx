@@ -1,6 +1,6 @@
 //src/App.tsx
 import { useState, useEffect } from "react";
-import type { Item, CartItem, Sale, Event } from "./types";
+import type { Item, CartItem, Sale,Event} from "./types";
 import { loadItems, saveItems, loadSales, saveSales } from "./storage";
 import"./App.css";
 
@@ -55,6 +55,7 @@ function App() {
   const selectedEventSalesForHistory = selectedEventForHistory ? sales.filter(s => s.eventId === selectedEventForHistory.id) : [];
   const selectedEvent =selectedEventId ? events.find(e => e.id === selectedEventId) ?? null : null;
   const selectedEventSalesForDetail = selectedEvent ? sales.filter(s => s.eventId === selectedEvent.id) : [];
+  const currentEvent =currentEventId ? events.find(e => e.id === currentEventId) ?? null : null;
 
 
   useEffect(() => {//商品データの保存(itemsが変化したときに実行)
@@ -64,6 +65,10 @@ function App() {
   useEffect(() => {//販売データの保存(salesが変化したときに実行)
     saveSales(sales);
   }, [sales]);
+
+  /*useEffect(() =>{
+    const Eventname=initialEvents[selectedEventId].name;
+  },[selectedEventId]);*/
 
   const go = (next: Screen) => {
     setScreenStack((prev) => [...prev,screen]);
@@ -245,10 +250,12 @@ function App() {
         </nav>
       </header>
 
-      {screen === "home" && (//ホーム画面を表示
-        <HomeScreen//ホーム画面コンポーネントを呼び出し
-          onGoRegister={() => setScreen("register")}//レジ画面へ遷移する関数を渡す
-          onGoHistory={() => setScreen("history")}//売上履歴画面へ遷移する関数を渡す
+      {screen === "home" && (
+        <HomeScreen
+          currentEvent={currentEvent}
+          onGoRegister={() => setScreen("register")}
+          onGoHistory={() => setScreen("history")}
+          onGoEvents={() => setScreen("events")} // ← 未選択ならイベント選択へ飛ばす用
         />
       )}
 
