@@ -1,23 +1,39 @@
 // src/components/RegisterScreen.tsx
-import type{ Item, CartItem } from "../types";
+import type{ Item, CartItem, Bundle } from "../types";
+
+type BundleCartItem = { bundleId: string; quantity: number };
 
 type RegisterProps = {
   items: Item[];
+  bundles: Bundle[];
+
   cart: CartItem[];
+  bundleCart: BundleCartItem[];
+
   totalPrice: number;
+
   onAddToCart: (itemId: string) => void;
+  onAddBundleToCart: (bundleId: string) => void;
+
   onCheckout: () => void;
+
   getItemById: (id: string) => Item;
-  getRemainingStock: (id: string) => number;
+  getBundleById: (id: string) => Bundle;
+
+  getRemainingStock: (itemId: string) => number;
 };
 
 export function RegisterScreen({
   items,
+  bundles,
   cart,
+  bundleCart,
   totalPrice,
   onAddToCart,
+  onAddBundleToCart,
   onCheckout,
   getItemById,
+  getBundleById,
   getRemainingStock,
 }: RegisterProps) {
   return (
@@ -43,6 +59,42 @@ export function RegisterScreen({
             );
           })}
         </ul>
+        <h3>バンドル</h3>
+          {bundles.length === 0 ? (
+            <p>バンドルがありません（頒布物管理で追加できます）</p>
+          ) : (
+            <table border={1} cellPadding={4} style={{ borderCollapse: "collapse", marginBottom: 16 }}>
+              <thead>
+                <tr>
+                  <th>バンドル名</th>
+                  <th>中身</th>
+                  <th>価格(円)</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bundles.map((b) => (
+                  <tr key={b.id}>
+                    <td>{b.name}</td>
+                    <td>
+                      {b.lines.map((l, i) => {
+                        const item = getItemById(l.itemId);
+                        return (
+                          <div key={i}>
+                            {item.name} × {l.quantity}
+                          </div>
+                        );
+                      })}
+                    </td>
+                    <td>{b.price}</td>
+                    <td>
+                      <button onClick={() => onAddBundleToCart(b.id)}>カートに追加</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
       </div>
 
       <div style={{ flex: 1 }}>
@@ -61,9 +113,22 @@ export function RegisterScreen({
             })}
           </ul>
         )}
+        {bundleCart.length > 0 && (
+            <>
+              <h4>バンドル</h4>
+              {bundleCart.map((bc) => {
+                const b = getBundleById(bc.bundleId);
+                return (
+                  <div key={bc.bundleId}>
+                    {b.name} × {bc.quantity}（{b.price * bc.quantity}円）
+                  </div>
+                );
+              })}
+            </>
+          )}
         <hr />
         <p>合計: {totalPrice} 円</p>
-        <button onClick={onCheckout} disabled={cart.length === 0}>
+        <button onClick={onCheckout} disabled={cart.length === 0 && bundleCart.length===0}>
           会計確定
         </button>
       </div>

@@ -1,24 +1,39 @@
 // src/components/SaleDetailScreen.tsx
-import type { Sale } from "../types";
+import type { Sale, Bundle } from "../types";
 
 type SaleDetailProps = {
   sale: Sale;
+  bundles: Bundle[]; // ←追加
   onBack: () => void;
   onDelete: () => void;
 };
 
-export function SaleDetailScreen({ sale, onBack ,onDelete}: SaleDetailProps) {
+export function SaleDetailScreen({ sale, bundles, onBack, onDelete }: SaleDetailProps) {
+  const bundleLines = sale.bundles ?? [];
+  const expanded = sale.bundleExpandedItems ?? [];
+
+  const getBundleName = (bundleId: string) =>
+    bundles.find((b) => b.id === bundleId)?.name ?? `(不明なバンドル: ${bundleId})`;
+  const getBundleById = (bundleId: string) =>
+      bundles.find((b) => b.id === bundleId);
+
+  const calcBundleSubtotal = (bundleId: string, quantity: number) => {
+    const bundle = getBundleById(bundleId);
+    return bundle ? bundle.price * quantity : 0;
+  };
+
   return (
     <div>
       <h2>売上詳細</h2>
       <p>日時: {sale.datetime}</p>
       <p>合計金額: {sale.total} 円</p>
 
-      <h3>内訳</h3>
+      {/* 単品内訳 */}
+      <h3>内訳（単品）</h3>
       {sale.items.length === 0 ? (
-        <p>内訳データがありません</p>
+        <p>単品の内訳データがありません</p>
       ) : (
-        <table border={1} cellPadding={4} style={{ borderCollapse: "collapse" }}>
+        <table border={1} cellPadding={4} style={{ borderCollapse: "collapse", marginBottom: 16 }}>
           <thead>
             <tr>
               <th>頒布物</th>
@@ -40,12 +55,65 @@ export function SaleDetailScreen({ sale, onBack ,onDelete}: SaleDetailProps) {
         </table>
       )}
 
+      {/* バンドル購入（バンドル名×個数） */}
+      <h3>内訳（バンドル）</h3>
+      {bundleLines.length === 0 ? (
+        <p>バンドル購入はありません</p>
+      ) : (
+        <table border={1} cellPadding={4} style={{ borderCollapse: "collapse", marginBottom: 16 }}>
+          <thead>
+            <tr>
+              <th>バンドル</th>
+              <th>数量</th>
+              <th>金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bundleLines.map((b) => {
+              const bundle = getBundleById(b.bundleId);
+              const subtotal = calcBundleSubtotal(b.bundleId, b.quantity);
+
+              return (
+                <tr key={b.bundleId}>
+                  <td>{bundle?.name ?? `(不明なバンドル)`}</td>
+                  <td>{b.quantity}</td>
+                  <td>{subtotal} 円</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+
+      {/* バンドル展開内訳（Itemごとの数量：確定スナップショット） */}
+      <h3>内訳（バンドル内の頒布物）</h3>
+      {expanded.length === 0 ? (
+        <p>バンドル内訳データがありません</p>
+      ) : (
+        <table border={1} cellPadding={4} style={{ borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th>頒布物</th>
+              <th>数量</th>
+            </tr>
+          </thead>
+          <tbody>
+            {expanded.map((it) => (
+              <tr key={it.itemId}>
+                <td>{it.name}</td>
+                <td>{it.quantity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
       <button style={{ marginTop: 16 }} onClick={onBack}>
         戻る
       </button>
-      
-      <button onClick={onDelete} style={{color: "red"}}>
-            この売り上げを削除
+
+      <button onClick={onDelete} style={{ color: "red", marginLeft: 8 }}>
+        この売り上げを削除
       </button>
     </div>
   );
