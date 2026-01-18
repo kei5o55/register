@@ -58,6 +58,8 @@ function App() {
   const selectedEventSalesForDetail = selectedEvent ? sales.filter(s => s.eventId === selectedEvent.id) : [];
   const currentEvent =currentEventId ? events.find(e => e.id === currentEventId) ?? null : null;
 
+  const [bundleCart, setBundleCart] = useState<BundleCartItem[]>([]);
+  type BundleCartItem = { bundleId: string; quantity: number };
 
   useEffect(() => {//商品データの保存(itemsが変化したときに実行)
     saveItems(items);
@@ -84,6 +86,20 @@ function App() {
       return prev.slice(0, -1);
     });
   };
+
+  const handleAddBundleToCart = (bundleId: string) => {
+    setBundleCart((prev) => {
+      const existing = prev.find((b) => b.bundleId === bundleId);
+      if (existing) {
+        return prev.map((b) =>
+          b.bundleId === bundleId ? { ...b, quantity: b.quantity + 1 } : b
+        );
+      }
+      return [...prev, { bundleId, quantity: 1 }];
+    });
+  };
+
+  const getBundleById = (id: string) => bundles.find((b) => b.id === id)!;
 
   const handleAddBundle = (name: string, lines: BundleLine[], price: number) => {
     const newBundle: Bundle = {
@@ -127,55 +143,140 @@ function App() {
     });
   };
 
-  const totalPrice = cart.reduce((sum, c) => {
-    const item = getItemById(c.itemId);
-    return sum + item.price * c.quantity;
+  const totalPrice =
+    cart.reduce((sum, c) => {
+      const item = getItemById(c.itemId);
+      return sum + item.price * c.quantity;
+    }, 0)
+    +
+    bundleCart.reduce((sum, bc) => {
+      const bundle = getBundleById(bc.bundleId);
+      return sum + bundle.price * bc.quantity;
   }, 0);
 
-  const handleCheckout = () => {
-    if (cart.length === 0) return;
+const handleCheckout = () => {
+  
+      // 単品もバンドルも空なら何もしない
+      if (cart.length === 0 && bundleCart.length === 0) return;
 
-    if (!currentEventId){
-      alert("イベントを選択してください");
-      return;
-    }
+      if (!currentEventId) {
+        alert("イベントを選択してください");
+        return;
+      }
 
-    const total = totalPrice;
-    const now = new Date();
+      // --- ① 必要数を itemId ごとに集計（単品 + バンドル展開） ---
+      const required = new Map<string, number>();
 
-    const saleItems: SaleItem[] = cart.map((c) => {
-      const item = getItemById(c.itemId);
-      return {
-        itemId: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: c.quantity,
+      // 単品
+      for (const c of cart) {
+        required.set(c.itemId, (required.get(c.itemId) ?? 0) + c.quantity);
+      }
+
+      // バンドル（中身を展開して必要数に加算）
+      for (const bc of bundleCart) {
+        const bundle = bundles.find((b) => b.id === bc.bundleId);
+        if (!bundle) continue;
+
+        for (const line of bundle.lines) {
+          const add = line.quantity * bc.quantity;
+          required.set(line.itemId, (required.get(line.itemId) ?? 0) + add);
+        }
+      }
+
+      // --- ② 在庫チェック（バンドル込み） ---
+      for (const [itemId, need] of required) {
+        const item = items.find((i) => i.id === itemId);
+        if (!item) continue; // 念のため
+
+        if (item.stock < need) {
+          alert(`在庫が足りません: ${item.name}\n必要: ${need} / 在庫: ${item.stock}`);
+          return;
+        }
+      }
+      // --- バンドル由来の内訳（itemIdごと）をスナップショット保存する ---
+      const bundleExpandedMap = new Map<string, { name: string; quantity: number }>();
+
+      for (const bc of bundleCart) {
+        const bundle = bundles.find((b) => b.id === bc.bundleId);
+        if (!bundle) continue;
+
+        for (const line of bundle.lines) {
+          const item = getItemById(line.itemId);
+
+          // バンドル1個あたり line.quantity 個入ってる × バンドル購入数
+          const add = line.quantity * bc.quantity;
+
+          const cur = bundleExpandedMap.get(line.itemId);
+          if (cur) {
+            cur.quantity += add;
+            // 名前は最新に寄せる（スナップショットとしては item.name でOK）
+            cur.name = item.name;
+          } else {
+            bundleExpandedMap.set(line.itemId, { name: item.name, quantity: add });
+          }
+        }
+      }
+
+      const bundleExpandedItems =
+        bundleExpandedMap.size > 0
+          ? Array.from(bundleExpandedMap.entries()).map(([itemId, v]) => ({
+              itemId,
+              name: v.name,
+              quantity: v.quantity,
+            }))
+          : undefined;
+
+
+      // --- ③ 売上データを作る（単品は items に、バンドルは bundles に保存） ---
+      const now = new Date();
+
+      const saleItems: SaleItem[] = cart.map((c) => {
+        const item = getItemById(c.itemId);
+        return {
+          itemId: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: c.quantity,
+        };
+      });
+
+      const saleBundles = bundleCart.map((bc) => ({
+        bundleId: bc.bundleId,
+        quantity: bc.quantity,
+      }));
+
+      const total = totalPrice; // ←すでに単品+バンドルの合計になってる前提
+
+      const sale: Sale = {
+        id: crypto.randomUUID(),
+        datetime: now.toLocaleString(),
+        total,
+        items: saleItems,
+        bundles: saleBundles.length > 0 ? saleBundles : undefined,
+        bundleExpandedItems, // ←追加
+        eventId: currentEventId,
       };
-    });
 
-    const sale: Sale = {
-      id: crypto.randomUUID(),
-      datetime: now.toLocaleString(),
-      total,
-      items: saleItems,
-      eventId: currentEventId,//選択されたイベントID(紐づけ)
-    };
+      setSales((prev) => [sale, ...prev]);
 
-    setSales((prev) => [sale, ...prev]);
+      // --- ④ 在庫更新（required 分まとめて引く） ---
+      const updatedItems = items.map((item) => {
+        const need = required.get(item.id) ?? 0;
+        if (need === 0) return item;
+        return { ...item, stock: item.stock - need };
+      });
 
-    const updatedItems = items.map((item) => {
-      const cartItem = cart.find((c) => c.itemId === item.id);
-      if (!cartItem) return item;
-      return {
-        ...item,
-        stock: item.stock - cartItem.quantity,
-      };
-    });
+      setItems(updatedItems);
 
-    setItems(updatedItems);
-    setCart([]);
-    alert(`合計金額: ${total} 円`);
-  };
+      // --- ⑤ カートを空にする ---
+      setCart([]);
+      setBundleCart([]);
+
+      alert(`合計金額: ${total} 円`);
+      console.log("saved sale (full)", JSON.stringify(sale, null, 2));
+
+
+};
 
   const handleChangeItemName = (id: string, name: string) => {
     setItems((prev) =>
@@ -277,11 +378,15 @@ function App() {
       {screen === "register" && (
         <RegisterScreen
           items={items}
+          bundles={bundles}
           cart={cart}
+          bundleCart={bundleCart}
           totalPrice={totalPrice}
           onAddToCart={handleAddToCart}
-          onCheckout={handleCheckout}
+          onAddBundleToCart={handleAddBundleToCart}
+          onCheckout={handleCheckout} // ※ 会計は次ステップで bundle 対応する
           getItemById={getItemById}
+          getBundleById={getBundleById}
           getRemainingStock={getRemainingStock}
         />
       )}
@@ -300,6 +405,7 @@ function App() {
       {screen === "saleDetail" && selectedSale && (
         <SaleDetailScreen
           sale={selectedSale}
+          bundles={bundles}
           onBack={back}
           onDelete={() => {
             handleDeleteSale(selectedSale.id);

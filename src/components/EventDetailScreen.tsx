@@ -36,14 +36,18 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
           <thead>
             <tr>
               <th>頒布物</th>
-              <th>個数</th>
+              <th>単品</th>
+              <th>バンドル</th>
+              <th>合計</th>
             </tr>
           </thead>
           <tbody>
             {report.items.map((it) => (
               <tr key={it.itemId}>
                 <td>{it.name}</td>
-                <td>{it.quantity}</td>
+                <td>{it.singleQuantity}</td>
+                <td>{it.bundleQuantity}</td>
+                <td>{it.totalQuantity}</td>
               </tr>
             ))}
           </tbody>
