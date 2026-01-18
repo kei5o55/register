@@ -12,17 +12,22 @@ export type Item = {
   price: number;
   stock: number;
 };
+export type CartItem = { itemId: string; quantity: number }
 
-export type CartItem = {
+export type CartLine =
+  | { kind: "item"; itemId: string; quantity: number }
+  | { kind: "bundle"; bundleId: string; quantity: number };
+
+export type BundleLine = {
   itemId: string;
   quantity: number;
 };
-export type Bandel = {
-  BandleId: string;
-  itemId: string[];
-  naem:string;
-  price: number;
-  stock: number;
+
+export type Bundle = {
+  id: string;
+  name: string;
+  lines: BundleLine[]; // 中身（アイテムIDと個数）
+  price: number;       // バンドル価格（合計 or 割引価格でもOK）
 };
 
 export type Sale = {

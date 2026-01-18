@@ -1,6 +1,6 @@
 //src/App.tsx
 import { useState, useEffect } from "react";
-import type { Item, CartItem, Sale,Event} from "./types";
+import type { Item, CartItem, Sale,Event,Bundle,BundleLine} from "./types";
 import { loadItems, saveItems, loadSales, saveSales } from "./storage";
 import"./App.css";
 
@@ -50,6 +50,7 @@ function App() {
   const [currentEventId, setCurrentEventId] = useState<string | null>(null);
   const [selectedEventIdForHistory,setSelectedEventIdForHistory]= useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [bundles, setBundles] = useState<Bundle[]>([]);
 
   const selectedEventForHistory = selectedEventIdForHistory ? events.find(e => e.id === selectedEventIdForHistory) ?? null : null;
   const selectedEventSalesForHistory = selectedEventForHistory ? sales.filter(s => s.eventId === selectedEventForHistory.id) : [];
@@ -82,6 +83,20 @@ function App() {
       setScreen(last);
       return prev.slice(0, -1);
     });
+  };
+
+  const handleAddBundle = (name: string, lines: BundleLine[], price: number) => {
+    const newBundle: Bundle = {
+      id: crypto.randomUUID(),
+      name,
+      lines,
+      price,
+    };
+    setBundles(prev => [...prev, newBundle]);
+  };
+
+  const handleDeleteBundle = (id: string) => {
+    setBundles(prev => prev.filter(b => b.id !== id));
   };
 
   const selectedSale = selectedSaleId
@@ -297,6 +312,9 @@ function App() {
       {screen === "items" && (
         <ItemsScreen
           items={items}
+          bundles={bundles}
+          onAddBundle={handleAddBundle}
+          onDeleteBundle={handleDeleteBundle}
           onChangeName={handleChangeItemName}
           onChangePrice={handleChangeItemPrice}
           onChangeStock={handleChangeItemStock}

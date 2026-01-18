@@ -2,7 +2,7 @@
 import type { Event } from "../types";
 
 type HomeProps = {
-  currentEvent: Event | null;
+  currentEvent: Event | null;//現在のイベントを持つ
   onGoRegister: () => void;
   onGoHistory: () => void;
   onGoEvents: () => void;
