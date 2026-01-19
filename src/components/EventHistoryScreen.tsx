@@ -1,5 +1,5 @@
 // src/components/EventHistoryScreen.tsx
-import type { Event, Sale } from "../types";
+import type { Event, Sale } from "../logic/types";
 import { HistoryScreen } from "./HistoryScreen"; // 既存を再利用するなら
 
 type EventHistoryScreenProps = {

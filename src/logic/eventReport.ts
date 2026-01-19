@@ -1,4 +1,4 @@
-import type { Sale } from "../types";
+import type { Sale } from "./types";
 
 export type ItemSummary = {
   itemId: string;

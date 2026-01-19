@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Item,Bundle,BundleLine } from "../types";
+import type { Item,Bundle,BundleLine } from "../logic/types";
 
 type ItemsScreenProps = {
   items: Item[];

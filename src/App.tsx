@@ -1,7 +1,7 @@
 //src/App.tsx
 import { useState, useEffect } from "react";
-import type { Item, CartItem, Sale,Event,Bundle,BundleLine} from "./types";
-import { loadItems, saveItems, loadSales, saveSales } from "./storage";
+import type { Item, CartItem, Sale,Event,Bundle,BundleLine} from "./logic/types";
+import { loadItems, saveItems, loadSales, saveSales } from "./logic/storage";
 import"./App.css";
 
 //コンポーネントのインポート
@@ -69,10 +69,6 @@ function App() {
     saveSales(sales);
   }, [sales]);
 
-  /*useEffect(() =>{
-    const Eventname=initialEvents[selectedEventId].name;
-  },[selectedEventId]);*/
-
   const go = (next: Screen) => {
     setScreenStack((prev) => [...prev,screen]);
     setScreen(next);
@@ -87,7 +83,53 @@ function App() {
     });
   };
 
+  const buildReservedMap = () => {
+    const reserved = new Map<string, number>();
+
+    // 単品カート分
+    for (const c of cart) {
+      reserved.set(c.itemId, (reserved.get(c.itemId) ?? 0) + c.quantity);
+    }
+
+    // バンドルカート分（中身を展開）
+    for (const bc of bundleCart) {
+      const bundle = bundles.find((b) => b.id === bc.bundleId);
+      if (!bundle) continue;
+
+      for (const line of bundle.lines) {
+        const add = line.quantity * bc.quantity;
+        reserved.set(line.itemId, (reserved.get(line.itemId) ?? 0) + add);
+      }
+    }
+
+    return reserved;
+  };
+
   const handleAddBundleToCart = (bundleId: string) => {
+    const bundle = bundles.find((b) => b.id === bundleId);
+    if (!bundle) return;
+
+    // いまカートで確保済みの個数（単品＋バンドル）
+    const reserved = buildReservedMap();
+
+    // 「このバンドルをさらに1個」追加したときに必要な個数をチェック
+    for (const line of bundle.lines) {
+      const item = items.find((i) => i.id === line.itemId);
+      if (!item) continue;
+
+      const already = reserved.get(line.itemId) ?? 0;
+      const needIfAddOne = already + line.quantity; // バンドル1個追加分
+
+      if (needIfAddOne > item.stock) {
+        alert(
+          `在庫が足りません: ${item.name}\n` +
+            `必要: ${needIfAddOne} / 在庫: ${item.stock}`
+        );
+        return;
+      }
+    }
+
+    // ここまで来たら追加OK
     setBundleCart((prev) => {
       const existing = prev.find((b) => b.bundleId === bundleId);
       if (existing) {
@@ -111,6 +153,21 @@ function App() {
     setBundles(prev => [...prev, newBundle]);
   };
 
+  const handleRemoveBundleFromCart = (bundleId: string) => {
+    setBundleCart((prev) => {
+      const target = prev.find((b) => b.bundleId === bundleId);
+      if (!target) return prev;
+
+      if (target.quantity <= 1) {
+        return prev.filter((b) => b.bundleId !== bundleId);
+      }
+
+      return prev.map((b) =>
+        b.bundleId === bundleId ? { ...b, quantity: b.quantity - 1 } : b
+      );
+    });
+  };
+
   const handleDeleteBundle = (id: string) => {
     setBundles(prev => prev.filter(b => b.id !== id));
   };
@@ -122,17 +179,18 @@ function App() {
   const getItemById = (id: string) => items.find((i) => i.id === id)!;
 
   const handleAddToCart = (itemId: string) => {
+    const reserved = buildReservedMap();
+    const item = getItemById(itemId);
+
+    const already = reserved.get(itemId) ?? 0;
+    const needIfAddOne = already + 1;
+
+    if (needIfAddOne > item.stock) {
+      alert(`在庫が足りません: ${item.name}`);
+      return;
+    }
+
     setCart((prev) => {
-      const item = getItemById(itemId);
-
-      const currentInCart = prev.find((c) => c.itemId === itemId)?.quantity ?? 0;
-      
-      const remainingStock = item.stock -currentInCart;
-      if (remainingStock <= 0) {
-        alert("在庫が足りません");
-        return prev;
-      }
-
       const existing = prev.find((c) => c.itemId === itemId);
       if (existing) {
         return prev.map((c) =>
@@ -140,6 +198,25 @@ function App() {
         );
       }
       return [...prev, { itemId, quantity: 1 }];
+    });
+  };
+
+  const handleRemoveFromCart = (itemId: string) => {
+    setCart((prev) => {
+      const target = prev.find((c) => c.itemId === itemId);
+      if (!target) return prev;
+
+      if (target.quantity <= 1) {
+        // 数量1なら行ごと削除
+        return prev.filter((c) => c.itemId !== itemId);
+      }
+
+      // それ以上なら quantity を -1
+      return prev.map((c) =>
+        c.itemId === itemId
+          ? { ...c, quantity: c.quantity - 1 }
+          : c
+      );
     });
   };
 
@@ -368,6 +445,8 @@ const handleCheckout = () => {
 
       {screen === "home" && (
         <HomeScreen
+          sales={sales}
+          events={events}
           currentEvent={currentEvent}
           onGoRegister={() => setScreen("register")}
           onGoHistory={() => setScreen("history")}
@@ -384,6 +463,8 @@ const handleCheckout = () => {
           totalPrice={totalPrice}
           onAddToCart={handleAddToCart}
           onAddBundleToCart={handleAddBundleToCart}
+          onRemoveFromCart={handleRemoveFromCart}
+          onRemoveBundleFromCart={handleRemoveBundleFromCart}
           onCheckout={handleCheckout} // ※ 会計は次ステップで bundle 対応する
           getItemById={getItemById}
           getBundleById={getBundleById}

@@ -1,5 +1,5 @@
 // src/components/RegisterScreen.tsx
-import type{ Item, CartItem, Bundle } from "../types";
+import type{ Item, CartItem, Bundle } from "../logic/types";
 
 type BundleCartItem = { bundleId: string; quantity: number };
 
@@ -14,6 +14,8 @@ type RegisterProps = {
 
   onAddToCart: (itemId: string) => void;
   onAddBundleToCart: (bundleId: string) => void;
+  onRemoveFromCart: (itemId: string) => void;
+  onRemoveBundleFromCart: (bundleId: string) => void;
 
   onCheckout: () => void;
 
@@ -31,6 +33,8 @@ export function RegisterScreen({
   totalPrice,
   onAddToCart,
   onAddBundleToCart,
+  onRemoveFromCart,
+  onRemoveBundleFromCart,
   onCheckout,
   getItemById,
   getBundleById,
@@ -106,9 +110,17 @@ export function RegisterScreen({
             {cart.map((c) => {
               const item = getItemById(c.itemId);
               return (
-                <li key={c.itemId}>
-                  {item.name} x {c.quantity} = {item.price * c.quantity}円
-                </li>
+                <div
+                  key={c.itemId}
+                  style={{ display: "flex", alignItems: "center", gap: 8 }}
+                >
+                  <span>
+                    {item.name} × {c.quantity}
+                  </span>
+
+                  <button onClick={() => onAddToCart(c.itemId)}>＋</button>
+                  <button onClick={() => onRemoveFromCart(c.itemId)}>−</button>
+                </div>
               );
             })}
           </ul>
@@ -118,9 +130,20 @@ export function RegisterScreen({
               <h4>バンドル</h4>
               {bundleCart.map((bc) => {
                 const b = getBundleById(bc.bundleId);
+                const subtotal = b.price * bc.quantity;
+
                 return (
-                  <div key={bc.bundleId}>
-                    {b.name} × {bc.quantity}（{b.price * bc.quantity}円）
+                  <div
+                    key={bc.bundleId}
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    <span>
+                      {b.name} × {bc.quantity}（{subtotal}円）
+                    </span>
+
+                    <button onClick={() => onAddBundleToCart(bc.bundleId)}>＋</button>
+                    <button onClick={() => onRemoveBundleFromCart(bc.bundleId)}>−</button>
+
                   </div>
                 );
               })}
