@@ -1,5 +1,5 @@
 // src/components/HistoryScreen.tsx
-import type { Sale } from "../types";
+import type { Sale } from "../logic/types";
 
 type HistoryProps = {
   sales: Sale[];

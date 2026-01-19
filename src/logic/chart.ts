@@ -1,4 +1,4 @@
-import type { Sale, Event } from "../types";
+import type { Sale, Event } from "./types";
 
 export type ChartRow = {
   key: string;   // グループキー（eventId や YYYY-MM-DD など）

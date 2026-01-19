@@ -1,5 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import type { ChartRow } from "../domain/chart";
+import type { ChartRow } from "../logic/chart";
 
 export function SalesBarChart({ data }: { data: ChartRow[] }) {
   return (

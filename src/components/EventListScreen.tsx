@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Event } from "../types";
+import type { Event } from "../logic/types";
 
 type EventListProps = {
   events: Event[];

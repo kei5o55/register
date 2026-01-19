@@ -1,5 +1,5 @@
 // src/components/RegisterScreen.tsx
-import type{ Item, CartItem, Bundle } from "../types";
+import type{ Item, CartItem, Bundle } from "../logic/types";
 
 type BundleCartItem = { bundleId: string; quantity: number };
 

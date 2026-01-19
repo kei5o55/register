@@ -6,7 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { ChartRow } from "../domain/eventSalesChart";
+import type { ChartRow } from "../logic/eventSalesChart";
 
 export function EventSalesBarChart({ data }: { data: ChartRow[] }) {
   if (data.length === 0) {

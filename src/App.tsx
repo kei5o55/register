@@ -1,7 +1,7 @@
 //src/App.tsx
 import { useState, useEffect } from "react";
-import type { Item, CartItem, Sale,Event,Bundle,BundleLine} from "./types";
-import { loadItems, saveItems, loadSales, saveSales } from "./storage";
+import type { Item, CartItem, Sale,Event,Bundle,BundleLine} from "./logic/types";
+import { loadItems, saveItems, loadSales, saveSales } from "./logic/storage";
 import"./App.css";
 
 //コンポーネントのインポート

@@ -1,6 +1,6 @@
 // src/components/HomeScreen.tsx
-import type { Sale,Event } from "../types";
-import { buildEventSalesChart } from "../domain/eventSalesChart";
+import type { Sale,Event } from "../logic/types";
+import { buildEventSalesChart } from "../logic/eventSalesChart";
 import { EventSalesBarChart } from "./EventSalesBarChart";
 
 

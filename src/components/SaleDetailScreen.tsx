@@ -1,5 +1,5 @@
 // src/components/SaleDetailScreen.tsx
-import type { Sale, Bundle } from "../types";
+import type { Sale, Bundle } from "../logic/types";
 
 type SaleDetailProps = {
   sale: Sale;
@@ -14,6 +14,7 @@ export function SaleDetailScreen({ sale, bundles, onBack, onDelete }: SaleDetail
 
   const getBundleName = (bundleId: string) =>
     bundles.find((b) => b.id === bundleId)?.name ?? `(不明なバンドル: ${bundleId})`;
+  
   const getBundleById = (bundleId: string) =>
       bundles.find((b) => b.id === bundleId);
 

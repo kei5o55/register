@@ -1,5 +1,5 @@
-import type { Event, Sale } from "../types";
-import { buildEventReport } from "../domain/eventReport";
+import type { Event, Sale } from "../logic/types";
+import { buildEventReport } from "../logic/eventReport";
 
 type Props = {
   event: Event;
