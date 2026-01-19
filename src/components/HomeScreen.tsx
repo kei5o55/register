@@ -1,14 +1,20 @@
 // src/components/HomeScreen.tsx
-import type { Event } from "../types";
+import type { Sale,Event } from "../types";
+import { buildEventSalesChart } from "../domain/eventSalesChart";
+import { EventSalesBarChart } from "./EventSalesBarChart";
+
 
 type HomeProps = {
+  sales:Sale[];
+  events:Event[];
   currentEvent: Event | null;//現在のイベントを持つ
   onGoRegister: () => void;
   onGoHistory: () => void;
   onGoEvents: () => void;
 };
 
-export function HomeScreen({ currentEvent,onGoRegister, onGoHistory,onGoEvents}: HomeProps) {
+export function HomeScreen({ sales,events,currentEvent,onGoRegister, onGoHistory,onGoEvents}: HomeProps) {
+  const chartData = buildEventSalesChart(sales, events);
   return (
     <div>
       <h2>ホーム</h2>
@@ -30,7 +36,10 @@ export function HomeScreen({ currentEvent,onGoRegister, onGoHistory,onGoEvents}:
             </button>
           </>
         )}
+        
       </div>
+      <h2>イベント別 売上合計</h2>
+      <EventSalesBarChart data={chartData} />
 
       <div style={{ display: "flex", gap: 8 }}>
         <button onClick={onGoRegister} disabled={!currentEvent}>
