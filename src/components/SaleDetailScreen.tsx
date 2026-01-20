@@ -1,12 +1,12 @@
 // src/components/SaleDetailScreen.tsx
 import type { Sale, Bundle } from "../logic/types";
+import  {toMinuteKey} from "../logic/time";
 
 type SaleDetailProps = {
   sale: Sale;
   bundles: Bundle[]; // ←追加
   onBack: () => void;
-  onDelete: () => void;
-};
+  onDelete: () => void;};
 
 export function SaleDetailScreen({ sale, bundles, onBack, onDelete }: SaleDetailProps) {
   const bundleLines = sale.bundles ?? [];
@@ -26,7 +26,7 @@ export function SaleDetailScreen({ sale, bundles, onBack, onDelete }: SaleDetail
   return (
     <div>
       <h2>売上詳細</h2>
-      <p>日時: {sale.datetime}</p>
+      <p>日時: {toMinuteKey(sale.datetime)}</p>{/*toMinuteKeyで日時を見やすく変更(年/月/日/時/分) */}
       <p>合計金額: {sale.total} 円</p>
 
       {/* 単品内訳 */}

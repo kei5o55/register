@@ -326,7 +326,7 @@ const handleCheckout = () => {
 
       const sale: Sale = {
         id: crypto.randomUUID(),
-        datetime: now.toLocaleString(),
+        datetime: new Date().toISOString(),
         total,
         items: saleItems,
         bundles: saleBundles.length > 0 ? saleBundles : undefined,
@@ -450,7 +450,7 @@ const handleCheckout = () => {
           currentEvent={currentEvent}
           onGoRegister={() => setScreen("register")}
           onGoHistory={() => setScreen("history")}
-          onGoEvents={() => setScreen("events")} // ← 未選択ならイベント選択へ飛ばす用
+          onGoEvents={() => setScreen("events")} //未選択ならイベント選択へ飛ばす用
         />
       )}
 
@@ -465,7 +465,7 @@ const handleCheckout = () => {
           onAddBundleToCart={handleAddBundleToCart}
           onRemoveFromCart={handleRemoveFromCart}
           onRemoveBundleFromCart={handleRemoveBundleFromCart}
-          onCheckout={handleCheckout} // ※ 会計は次ステップで bundle 対応する
+          onCheckout={handleCheckout}
           getItemById={getItemById}
           getBundleById={getBundleById}
           getRemainingStock={getRemainingStock}
@@ -492,8 +492,7 @@ const handleCheckout = () => {
             handleDeleteSale(selectedSale.id);
             go("history");
             //setScreen("history");
-          }}
-        />
+          }}        />
       )}
 
       {screen === "items" && (
@@ -540,12 +539,10 @@ const handleCheckout = () => {
           onSelectSale={(id) =>{
             setSelectedSaleId(id);
             go("saleDetail");
-            //setScreen("saleDetail");
           }}
           onOpenEventDetail={(id) => {
             setSelectedEventId(id);
-            go("eventDetail");
-            //setScreen("eventDetail");
+            go("eventDetail");;
           }}
           />
         )}
