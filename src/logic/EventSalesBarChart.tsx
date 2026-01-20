@@ -1,5 +1,3 @@
-// src/components/EventSalesBarChart.tsx
-
 import {
   BarChart,
   Bar,
@@ -8,7 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { ChartRow } from "../logic/eventSalesChart";
+import type { ChartRow } from "./eventSalesChart";
 
 type Props = {
   data: ChartRow[];

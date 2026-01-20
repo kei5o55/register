@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Sale } from "../logic/types";
 import { buildEventTimeChart, type TimeGroup, type Metric } from "../logic/eventTimeChart";
-import { EventSalesBarChart } from "./EventSalesBarChart";
+import { EventSalesBarChart } from "../logic/EventSalesBarChart";
 
 export function EventTimeChartPanel({ sales }: { sales: Sale[] }) {
   const [group, setGroup] = useState<TimeGroup>("hour");
