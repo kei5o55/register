@@ -1,3 +1,5 @@
+// src/components/EventSalesBarChart.tsx
+
 import {
   BarChart,
   Bar,
@@ -8,7 +10,12 @@ import {
 } from "recharts";
 import type { ChartRow } from "../logic/eventSalesChart";
 
-export function EventSalesBarChart({ data }: { data: ChartRow[] }) {
+type Props = {
+  data: ChartRow[];
+  unit?: string; // 追加
+};
+
+export function EventSalesBarChart({ data, unit }: Props) {
   if (data.length === 0) {
     return <p>売上データがありません</p>;
   }
@@ -19,7 +26,9 @@ export function EventSalesBarChart({ data }: { data: ChartRow[] }) {
         <BarChart data={data}>
           <XAxis dataKey="label" />
           <YAxis />
-          <Tooltip />
+          <Tooltip
+            formatter={(v) => (unit ? [`${v} ${unit}`, "値"] : [v as number, "値"])}
+          />
           <Bar dataKey="value" />
         </BarChart>
       </ResponsiveContainer>

@@ -1,5 +1,7 @@
 import type { Event, Sale } from "../logic/types";
 import { buildEventReport } from "../logic/eventReport";
+import {EventSalesBarChart} from "./EventSalesBarChart";
+import {buildHourlySalesYen} from "../logic/time";
 
 type Props = {
   event: Event;
@@ -9,6 +11,7 @@ type Props = {
 
 export function EventDetailScreen({ event, sales, onBack }: Props) {
   const report = buildEventReport(sales);
+  const hourlyData = buildHourlySalesYen(sales);
 
   return (
     <div>
@@ -53,6 +56,8 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
           </tbody>
         </table>
       )}
+      <h3>時間別売上（合計）</h3>
+      <EventSalesBarChart data={hourlyData} unit="円" />
 
       <button style={{ marginTop: 16 }} onClick={onBack}>
         戻る

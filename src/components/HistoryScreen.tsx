@@ -1,5 +1,6 @@
 // src/components/HistoryScreen.tsx
 import type { Sale } from "../logic/types";
+import { toMinuteKey } from "../logic/time";
 
 type HistoryProps = {
   sales: Sale[];
@@ -20,7 +21,7 @@ export function HistoryScreen({ sales, onSelectSale }: HistoryProps) {
           {sales.map((sale) => (
             <li key={sale.id} style={{ marginBottom: 8 }}>
               <button onClick={() => onSelectSale(sale.id)}>
-                {sale.datetime} - {sale.total} 円
+                {toMinuteKey(sale.datetime)} - {sale.total} 円
               </button>
             </li>
           ))}
