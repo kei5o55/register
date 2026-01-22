@@ -46,7 +46,7 @@ export function RegisterScreen({
         <h2>商品一覧</h2>
         <ul>
           {items.map((item) => {
-            const remaining = getRemainingStock(item.id);
+            const remaining = getRemainingStock(item.id);//在庫からカート分を引いた残り数を取得
             return (
               <li key={item.id} style={{ marginBottom: 8 }}>
                 <div>
@@ -55,7 +55,7 @@ export function RegisterScreen({
                 </div>
                 <button
                   onClick={() => onAddToCart(item.id)}
-                  disabled={remaining <= 0}
+                  disabled={remaining <= 0}//在庫が0以下ならボタンを無効化
                 >
                   カートに追加
                 </button>

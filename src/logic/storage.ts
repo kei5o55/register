@@ -1,12 +1,14 @@
 // src/storage.ts
+// localStorageを使ったデータの永続化ロジック
+
 import type { Item, Sale } from "./types";
 
-const STORAGE_PREFIX = "doujin-regi";
-const ITEMS_KEY = `${STORAGE_PREFIX}:items`;
-const SALES_KEY = `${STORAGE_PREFIX}:sales`;
+const STORAGE_PREFIX = "doujin-regi";// localStorage内でのキー接頭辞
+const ITEMS_KEY = `${STORAGE_PREFIX}:items`;// アイテムデータ保存用キー
+const SALES_KEY = `${STORAGE_PREFIX}:sales`;// 売上データ保存用キー
 
-export function loadItems(defaultItems: Item[]): Item[] {
-  if (typeof window === "undefined") return defaultItems; // 念のためSSR対策
+export function loadItems(defaultItems: Item[]): Item[] {// アイテムデータをlocalStorageから読み込む関数
+  if (typeof window === "undefined") return defaultItems;// サーバーサイドではlocalStorageは使えないのでデフォルトを返す
   try {
     const raw = localStorage.getItem(ITEMS_KEY);
     if (!raw) return defaultItems;
@@ -18,7 +20,7 @@ export function loadItems(defaultItems: Item[]): Item[] {
   }
 }
 
-export function saveItems(items: Item[]) {
+export function saveItems(items: Item[]) {// アイテムデータをlocalStorageに保存する関数
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
@@ -27,7 +29,7 @@ export function saveItems(items: Item[]) {
   }
 }
 
-export function loadSales(): Sale[] {
+export function loadSales(): Sale[] {// 売上データをlocalStorageから読み込む関数
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(SALES_KEY);
@@ -40,8 +42,8 @@ export function loadSales(): Sale[] {
   }
 }
 
-export function saveSales(sales: Sale[]) {
-  if (typeof window === "undefined") return;
+export function saveSales(sales: Sale[]) {// 売上データをlocalStorageに保存する関数
+  if (typeof window === "undefined") return;//
   try {
     localStorage.setItem(SALES_KEY, JSON.stringify(sales));
   } catch (e) {

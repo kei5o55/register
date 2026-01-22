@@ -1,10 +1,12 @@
 // src/logic/charts.ts
+// 汎用的なチャートデータ生成ロジック
+
 import type { Event, Sale } from "./types";
 
 export type GroupBy = "event" | "day" | "hour";
 export type Metric = "yen" | "orders";
 
-export type ChartRow = {
+export type ChartRow = {// チャート1行分のデータ
   key: string;
   label: string;
   value: number;
