@@ -1,13 +1,13 @@
+//src/components/EventDetailScreren.tsx
+
 import type { Event, Sale } from "../logic/types";
 import { buildEventReport } from "../logic/eventReport";
-<<<<<<< Updated upstream
-=======
 import {EventSalesBarChart} from "./EventSalesBarChart";
+import { buildEventBundleQuantityChart } from "../logic/eventBundleCart";
 import {buildHourlySalesYen} from "../logic/time";
 import { useMemo, useState } from "react";
 import type { ChartRow } from "../logic/eventSalesChart"; 
 
->>>>>>> Stashed changes
 
 type Props = {
   event: Event;
@@ -15,8 +15,38 @@ type Props = {
   onBack: () => void;
 };
 
+type ChartMode = "time" | "item" | "bundle";
+type ItemMode = "single" | "bundle" | "total";
+
 export function EventDetailScreen({ event, sales, onBack }: Props) {
   const report = buildEventReport(sales);
+  const bundleChartData = buildEventBundleQuantityChart(sales);
+  const hourlyData = buildHourlySalesYen(sales);
+
+
+
+  const [chartMode, setChartMode] = useState<ChartMode>("time");
+  const [itemMode, setItemMode] = useState<ItemMode>("total");
+
+  const itemChartData: ChartRow[] = useMemo(() => {
+    return report.items
+      .map((it) => {
+        const value =
+          itemMode === "single"
+            ? it.singleQuantity
+            : itemMode === "bundle"
+            ? it.bundleQuantity
+            : it.totalQuantity;
+
+        return {
+          key: it.itemId,
+          label: it.name,
+          value,
+        };
+      })
+      .sort((a, b) => b.value - a.value);
+  }, [report.items, itemMode]);
+
 
   return (
     <div>
@@ -61,6 +91,43 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
           </tbody>
         </table>
       )}
+      <h3>グラフ</h3>
+
+      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <label>
+          表示：
+          <select value={chartMode} onChange={(e) => setChartMode(e.target.value as ChartMode)}>
+            <option value="time">時間別売上</option>
+            <option value="bundle">バンドル別頒布数</option>
+            <option value="item">頒布物別頒布数</option>
+          </select>
+        </label>
+
+        {chartMode === "item" && (
+          <label>
+            内訳：
+            <select value={itemMode} onChange={(e) => setItemMode(e.target.value as ItemMode)}>
+              <option value="single">単品のみ</option>
+              <option value="bundle">バンドルのみ</option>
+              <option value="total">合計</option>
+            </select>
+          </label>
+        )}
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        {chartMode === "time" && (
+          <EventSalesBarChart data={hourlyData} unit="円" />
+        )}
+
+        {chartMode === "item" && (
+          <EventSalesBarChart data={itemChartData} unit="個" />
+        )}
+
+        {chartMode === "bundle" && (
+          <EventSalesBarChart data={bundleChartData} unit="個" />
+        )}
+      </div>
 
       <button style={{ marginTop: 16 }} onClick={onBack}>
         戻る

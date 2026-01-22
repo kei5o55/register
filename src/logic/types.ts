@@ -34,6 +34,7 @@ export type Bundle = {// バンドル商品
 
 export type SaleBundle = {// 売上内のバンドル購入分
   bundleId: string;// バンドルID(Bundle.id)
+  name: string;// その時点のバンドル名（スナップショット）
   quantity: number;// 売れた個数
 };
 
@@ -50,7 +51,7 @@ export type Sale = {// 売上データ
   total: number;// 合計金額（円）
   items: SaleItem[];        // 単品購入分だけ
   bundles?: SaleBundle[];   // ← バンドル購入分（null許容）
-  bundleExpandedItems?: BundleExpandedLine[]; // ← バンドルを行ごとに展開したもの（null許容）
+  bundleExpandedItems?: BundleExpandedLine[]; // ← バンドルを行ごとに展開したもの．売り上げ記録時に単品の計算もできるように
   eventId: string;//Eventidごとに売上を紐づけるためのフィールド
 };
 

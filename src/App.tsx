@@ -324,6 +324,7 @@ const handleCheckout = () => {
 
       const saleBundles = bundleCart.map((bc) => ({
         bundleId: bc.bundleId,
+        name: getBundleById(bc.bundleId).name,
         quantity: bc.quantity,
       }));
 
