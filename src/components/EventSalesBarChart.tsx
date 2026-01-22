@@ -6,7 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { ChartRow } from "./eventSalesChart";
+import type { ChartRow } from "../logic/eventSalesChart";
 
 type Props = {
   data: ChartRow[];

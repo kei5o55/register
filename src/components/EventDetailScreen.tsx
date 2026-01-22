@@ -2,7 +2,7 @@
 
 import type { Event, Sale } from "../logic/types";
 import { buildEventReport } from "../logic/eventReport";
-import {EventSalesBarChart} from "../logic/EventSalesBarChart";
+import {EventSalesBarChart} from "./EventSalesBarChart";
 import {buildHourlySalesYen} from "../logic/time";
 import { useMemo, useState } from "react";
 import type { ChartRow } from "../logic/eventSalesChart"; 
