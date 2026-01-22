@@ -3,6 +3,7 @@
 import type { Event, Sale } from "../logic/types";
 import { buildEventReport } from "../logic/eventReport";
 import {EventSalesBarChart} from "./EventSalesBarChart";
+import { buildEventBundleQuantityChart } from "../logic/eventBundleCart";
 import {buildHourlySalesYen} from "../logic/time";
 import { useMemo, useState } from "react";
 import type { ChartRow } from "../logic/eventSalesChart"; 
@@ -14,12 +15,15 @@ type Props = {
   onBack: () => void;
 };
 
+type ChartMode = "time" | "item" | "bundle";
+type ItemMode = "single" | "bundle" | "total";
+
 export function EventDetailScreen({ event, sales, onBack }: Props) {
   const report = buildEventReport(sales);
+  const bundleChartData = buildEventBundleQuantityChart(sales);
   const hourlyData = buildHourlySalesYen(sales);
 
-  type ChartMode = "time" | "item";
-  type ItemMode = "single" | "bundle" | "total";
+
 
   const [chartMode, setChartMode] = useState<ChartMode>("time");
   const [itemMode, setItemMode] = useState<ItemMode>("total");
@@ -94,6 +98,7 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
           表示：
           <select value={chartMode} onChange={(e) => setChartMode(e.target.value as ChartMode)}>
             <option value="time">時間別売上</option>
+            <option value="bundle">バンドル別頒布数</option>
             <option value="item">頒布物別頒布数</option>
           </select>
         </label>
@@ -111,12 +116,19 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
       </div>
 
       <div style={{ marginTop: 12 }}>
-        {chartMode === "time" ? (
+        {chartMode === "time" && (
           <EventSalesBarChart data={hourlyData} unit="円" />
-        ) : (
+        )}
+
+        {chartMode === "item" && (
           <EventSalesBarChart data={itemChartData} unit="個" />
         )}
+
+        {chartMode === "bundle" && (
+          <EventSalesBarChart data={bundleChartData} unit="個" />
+        )}
       </div>
+
       <button style={{ marginTop: 16 }} onClick={onBack}>
         戻る
       </button>

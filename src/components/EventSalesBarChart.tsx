@@ -42,7 +42,7 @@ export function EventSalesBarChart({ data, unit }: Props) {
           <Tooltip
             formatter={(v) => (unit ? [`${v} ${unit}`, yLabel] : [v as number, "値"])}
           />
-          <Bar dataKey="value" />
+          <Bar dataKey="value" fill="#8884d8" />
         </BarChart>
       </ResponsiveContainer>
     </div>
