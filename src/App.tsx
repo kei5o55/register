@@ -52,6 +52,7 @@ function App() {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [bundles, setBundles] = useState<Bundle[]>([]);
 
+  
   const selectedEventForHistory = selectedEventIdForHistory ? events.find(e => e.id === selectedEventIdForHistory) ?? null : null;
   const selectedEventSalesForHistory = selectedEventForHistory ? sales.filter(s => s.eventId === selectedEventForHistory.id) : [];
   const selectedEvent =selectedEventId ? events.find(e => e.id === selectedEventId) ?? null : null;
@@ -69,7 +70,11 @@ function App() {
     saveSales(sales);
   }, [sales]);
 
-  const go = (next: Screen) => {
+  //バンドル・アイテムのIdを取得する関数
+  const getBundleById = (id: string) => bundles.find((b) => b.id === id)!;
+  const getItemById = (id: string) => items.find((i) => i.id === id)!;
+
+  const go = (next: Screen) => {//
     setScreenStack((prev) => [...prev,screen]);
     setScreen(next);
   };
@@ -105,7 +110,7 @@ function App() {
     return reserved;
   };
 
-  const handleAddBundleToCart = (bundleId: string) => {
+  const handleAddBundleToCart = (bundleId: string) => {//バンドルをカート保存
     const bundle = bundles.find((b) => b.id === bundleId);
     if (!bundle) return;
 
@@ -141,7 +146,7 @@ function App() {
     });
   };
 
-  const getBundleById = (id: string) => bundles.find((b) => b.id === id)!;
+  
 
   const handleAddBundle = (name: string, lines: BundleLine[], price: number) => {
     const newBundle: Bundle = {
@@ -176,7 +181,7 @@ function App() {
     ? sales.find((s) => s.id === selectedSaleId) ?? null
     : null;
 
-  const getItemById = (id: string) => items.find((i) => i.id === id)!;
+  
 
   const handleAddToCart = (itemId: string) => {
     const reserved = buildReservedMap();
@@ -411,8 +416,8 @@ const handleCheckout = () => {
     setSales((prev) => prev.filter((sale) => sale.eventId !== id));
   };
 
-  //いったん追加
-  const getRemainingStock = (itemId: string) => {
+  
+  const getRemainingStock = (itemId: string) => {//在庫からカート分を引いた残り数を取得
     const item = getItemById(itemId);
     const cartItem = cart.find((c) => c.itemId === itemId);
     const used = cartItem ? cartItem.quantity : 0;

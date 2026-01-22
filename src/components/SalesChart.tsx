@@ -4,7 +4,7 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import type { ChartRow } from "../logic/chart";
 
-export function SalesBarChart({ data }: { data: ChartRow[] }) {
+export function SalesBarChart({ data }: { data: ChartRow[] }) {//受け取ったchartrow型の配列データを棒グラフで表示するコンポーネント
   return (
     <div style={{ width: "100%", height: 320 }}>
       <ResponsiveContainer>
