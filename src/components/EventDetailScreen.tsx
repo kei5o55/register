@@ -1,4 +1,6 @@
 //src/components/EventDetailScreren.tsx
+// eventの詳細画面コンポーネント
+// イベントの売上データを解析し、サマリやグラフを表示する
 
 import type { Event, Sale } from "../logic/types";
 import { buildEventReport } from "../logic/eventReport";

@@ -1,14 +1,18 @@
 // src/components/SaleDetailScreen.tsx
-import type { Sale, Bundle } from "../logic/types";
+// 売上詳細画面コンポーネント
+// 指定された売上(Sale[])の詳細情報を表示する
+
+import type { Sale, Bundle,Event } from "../logic/types";
 import  {toMinuteKey} from "../logic/time";
 
 type SaleDetailProps = {
   sale: Sale;
-  bundles: Bundle[]; // ←追加
+  bundles: Bundle[]; 
+  events: Event[];
   onBack: () => void;
   onDelete: () => void;};
 
-export function SaleDetailScreen({ sale, bundles, onBack, onDelete }: SaleDetailProps) {
+export function SaleDetailScreen({ sale, bundles, events, onBack, onDelete }: SaleDetailProps) {
   const bundleLines = sale.bundles ?? [];
   const expanded = sale.bundleExpandedItems ?? [];
 
@@ -17,6 +21,9 @@ export function SaleDetailScreen({ sale, bundles, onBack, onDelete }: SaleDetail
   
   const getBundleById = (bundleId: string) =>
       bundles.find((b) => b.id === bundleId);
+
+  const getEventName = (eventId: string) =>
+    events.find((e) => e.id === eventId)?.name ?? `(不明なイベント: ${eventId})`;
 
   const calcBundleSubtotal = (bundleId: string, quantity: number) => {
     const bundle = getBundleById(bundleId);
@@ -27,6 +34,7 @@ export function SaleDetailScreen({ sale, bundles, onBack, onDelete }: SaleDetail
     <div>
       <h2>売上詳細</h2>
       <p>日時: {toMinuteKey(sale.datetime)}</p>{/*toMinuteKeyで日時を見やすく変更(年/月/日/時/分) */}
+      <p>イベント: {getEventName(sale.eventId)}</p>
       <p>合計金額: {sale.total} 円</p>
 
       {/* 単品内訳 */}

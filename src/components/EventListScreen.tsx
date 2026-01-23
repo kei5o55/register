@@ -1,3 +1,7 @@
+// src/components/EventListScreen.tsx
+// eventの一覧画面コンポーネント
+// 登録されているイベントの一覧を表示し、選択や追加・削除を行う
+
 import { useState } from "react";
 import type { Event } from "../logic/types";
 

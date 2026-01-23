@@ -1,3 +1,7 @@
+// src/components/EventSalesBarChart.tsx
+// イベントの売上棒グラフコンポーネント
+// Rechartsを使って売上データを棒グラフで表示する
+
 import {
   BarChart,
   Bar,

@@ -1,3 +1,7 @@
+// src/components/EventTimeChartPanel.tsx
+// イベントの時間別売上グラフパネルコンポーネント
+// 売上データを時間別に集計し、グラフで表示する
+
 import { useMemo, useState } from "react";
 import type { Sale } from "../logic/types";
 import { buildEventTimeChart, type TimeGroup, type Metric } from "../logic/eventTimeChart";

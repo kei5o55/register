@@ -1,4 +1,7 @@
 // src/components/HomeScreen.tsx
+// eventのホーム画面コンポーネント
+// 現在のイベント情報やイベント別売上合計グラフを表示する
+
 import type { Sale,Event } from "../logic/types";
 import { buildEventSalesChart } from "../logic/eventSalesChart";
 import { EventSalesBarChart } from "./EventSalesBarChart";
@@ -39,7 +42,7 @@ export function HomeScreen({ sales,events,currentEvent,onGoRegister, onGoHistory
         
       </div>
       <h2>イベント別 売上合計</h2>
-      <EventSalesBarChart data={chartData} />
+      <EventSalesBarChart data={chartData} unit="円" />
 
       <div style={{ display: "flex", gap: 8 }}>
         <button onClick={onGoRegister} disabled={!currentEvent}>

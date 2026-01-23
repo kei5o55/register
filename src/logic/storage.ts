@@ -6,6 +6,7 @@ import type { Item, Sale } from "./types";
 const STORAGE_PREFIX = "doujin-regi";// localStorage内でのキー接頭辞
 const ITEMS_KEY = `${STORAGE_PREFIX}:items`;// アイテムデータ保存用キー
 const SALES_KEY = `${STORAGE_PREFIX}:sales`;// 売上データ保存用キー
+const EVENTS_KEY = `${STORAGE_PREFIX}:events`;// イベントデータ保存用キー
 
 export function loadItems(defaultItems: Item[]): Item[] {// アイテムデータをlocalStorageから読み込む関数
   if (typeof window === "undefined") return defaultItems;// サーバーサイドではlocalStorageは使えないのでデフォルトを返す

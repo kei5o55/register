@@ -1,4 +1,7 @@
 // src/components/RegisterScreen.tsx
+// 頒布会レジ画面コンポーネント
+// 頒布物の一覧表示、カート操作、会計処理を行う
+
 import type{ Item, CartItem, Bundle } from "../logic/types";
 
 type BundleCartItem = { bundleId: string; quantity: number };

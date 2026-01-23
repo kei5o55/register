@@ -1,4 +1,7 @@
 // src/components/EventHistoryScreen.tsx
+// eventの売上履歴画面コンポーネント
+// 指定されたイベントに関連する売上データを表示する
+
 import type { Event, Sale } from "../logic/types";
 import { HistoryScreen } from "./HistoryScreen"; // 既存を再利用するなら
 

@@ -1,3 +1,7 @@
+// src/components/ItemScreen.tsx
+// 頒布物管理画面コンポーネント
+// 頒布物（Item）とバンドル（Bundle）を一覧表示・編集・追加・削除する
+
 import { useState } from "react";
 import type { Item,Bundle,BundleLine } from "../logic/types";
 

@@ -1,4 +1,7 @@
 // src/components/HistoryScreen.tsx
+// eventの売上履歴画面コンポーネント
+// 指定されたイベントに関連する売上データを表示する
+
 import type { Sale } from "../logic/types";
 import { toMinuteKey } from "../logic/time";
 
