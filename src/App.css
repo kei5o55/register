@@ -114,3 +114,72 @@
   font-size: 20px;
 }
 
+/* style.css */
+.custom-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+}
+
+.custom-radio:checked {
+  border-color: #007bff;
+}
+
+.custom-radio:checked::before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: #007bff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ラジオボタン自体の設定 */
+.custom-check-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #ccc;
+  border-radius: 4px; /* 四角形（少し角丸） */
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
+/* ホバー時（マウスを乗せた時）の枠色 */
+.custom-check-radio:hover {
+  border-color: #007bff;
+}
+
+/* チェックされた時の背景と枠色 */
+.custom-check-radio:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+/* チェックマーク（レ点）の作成 */
+.custom-check-radio:checked::before {
+  content: "";
+  position: absolute;
+  /* レ点の形状をL字の枠線で作る */
+  left: 6px;
+  top: -1px;
+  width: 4px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 3px 3px 0; /* 右と下だけ線をつける */
+  transform: rotate(45deg);  /* 45度回転させてレ点にする */
+}

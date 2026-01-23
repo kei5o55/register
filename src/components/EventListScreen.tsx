@@ -68,6 +68,7 @@ export function EventListScreen({
                   <input
                     type="radio"
                     name="currentEvent"
+                    className="custom-check-radio"
                     checked={currentEventId === event.id}
                     onChange={() => onSelectCurrentEvent(event.id)}
                   />
