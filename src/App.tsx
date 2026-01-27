@@ -383,6 +383,9 @@ const handleCheckout = () => {
   const handleChangeItemTags = (id: string, tags: string[]) => {
     setItems(prev => prev.map(it => (it.id === id ? { ...it, tags } : it)));
   };
+  const handleChangeEventTags = (id: string, tags: string[]) => {
+    setEvents(prev => prev.map(ev => (ev.id === id ? { ...ev, tags } : ev)));
+  };
 
   const handleAddItem = (name: string, price: number, stock: number) => {
     if (!name.trim()) return;
@@ -540,6 +543,7 @@ const handleCheckout = () => {
           }}*/
           onAddEvent={handleAddEvent}
           onDeleteEvent={handleDeleteEvent}
+          onChangeEventTags={handleChangeEventTags}
         />
       )}
 
