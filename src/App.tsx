@@ -17,7 +17,7 @@ import { EventDetailScreen } from "./components/EventDetailScreen";
 
 
 type SaleItem = {//販売された商品の情報を表す型
-  itemId: string;
+  itemId: string;   // 商品のID（一意）
   name: string;     // 当時の名前
   price: number;    // 当時の価格
   quantity: number; // 売れた数
@@ -88,8 +88,9 @@ function App() {
       return prev.slice(0, -1);
     });
   };
+  
 
-  const buildReservedMap = () => {
+  const buildReservedMap = () => {//カート内の確保済み個数(バンドル＋単品)を itemId ごとに集計する関数
     const reserved = new Map<string, number>();
 
     // 単品カート分
@@ -444,9 +445,9 @@ const handleCheckout = () => {
         <nav style={{ display: "flex", gap: 8 ,flexWrap: "nowrap"}}>
           <button onClick={() => setScreen("home")}>ホーム</button>
           <button onClick={() => setScreen("register")}>レジ</button>
-          <button onClick={() => setScreen("history")}>売上履歴</button>
           <button onClick={() => setScreen("items")}>頒布物管理</button>
           <button onClick={() => setScreen("events")}>イベント履歴</button>
+          <button onClick={() => setScreen("history")}>売上履歴</button>
         </nav>
       </header>
 

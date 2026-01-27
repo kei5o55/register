@@ -8,11 +8,14 @@ export type SaleItem = {
   quantity: number; // 売れた数
 };
 
+export type Tags=string[];// タグの配列(複数タグを持てるように)
+
 export type Item = {// 同人アイテム
   id: string;// 一意なID
   name: string;// アイテム名
   price: number;// 価格（円）
   stock: number;// 在庫数
+  tags?: Tags;// タグ（任意）
 };
 export type CartItem = { itemId: string; quantity: number }// カート内の単品アイテム行
 
@@ -60,6 +63,7 @@ export type Event = {
   name: string;// イベント名
   date: string;// 開催日
   memo?: string;// メモ
+  tags?: Tags;// タグ（任意）
 }
 
 export type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events";
