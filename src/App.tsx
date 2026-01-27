@@ -380,6 +380,9 @@ const handleCheckout = () => {
       prev.map((item) => (item.id === id ? { ...item, stock } : item))
     );
   };
+  const handleChangeItemTags = (id: string, tags: string[]) => {
+    setItems(prev => prev.map(it => (it.id === id ? { ...it, tags } : it)));
+  };
 
   const handleAddItem = (name: string, price: number, stock: number) => {
     if (!name.trim()) return;
@@ -515,6 +518,7 @@ const handleCheckout = () => {
           onChangeStock={handleChangeItemStock}
           onAddItem={handleAddItem}
           onDeleteItem={handleDeleteItem}
+          onChangeTags={handleChangeItemTags}
         />
       )}
 

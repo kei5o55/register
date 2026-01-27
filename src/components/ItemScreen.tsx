@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import type { Item,Bundle,BundleLine } from "../logic/types";
+import { TagEditor } from "./TagEditor";
 
 type ItemsScreenProps = {
   items: Item[];
@@ -22,6 +23,7 @@ type ItemsScreenProps = {
   onChangeStock: (id: string, stock: number) => void;
   onAddItem: (name: string, price: number, stock: number) => void;
   onDeleteItem: (id: string) => void;
+  onChangeTags: (id: string, tags: string[]) => void;
 };
 
 export function ItemsScreen({
@@ -34,6 +36,7 @@ export function ItemsScreen({
   onChangeStock,
   onAddItem,
   onDeleteItem,
+  onChangeTags,
 }: ItemsScreenProps) {
   const [newName, setNewName] = useState("");
   const [newPrice, setNewPrice] = useState("500");
@@ -155,6 +158,11 @@ export function ItemsScreen({
                 <td>
                   <button onClick={() => onDeleteItem(item.id)}>削除</button>
                 </td>
+                <TagEditor
+                  tags={item.tags}
+                  onChange={(next) => onChangeTags(item.id, next)}
+                  placeholder="タグを追加（例：新刊）"
+                />
               </tr>
             ))}
           </tbody>
