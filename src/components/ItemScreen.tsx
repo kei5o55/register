@@ -156,7 +156,7 @@ export function ItemsScreen({
                   />
                 </td>
                 <td>
-                  <button onClick={() => onDeleteItem(item.id)}>削除</button>
+                  <button onClick={() => onDeleteItem(item.id)} style={{ color: "red", marginLeft: 8 }}>削除</button>
                 </td>
                 <TagEditor
                   tags={item.tags}
@@ -229,7 +229,7 @@ export function ItemsScreen({
                 </td>
                 <td>{b.price}</td>
                 <td>
-                  <button onClick={() => onDeleteBundle(b.id)}>削除</button>
+                  <button onClick={() => onDeleteBundle(b.id)} style={{ color: "red", marginLeft: 8 }}>削除</button>
                 </td>
               </tr>
             ))}
