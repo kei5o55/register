@@ -45,7 +45,9 @@ export function ItemsScreen({
   const [bundleLines, setBundleLines] = useState<BundleLine[]>([]);
   const [bundlePrice, setBundlePrice] = useState(0);
 
-  const addLine = () => {
+  //vercelデプロイ用にコメントアウト
+
+  /*const addLine = () => {
     const firstItem = items[0];
     if (!firstItem) return;
     const next = [...bundleLines, { itemId: firstItem.id, quantity: 1 }];
@@ -79,7 +81,7 @@ export function ItemsScreen({
     const next = bundleLines.map((l, i) => (i === idx ? { ...l, itemId } : l));
     setBundleLines(next);
     // ここでは price は自動更新しない（割引が消えるのを防ぐ）
-  };
+  };*/
 
   const handleSubmitNew = () => {
     const price = Number(newPrice);

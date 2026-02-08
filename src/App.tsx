@@ -42,7 +42,7 @@ const initialEvents: Event[] = [{//仮データ
 
 function App() {
   const [screen, setScreen] = useState<Screen>("home");
-  const [screenStack,setScreenStack] = useState<Screen[]>([]);
+  const [,setScreenStack] = useState<Screen[]>([]);
   const [items, setItems] = useState<Item[]>(() => loadItems(initialItems)); 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<Sale[]>(() => loadSales());
@@ -312,7 +312,7 @@ const handleCheckout = () => {
 
 
       // --- ③ 売上データを作る（単品は items に、バンドルは bundles に保存） ---
-      const now = new Date();
+      //const now = new Date();
 
       const saleItems: SaleItem[] = cart.map((c) => {
         const item = getItemById(c.itemId);
@@ -447,7 +447,7 @@ const handleCheckout = () => {
           marginBottom: 16,
         }}
       >
-        <h1>レジアプリ（プロトタイプ）</h1>
+        <h1>レジ（プロトタイプ）</h1>
         <nav style={{ display: "flex", gap: 8 ,flexWrap: "nowrap"}}>
           <button onClick={() => setScreen("home")}>ホーム</button>
           <button onClick={() => setScreen("register")}>レジ</button>

@@ -15,9 +15,6 @@ type SaleDetailProps = {
 export function SaleDetailScreen({ sale, bundles, events, onBack, onDelete }: SaleDetailProps) {
   const bundleLines = sale.bundles ?? [];
   const expanded = sale.bundleExpandedItems ?? [];
-
-  const getBundleName = (bundleId: string) =>
-    bundles.find((b) => b.id === bundleId)?.name ?? `(不明なバンドル: ${bundleId})`;
   
   const getBundleById = (bundleId: string) =>
       bundles.find((b) => b.id === bundleId);
