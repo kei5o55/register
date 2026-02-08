@@ -17,7 +17,7 @@ import { EventDetailScreen } from "./components/EventDetailScreen";
 
 
 type SaleItem = {//販売された商品の情報を表す型
-  itemId: string;
+  itemId: string;   // 商品のID（一意）
   name: string;     // 当時の名前
   price: number;    // 当時の価格
   quantity: number; // 売れた数
@@ -42,7 +42,7 @@ const initialEvents: Event[] = [{//仮データ
 
 function App() {
   const [screen, setScreen] = useState<Screen>("home");
-  const [screenStack,setScreenStack] = useState<Screen[]>([]);
+  const [,setScreenStack] = useState<Screen[]>([]);
   const [items, setItems] = useState<Item[]>(() => loadItems(initialItems)); 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<Sale[]>(() => loadSales());
@@ -88,8 +88,9 @@ function App() {
       return prev.slice(0, -1);
     });
   };
+  
 
-  const buildReservedMap = () => {
+  const buildReservedMap = () => {//カート内の確保済み個数(バンドル＋単品)を itemId ごとに集計する関数
     const reserved = new Map<string, number>();
 
     // 単品カート分
@@ -311,7 +312,7 @@ const handleCheckout = () => {
 
 
       // --- ③ 売上データを作る（単品は items に、バンドルは bundles に保存） ---
-      const now = new Date();
+      //const now = new Date();
 
       const saleItems: SaleItem[] = cart.map((c) => {
         const item = getItemById(c.itemId);
@@ -379,6 +380,12 @@ const handleCheckout = () => {
       prev.map((item) => (item.id === id ? { ...item, stock } : item))
     );
   };
+  const handleChangeItemTags = (id: string, tags: string[]) => {
+    setItems(prev => prev.map(it => (it.id === id ? { ...it, tags } : it)));
+  };
+  const handleChangeEventTags = (id: string, tags: string[]) => {
+    setEvents(prev => prev.map(ev => (ev.id === id ? { ...ev, tags } : ev)));
+  };
 
   const handleAddItem = (name: string, price: number, stock: number) => {
     if (!name.trim()) return;
@@ -440,13 +447,13 @@ const handleCheckout = () => {
           marginBottom: 16,
         }}
       >
-        <h1>レジアプリ（プロトタイプ）</h1>
+        <h1>レジ（プロトタイプ）</h1>
         <nav style={{ display: "flex", gap: 8 ,flexWrap: "nowrap"}}>
           <button onClick={() => setScreen("home")}>ホーム</button>
           <button onClick={() => setScreen("register")}>レジ</button>
-          <button onClick={() => setScreen("history")}>売上履歴</button>
           <button onClick={() => setScreen("items")}>頒布物管理</button>
           <button onClick={() => setScreen("events")}>イベント履歴</button>
+          <button onClick={() => setScreen("history")}>売上履歴</button>
         </nav>
       </header>
 
@@ -514,6 +521,7 @@ const handleCheckout = () => {
           onChangeStock={handleChangeItemStock}
           onAddItem={handleAddItem}
           onDeleteItem={handleDeleteItem}
+          onChangeTags={handleChangeItemTags}
         />
       )}
 
@@ -535,6 +543,7 @@ const handleCheckout = () => {
           }}*/
           onAddEvent={handleAddEvent}
           onDeleteEvent={handleDeleteEvent}
+          onChangeEventTags={handleChangeEventTags}
         />
       )}
 

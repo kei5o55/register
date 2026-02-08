@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import type { Item,Bundle,BundleLine } from "../logic/types";
+import { TagEditor } from "./TagEditor";
 
 type ItemsScreenProps = {
   items: Item[];
@@ -22,6 +23,7 @@ type ItemsScreenProps = {
   onChangeStock: (id: string, stock: number) => void;
   onAddItem: (name: string, price: number, stock: number) => void;
   onDeleteItem: (id: string) => void;
+  onChangeTags: (id: string, tags: string[]) => void;
 };
 
 export function ItemsScreen({
@@ -34,6 +36,7 @@ export function ItemsScreen({
   onChangeStock,
   onAddItem,
   onDeleteItem,
+  onChangeTags,
 }: ItemsScreenProps) {
   const [newName, setNewName] = useState("");
   const [newPrice, setNewPrice] = useState("500");
@@ -42,7 +45,9 @@ export function ItemsScreen({
   const [bundleLines, setBundleLines] = useState<BundleLine[]>([]);
   const [bundlePrice, setBundlePrice] = useState(0);
 
-  const addLine = () => {
+  //vercelデプロイ用にコメントアウト
+
+  /*const addLine = () => {
     const firstItem = items[0];
     if (!firstItem) return;
     const next = [...bundleLines, { itemId: firstItem.id, quantity: 1 }];
@@ -76,7 +81,7 @@ export function ItemsScreen({
     const next = bundleLines.map((l, i) => (i === idx ? { ...l, itemId } : l));
     setBundleLines(next);
     // ここでは price は自動更新しない（割引が消えるのを防ぐ）
-  };
+  };*/
 
   const handleSubmitNew = () => {
     const price = Number(newPrice);
@@ -153,8 +158,13 @@ export function ItemsScreen({
                   />
                 </td>
                 <td>
-                  <button onClick={() => onDeleteItem(item.id)}>削除</button>
+                  <button onClick={() => onDeleteItem(item.id)} style={{ color: "red", marginLeft: 8 }}>削除</button>
                 </td>
+                <TagEditor
+                  tags={item.tags}
+                  onChange={(next) => onChangeTags(item.id, next)}
+                  placeholder="タグを追加（例：新刊）"
+                />
               </tr>
             ))}
           </tbody>
@@ -221,7 +231,7 @@ export function ItemsScreen({
                 </td>
                 <td>{b.price}</td>
                 <td>
-                  <button onClick={() => onDeleteBundle(b.id)}>削除</button>
+                  <button onClick={() => onDeleteBundle(b.id)} style={{ color: "red", marginLeft: 8 }}>削除</button>
                 </td>
               </tr>
             ))}

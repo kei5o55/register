@@ -3,6 +3,7 @@
 // 登録されているイベントの一覧を表示し、選択や追加・削除を行う
 
 import { useState } from "react";
+import { TagEditor } from "./TagEditor";
 import type { Event } from "../logic/types";
 
 type EventListProps = {
@@ -13,6 +14,7 @@ type EventListProps = {
   //onOpenEventDetail: (id: string) => void;
   onDeleteEvent: (id: string) => void;
   onAddEvent: (name: string, date: string, memo: string) => void;
+  onChangeEventTags: (eventId: string, tags: string[]) => void;
 };
 
 export function EventListScreen({
@@ -23,6 +25,7 @@ export function EventListScreen({
   //onOpenEventDetail,
   onDeleteEvent,
   onAddEvent,
+  onChangeEventTags,
 }: EventListProps) {
   const [newName, setNewName] = useState("");
   const [newDate, setNewDate] = useState("");
@@ -83,6 +86,11 @@ export function EventListScreen({
                   )}
                 </td>
                 <td>{event.memo ?? "-"}</td>
+                <TagEditor
+                  tags={event.tags}
+                  onChange={(next) => onChangeEventTags(event.id, next)}
+                  placeholder="イベントタグ（例：夏コミ）"
+                />
                 <td>
                   <button onClick={() => onOpenEventHistory(event.id)}>
                     売上履歴
@@ -127,6 +135,7 @@ export function EventListScreen({
           placeholder="スペース番号や配置メモなど（任意）"
           rows={3}
         />
+
         <button onClick={handleSubmit}>イベントを追加</button>
       </div>
     </div>
