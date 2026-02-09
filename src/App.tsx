@@ -71,6 +71,14 @@ function App() {
     saveSales(sales);
   }, [sales]);
 
+  useEffect(() => {
+    // イベントが存在し、かつ現在何も選択されていない場合
+    if (events.length > 0 && !currentEventId) {
+      // 一番上のイベントIDを選択状態にする
+      setCurrentEventId(events[0].id);
+    }
+  }, [events, currentEventId]);
+
   //バンドル・アイテムのIdを取得する関数
   const getBundleById = (id: string) => bundles.find((b) => b.id === id)!;
   const getItemById = (id: string) => items.find((i) => i.id === id)!;

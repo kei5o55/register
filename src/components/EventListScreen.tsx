@@ -2,7 +2,7 @@
 // eventの一覧画面コンポーネント
 // 登録されているイベントの一覧を表示し、選択や追加・削除を行う
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { TagEditor } from "./TagEditor";
 import type { Event } from "../logic/types";
 
@@ -16,6 +16,8 @@ type EventListProps = {
   onAddEvent: (name: string, date: string, memo: string) => void;
   onChangeEventTags: (eventId: string, tags: string[]) => void;
 };
+
+
 
 export function EventListScreen({
   events,
