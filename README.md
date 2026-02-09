@@ -7,6 +7,8 @@
 現在は試作段階ですが、以下のURLから実際に体験できます。
 https://register-3k2l.vercel.app/
 
+**現在 Branch: add-EventSettingcompornent　にて作業中です！**
+
 ### 制作目的
 - モダンな Web 技術（TypeScript / React）を用いた 実践的なアプリケーション開発経験の習得
 - 同人即売会の現場を支えるツールの制作を通じて，自身および他者の創作活動の支援につながるプロダクトの開発を目指す
