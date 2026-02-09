@@ -61,6 +61,7 @@ export function EventListScreen({
               <th>開催日</th>
               <th>イベント名</th>
               <th>メモ</th>
+              <th>タグ</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -79,11 +80,6 @@ export function EventListScreen({
                 <td>{event.date}</td>
                 <td>
                   {event.name}
-                  {currentEventId === event.id && (
-                    <strong style={{ marginLeft: 8, color: "green" }}>
-                      （現在のイベント）
-                    </strong>
-                  )}
                 </td>
                 <td>{event.memo ?? "-"}</td>
                 <TagEditor
