@@ -15,6 +15,7 @@ type EventListProps = {
   onDeleteEvent: (id: string) => void;
   onAddEvent: (name: string, date: string, memo: string) => void;
   onChangeEventTags: (eventId: string, tags: string[]) => void;
+  onOpenEventSetting: (id: string) => void;
 };
 
 
@@ -28,6 +29,7 @@ export function EventListScreen({
   onDeleteEvent,
   onAddEvent,
   onChangeEventTags,
+  onOpenEventSetting,
 }: EventListProps) {
   const [newName, setNewName] = useState("");
   const [newDate, setNewDate] = useState("");
@@ -106,6 +108,11 @@ export function EventListScreen({
                     }}
                   >
                     削除
+                  </button>
+                </td>
+                <td>
+                  <button style={{ marginLeft: 8 }} onClick={() => onOpenEventSetting(event.id)}>
+                    設定
                   </button>
                 </td>
               </tr>

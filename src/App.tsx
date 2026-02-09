@@ -13,6 +13,7 @@ import { ItemsScreen } from "./components/ItemScreen";
 import { EventListScreen } from "./components/EventListScreen";
 import { EventHistoryScreen } from "./components/EventHistoryScreen";
 import { EventDetailScreen } from "./components/EventDetailScreen";
+import { EventSettingScreen } from "./components/EventSettingScreen";
 //import { Event } from './logic/types';//なんかエラー出るからやめた
 
 
@@ -23,7 +24,7 @@ type SaleItem = {//販売された商品の情報を表す型
   quantity: number; // 売れた数
 };
 
-type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events" | "eventHistory" | "eventDetail";//画面の種類を定義
+type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events" | "eventHistory" | "eventDetail" | "eventSetting";//画面の種類を定義
 
 const initialItems: Item[] = [//仮データ
   { id: "1", name: "新刊 A", price: 500, stock: 20 },
@@ -52,6 +53,11 @@ function App() {
   const [selectedEventIdForHistory,setSelectedEventIdForHistory]= useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [bundles, setBundles] = useState<Bundle[]>([]);
+  const [selectedEventIdForSetting, setSelectedEventIdForSetting] =
+  useState<string | null>(null);
+
+  const selectedEventForSetting =events.find((e) => e.id === selectedEventIdForSetting) ?? null;
+
 
   
   const selectedEventForHistory = selectedEventIdForHistory ? events.find(e => e.id === selectedEventIdForHistory) ?? null : null;
@@ -167,6 +173,18 @@ function App() {
     };
     setBundles(prev => [...prev, newBundle]);
   };
+  
+  const handleUpdateEventBasics = (
+    eventId: string,
+    patch: { name?: string; date?: string; memo?: string }
+  ) => {
+    setEvents((prev) =>
+      prev.map((e) =>
+        e.id === eventId ? { ...e, ...patch } : e
+      )
+    );
+  };
+
 
   const handleRemoveBundleFromCart = (bundleId: string) => {
     setBundleCart((prev) => {
@@ -552,6 +570,10 @@ const handleCheckout = () => {
           onAddEvent={handleAddEvent}
           onDeleteEvent={handleDeleteEvent}
           onChangeEventTags={handleChangeEventTags}
+          onOpenEventSetting={(id) => {
+            setSelectedEventIdForSetting(id);
+            go("eventSetting");
+          }}
         />
       )}
 
@@ -579,6 +601,23 @@ const handleCheckout = () => {
           onBack={back}
           />
         )}
+
+        {screen === "eventSetting" &&
+          selectedEventForSetting && (
+            <EventSettingScreen
+              event={selectedEventForSetting}
+              items={items}
+              bundles={bundles}
+              selectedItemIds={[]}
+              selectedBundleIds={[]}
+              onUpdateEventBasics={handleUpdateEventBasics}
+              onChangeEventTags={handleChangeEventTags}
+              onChangeEventItems={() => {}}
+              onChangeEventBundles={() => {}}
+              onBack={back}
+            />
+          )}
+
     </div>
   );
 }
