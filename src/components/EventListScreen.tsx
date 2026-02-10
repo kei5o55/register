@@ -3,7 +3,6 @@
 // 登録されているイベントの一覧を表示し、選択や追加・削除を行う
 
 import { useState } from "react";
-import { TagEditor } from "./TagEditor";
 import type { Event } from "../logic/types";
 
 type EventListProps = {
@@ -15,6 +14,7 @@ type EventListProps = {
   onDeleteEvent: (id: string) => void;
   onAddEvent: (name: string, date: string, memo: string) => void;
   onChangeEventTags: (eventId: string, tags: string[]) => void;
+  onOpenEventSetting: (id: string) => void;
 };
 
 
@@ -27,7 +27,7 @@ export function EventListScreen({
   //onOpenEventDetail,
   onDeleteEvent,
   onAddEvent,
-  onChangeEventTags,
+  onOpenEventSetting,
 }: EventListProps) {
   const [newName, setNewName] = useState("");
   const [newDate, setNewDate] = useState("");
@@ -84,11 +84,26 @@ export function EventListScreen({
                   {event.name}
                 </td>
                 <td>{event.memo ?? "-"}</td>
-                <TagEditor
-                  tags={event.tags}
-                  onChange={(next) => onChangeEventTags(event.id, next)}
-                  placeholder="イベントタグ（例：夏コミ）"
-                />
+                <td>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                    {/* event.tags?.length で安全にチェック */}
+                    {(event.tags?.length ?? 0) > 0 ? (
+                      event.tags?.map((tag, i) => (
+                        <span key={i} style={{
+                          backgroundColor: "#e1ecf4",
+                          color: "#39739d",
+                          padding: "2px 6px",
+                          borderRadius: "4px",
+                          fontSize: "0.85em"
+                        }}>
+                          #{tag}
+                        </span>
+                      ))
+                    ) : (
+                      "-"
+                    )}
+                  </div>
+                </td>
                 <td>
                   <button onClick={() => onOpenEventHistory(event.id)}>
                     売上履歴
@@ -106,6 +121,11 @@ export function EventListScreen({
                     }}
                   >
                     削除
+                  </button>
+                </td>
+                <td>
+                  <button style={{ marginLeft: 8 }} onClick={() => onOpenEventSetting(event.id)}>
+                    設定
                   </button>
                 </td>
               </tr>

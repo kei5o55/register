@@ -1,7 +1,7 @@
 // src/types.ts
 // 共通の型定義
 
-export type SaleItem = {
+export type SaleItem = {// 売上内の単品購入分
   itemId: string;
   name: string;     // 当時の名前
   price: number;    // 当時の価格
@@ -17,6 +17,7 @@ export type Item = {// 同人アイテム
   stock: number;// 在庫数
   tags?: Tags;// タグ（任意）
 };
+
 export type CartItem = { itemId: string; quantity: number }// カート内の単品アイテム行
 
 export type CartLine =
@@ -64,6 +65,8 @@ export type Event = {
   date: string;// 開催日
   memo?: string;// メモ
   tags?: Tags;// タグ（任意）
+  enabledItemIds?: string[];// イベントで使用可能な頒布物IDの配列
+  enabledBundleIds?: string[];// イベントで使用可能なバンドルIDの配列
 }
 
 export type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events";

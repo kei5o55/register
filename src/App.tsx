@@ -13,6 +13,7 @@ import { ItemsScreen } from "./components/ItemScreen";
 import { EventListScreen } from "./components/EventListScreen";
 import { EventHistoryScreen } from "./components/EventHistoryScreen";
 import { EventDetailScreen } from "./components/EventDetailScreen";
+import { EventSettingScreen } from "./components/EventSettingScreen";
 //import { Event } from './logic/types';//なんかエラー出るからやめた
 
 
@@ -23,7 +24,7 @@ type SaleItem = {//販売された商品の情報を表す型
   quantity: number; // 売れた数
 };
 
-type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events" | "eventHistory" | "eventDetail";//画面の種類を定義
+type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events" | "eventHistory" | "eventDetail" | "eventSetting";//画面の種類を定義
 
 const initialItems: Item[] = [//仮データ
   { id: "1", name: "新刊 A", price: 500, stock: 20 },
@@ -52,6 +53,23 @@ function App() {
   const [selectedEventIdForHistory,setSelectedEventIdForHistory]= useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [bundles, setBundles] = useState<Bundle[]>([]);
+  const [selectedEventIdForSetting, setSelectedEventIdForSetting] =
+  useState<string | null>(null);
+
+  const selectedEventForSetting =events.find((e) => e.id === selectedEventIdForSetting) ?? null;
+  
+  // イベントID → 有効な itemId 配列
+  const [eventItemMap, setEventItemMap] = useState<Record<string, string[]>>({});
+
+  // イベントID → 有効な bundleId 配列
+  const [eventBundleMap, setEventBundleMap] = useState<Record<string, string[]>>({});
+  const handleChangeEventItems = (eventId: string, itemIds: string[]) => {
+    setEventItemMap((prev) => ({ ...prev, [eventId]: itemIds }));
+  };
+
+  const handleChangeEventBundles = (eventId: string, bundleIds: string[]) => {
+    setEventBundleMap((prev) => ({ ...prev, [eventId]: bundleIds }));
+  };
 
   
   const selectedEventForHistory = selectedEventIdForHistory ? events.find(e => e.id === selectedEventIdForHistory) ?? null : null;
@@ -167,6 +185,20 @@ function App() {
     };
     setBundles(prev => [...prev, newBundle]);
   };
+  
+  const handleUpdateEventBasics = (
+    eventId: string,
+    patch: { name?: string; date?: string; memo?: string }
+  ) => {
+    setEvents((prev) =>
+      prev.map((e) =>
+        e.id === eventId ? { ...e, ...patch } : e
+      )
+    );
+  };
+const enabledItemIds = currentEventId ? (eventItemMap[currentEventId] ?? []) : undefined;
+const enabledBundleIds = currentEventId ? (eventBundleMap[currentEventId] ?? []) : undefined;
+
 
   const handleRemoveBundleFromCart = (bundleId: string) => {
     setBundleCart((prev) => {
@@ -427,10 +459,32 @@ const handleCheckout = () => {
     setEvents((prev) => [...prev, newEvent]);
   };
 
-  const handleDeleteEvent=(id:string)=>{
-    setEvents((prev) => prev.filter((event) => event.id !== id));
-    setSales((prev) => prev.filter((sale) => sale.eventId !== id));
+  const handleDeleteEvent = (id: string) => {
+    // イベント本体削除
+    setEvents((prev) => prev.filter((e) => e.id !== id));
+
+    // eventItemMap からも削除
+    setEventItemMap((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+
+    // eventBundleMap からも削除
+    setEventBundleMap((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+
+    // もし削除したイベントが現在選択中なら解除＋カート初期化
+    if (id === currentEventId) {
+      setCurrentEventId(null);
+      setCart([]);
+      setBundleCart([]);
+    }
   };
+
 
   
   const getRemainingStock = (itemId: string) => {//在庫からカート分を引いた残り数を取得
@@ -480,6 +534,8 @@ const handleCheckout = () => {
         <RegisterScreen
           items={items}
           bundles={bundles}
+          enabledItemIds={enabledItemIds}
+          enabledBundleIds={enabledBundleIds}
           cart={cart}
           bundleCart={bundleCart}
           totalPrice={totalPrice}
@@ -537,8 +593,12 @@ const handleCheckout = () => {
         <EventListScreen
           events={events}
           currentEventId={currentEventId}
-          onSelectCurrentEvent={(id)=>{
+          onSelectCurrentEvent={(id) => {
+            if (id === currentEventId) return;
+
             setCurrentEventId(id);
+            setCart([]);
+            setBundleCart([]);
           }}
           onOpenEventHistory={(id) => {
             setSelectedEventIdForHistory(id);
@@ -552,6 +612,10 @@ const handleCheckout = () => {
           onAddEvent={handleAddEvent}
           onDeleteEvent={handleDeleteEvent}
           onChangeEventTags={handleChangeEventTags}
+          onOpenEventSetting={(id) => {
+            setSelectedEventIdForSetting(id);
+            go("eventSetting");
+          }}
         />
       )}
 
@@ -579,6 +643,23 @@ const handleCheckout = () => {
           onBack={back}
           />
         )}
+
+        {screen === "eventSetting" &&
+          selectedEventForSetting && (
+            <EventSettingScreen
+              event={selectedEventForSetting}
+              items={items}
+              bundles={bundles}
+              selectedItemIds={eventItemMap[selectedEventForSetting.id] ?? []}
+              selectedBundleIds={eventBundleMap[selectedEventForSetting.id] ?? []}
+              onUpdateEventBasics={handleUpdateEventBasics}
+              onChangeEventTags={handleChangeEventTags}
+              onChangeEventItems={handleChangeEventItems}
+              onChangeEventBundles={handleChangeEventBundles}
+              onBack={back}
+            />
+          )}
+
     </div>
   );
 }
