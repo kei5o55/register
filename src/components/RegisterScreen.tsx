@@ -63,6 +63,9 @@ export function RegisterScreen({
     <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
       <div style={{ flex: 1 }}>
         <h2>商品一覧</h2>
+        {visibleItems.length === 0 ? (
+          <p>頒布物がありません（頒布物管理で追加できます）</p>
+        ) : (
         <ul>
           {visibleItems.map((item) => {
             const remaining = getRemainingStock(item.id);//在庫からカート分を引いた残り数を取得
@@ -82,6 +85,7 @@ export function RegisterScreen({
             );
           })}
         </ul>
+        )}
         <h3>バンドル</h3>
           {visibleBundles.length === 0 ? (
             <p>バンドルがありません（頒布物管理で追加できます）</p>
