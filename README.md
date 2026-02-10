@@ -7,8 +7,6 @@
 現在は試作段階ですが、以下のURLから実際に体験できます。
 https://register-3k2l.vercel.app/
 
-**現在 Branch: add-EventSettingcompornent　にて作業中です！**
-
 ### 制作目的
 - モダンな Web 技術（TypeScript / React）を用いた 実践的なアプリケーション開発経験の習得
 - 同人即売会の現場を支えるツールの制作を通じて，自身および他者の創作活動の支援につながるプロダクトの開発を目指す
@@ -36,7 +34,8 @@ https://register-3k2l.vercel.app/
   - セット頒布(バンドル）の作成・管理
   
 - イベント管理
-  ![Animation3](https://github.com/user-attachments/assets/771cf7c3-f51a-44d4-b231-48e77057c2d0)
+ ![Animation](https://github.com/user-attachments/assets/759e9508-1c6e-46e3-a880-7373c58df3c6)
+
 
   - 即売イベントの追加
   - イベント日時やメモの追加
@@ -44,7 +43,7 @@ https://register-3k2l.vercel.app/
   - 時間別売上グラフ
   - 頒布物別頒布数グラフ
  ![Animation4](https://github.com/user-attachments/assets/45a153ed-1374-488e-a976-ec1a9826589c)
-
+（過去のgifとなるため現DEMOとの相違箇所がありますが機能には変更はありません．）
     
  
 ### 設計のポイント
