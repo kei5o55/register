@@ -10,9 +10,12 @@ type RegisterProps = {
   items: Item[];
   bundles: Bundle[];
 
+  // 追加：このイベントで表示したいID（null/undefinedなら全表示にする）
+  enabledItemIds?: string[];
+  enabledBundleIds?: string[];
+
   cart: CartItem[];
   bundleCart: BundleCartItem[];
-
   totalPrice: number;
 
   onAddToCart: (itemId: string) => void;
@@ -24,13 +27,15 @@ type RegisterProps = {
 
   getItemById: (id: string) => Item;
   getBundleById: (id: string) => Bundle;
-
   getRemainingStock: (itemId: string) => number;
 };
+
 
 export function RegisterScreen({
   items,
   bundles,
+  enabledItemIds,
+  enabledBundleIds,
   cart,
   bundleCart,
   totalPrice,
@@ -43,12 +48,23 @@ export function RegisterScreen({
   getBundleById,
   getRemainingStock,
 }: RegisterProps) {
+    const enabledItemSet = enabledItemIds ? new Set(enabledItemIds) : null;
+    const enabledBundleSet = enabledBundleIds ? new Set(enabledBundleIds) : null;
+
+    const visibleItems = enabledItemSet
+      ? items.filter((it) => enabledItemSet.has(it.id))
+      : items;
+
+    const visibleBundles = enabledBundleSet
+      ? bundles.filter((b) => enabledBundleSet.has(b.id))
+      : bundles;
+
   return (
     <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
       <div style={{ flex: 1 }}>
         <h2>商品一覧</h2>
         <ul>
-          {items.map((item) => {
+          {visibleItems.map((item) => {
             const remaining = getRemainingStock(item.id);//在庫からカート分を引いた残り数を取得
             return (
               <li key={item.id} style={{ marginBottom: 8 }}>
@@ -67,7 +83,7 @@ export function RegisterScreen({
           })}
         </ul>
         <h3>バンドル</h3>
-          {bundles.length === 0 ? (
+          {visibleBundles.length === 0 ? (
             <p>バンドルがありません（頒布物管理で追加できます）</p>
           ) : (
             <table border={1} cellPadding={4} style={{ borderCollapse: "collapse", marginBottom: 16 }}>
@@ -80,7 +96,7 @@ export function RegisterScreen({
                 </tr>
               </thead>
               <tbody>
-                {bundles.map((b) => (
+                {visibleBundles.map((b) => (
                   <tr key={b.id}>
                     <td>{b.name}</td>
                     <td>

@@ -57,7 +57,19 @@ function App() {
   useState<string | null>(null);
 
   const selectedEventForSetting =events.find((e) => e.id === selectedEventIdForSetting) ?? null;
+  
+  // イベントID → 有効な itemId 配列
+  const [eventItemMap, setEventItemMap] = useState<Record<string, string[]>>({});
 
+  // イベントID → 有効な bundleId 配列
+  const [eventBundleMap, setEventBundleMap] = useState<Record<string, string[]>>({});
+  const handleChangeEventItems = (eventId: string, itemIds: string[]) => {
+    setEventItemMap((prev) => ({ ...prev, [eventId]: itemIds }));
+  };
+
+  const handleChangeEventBundles = (eventId: string, bundleIds: string[]) => {
+    setEventBundleMap((prev) => ({ ...prev, [eventId]: bundleIds }));
+  };
 
   
   const selectedEventForHistory = selectedEventIdForHistory ? events.find(e => e.id === selectedEventIdForHistory) ?? null : null;
@@ -184,6 +196,8 @@ function App() {
       )
     );
   };
+const enabledItemIds = currentEventId ? (eventItemMap[currentEventId] ?? []) : undefined;
+const enabledBundleIds = currentEventId ? (eventBundleMap[currentEventId] ?? []) : undefined;
 
 
   const handleRemoveBundleFromCart = (bundleId: string) => {
@@ -445,10 +459,32 @@ const handleCheckout = () => {
     setEvents((prev) => [...prev, newEvent]);
   };
 
-  const handleDeleteEvent=(id:string)=>{
-    setEvents((prev) => prev.filter((event) => event.id !== id));
-    setSales((prev) => prev.filter((sale) => sale.eventId !== id));
+  const handleDeleteEvent = (id: string) => {
+    // イベント本体削除
+    setEvents((prev) => prev.filter((e) => e.id !== id));
+
+    // eventItemMap からも削除
+    setEventItemMap((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+
+    // eventBundleMap からも削除
+    setEventBundleMap((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+
+    // もし削除したイベントが現在選択中なら解除＋カート初期化
+    if (id === currentEventId) {
+      setCurrentEventId(null);
+      setCart([]);
+      setBundleCart([]);
+    }
   };
+
 
   
   const getRemainingStock = (itemId: string) => {//在庫からカート分を引いた残り数を取得
@@ -498,6 +534,8 @@ const handleCheckout = () => {
         <RegisterScreen
           items={items}
           bundles={bundles}
+          enabledItemIds={enabledItemIds}
+          enabledBundleIds={enabledBundleIds}
           cart={cart}
           bundleCart={bundleCart}
           totalPrice={totalPrice}
@@ -555,8 +593,12 @@ const handleCheckout = () => {
         <EventListScreen
           events={events}
           currentEventId={currentEventId}
-          onSelectCurrentEvent={(id)=>{
+          onSelectCurrentEvent={(id) => {
+            if (id === currentEventId) return;
+
             setCurrentEventId(id);
+            setCart([]);
+            setBundleCart([]);
           }}
           onOpenEventHistory={(id) => {
             setSelectedEventIdForHistory(id);
@@ -608,12 +650,12 @@ const handleCheckout = () => {
               event={selectedEventForSetting}
               items={items}
               bundles={bundles}
-              selectedItemIds={[]}
-              selectedBundleIds={[]}
+              selectedItemIds={eventItemMap[selectedEventForSetting.id] ?? []}
+              selectedBundleIds={eventBundleMap[selectedEventForSetting.id] ?? []}
               onUpdateEventBasics={handleUpdateEventBasics}
               onChangeEventTags={handleChangeEventTags}
-              onChangeEventItems={() => {}}
-              onChangeEventBundles={() => {}}
+              onChangeEventItems={handleChangeEventItems}
+              onChangeEventBundles={handleChangeEventBundles}
               onBack={back}
             />
           )}
