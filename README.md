@@ -17,24 +17,34 @@ https://register-3k2l.vercel.app/
 
 ### 主な機能
 - レジ機能
+  ![Animation1](https://github.com/user-attachments/assets/c315eb93-0178-401f-b4af-5119da099b1c)
+
   - 商品の選択・カート追加
   - 商品の在庫数チェック
   - 合計金額の自動計算
   - 会計処理
   - 売上履歴の保存・一覧表示
   - 売上ごとの詳細表示
+
+   
 - 頒布物管理
+  ![Animation2](https://github.com/user-attachments/assets/d4a977d0-35b6-49be-b233-200b9f824130)
   - 頒布物の追加
   - 頒布物情報（名称・価格）および在庫数の編集
   - 頒布物の削除
   - セット頒布(バンドル）の作成・管理
   
 - イベント管理
+  ![Animation3](https://github.com/user-attachments/assets/771cf7c3-f51a-44d4-b231-48e77057c2d0)
+
   - 即売イベントの追加
   - イベント日時やメモの追加
   - イベントごとの売上金額＋個数集計
   - 時間別売上グラフ
   - 頒布物別頒布数グラフ
+ ![Animation4](https://github.com/user-attachments/assets/45a153ed-1374-488e-a976-ec1a9826589c)
+
+    
  
 ### 設計のポイント
 - 集計ロジックと表示ロジックを分離
@@ -50,6 +60,7 @@ https://register-3k2l.vercel.app/
 - **TypeScript**
   - 静的型付けによる安全性の高い実装を行い
     バグの抑制および保守性・拡張性を意識した設計を実施
+  - 商品名（string）、単価（number）、数量（number）など、レジアプリ特有の多様な入力値を厳密な型定義で管理することで、型不一致による不具合を未然に防いでいます
 
 - **React**
   - コンポーネント指向に基づく画面構成を採用し，UIの再利用性と拡張性を考慮した実装
@@ -60,6 +71,7 @@ https://register-3k2l.vercel.app/
   - 将来的にDBへ移行し，複数端末での管理を目標
 
 ### 今後の課題
+- App.tsxのロジック整理
 - DB/APIを用いた永続化
 - ユーザー別管理
 - グラフの表示切替拡張
