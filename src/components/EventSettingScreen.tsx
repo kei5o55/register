@@ -194,8 +194,25 @@ export function EventSettingScreen({
                 />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{it.name}</div>
-                  <div style={{ opacity: 0.7 }}>
+                 <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>
                     {it.price} 円 / 在庫 {it.stock}
+                    {/* event.tags?.length で安全にチェック */}
+                    {(it.tags?.length ?? 0) > 0 ? (
+                      it.tags?.map((tag, i) => (
+                        <span key={i} style={{
+                          backgroundColor: "#e1ecf4",
+                          color: "#39739d",
+                          padding: "2px 6px",
+                          borderRadius: "4px",
+                          fontSize: "0.85em"
+                        }}>
+                          #{tag}
+                        </span>
+                      ))
+                    ) : (
+                      ""
+                    )}
+  
                   </div>
                 </div>
               </label>
