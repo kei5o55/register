@@ -64,7 +64,7 @@ export function RegisterScreen({
       <div style={{ flex: 1 }}>
         <h2>商品一覧</h2>
         {visibleItems.length === 0 ? (
-          <p>頒布物がありません（頒布物管理で追加できます）</p>
+          <p>頒布物がありません（イベント履歴→設定 から登録できます）</p>
         ) : (
         <ul>
           {visibleItems.map((item) => {
@@ -88,7 +88,7 @@ export function RegisterScreen({
         )}
         <h3>バンドル</h3>
           {visibleBundles.length === 0 ? (
-            <p>バンドルがありません（頒布物管理で追加できます）</p>
+            <p>バンドルがありません（イベント履歴→設定 から登録できます）</p>
           ) : (
             <table border={1} cellPadding={4} style={{ borderCollapse: "collapse", marginBottom: 16 }}>
               <thead>
