@@ -51,6 +51,31 @@ export function RegisterScreen({
     const enabledItemSet = enabledItemIds ? new Set(enabledItemIds) : null;
     const enabledBundleSet = enabledBundleIds ? new Set(enabledBundleIds) : null;
 
+    //テスト用販売データ送信関数
+    const sendSale = async () => {
+    const payload = {
+      sale_id: crypto.randomUUID(),
+      device_id: "dev-001",
+      sold_at: new Date().toISOString(),
+      total_amount: 1200,
+      items: [
+        { item_id: "A", name: "本", price: 600, qty: 1 },
+        { item_id: "B", name: "ステッカー", price: 300, qty: 2 },
+      ],
+    };
+
+  const res = await fetch("http://localhost:3000/sales/import", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const json = await res.json();
+  console.log(json);
+  alert(JSON.stringify(json));
+};
+
+
     const visibleItems = enabledItemSet
       ? items.filter((it) => enabledItemSet.has(it.id))
       : items;
@@ -120,6 +145,7 @@ export function RegisterScreen({
                   </tr>
                 ))}
               </tbody>
+              
             </table>
           )}
       </div>
@@ -177,6 +203,7 @@ export function RegisterScreen({
         <button onClick={onCheckout} disabled={cart.length === 0 && bundleCart.length===0}>
           会計確定
         </button>
+        <button onClick={sendSale}>売上送信</button>
       </div>
     </div>
   );

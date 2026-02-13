@@ -85,6 +85,7 @@ export function EventSettingScreen({
     onChangeEventBundles(event.id, bundleIds);
 
     alert("保存しました");
+    
   };
 
   const hasChanges =
