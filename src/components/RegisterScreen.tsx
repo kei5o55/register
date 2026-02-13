@@ -53,27 +53,42 @@ export function RegisterScreen({
 
     //テスト用販売データ送信関数
     const sendSale = async () => {
-    const payload = {
-      sale_id: crypto.randomUUID(),
-      device_id: "dev-001",
-      sold_at: new Date().toISOString(),
-      total_amount: 1200,
-      items: [
-        { item_id: "A", name: "本", price: 600, qty: 1 },
-        { item_id: "B", name: "ステッカー", price: 300, qty: 2 },
-      ],
+      const payload = {
+        sale_id: crypto.randomUUID(),// 一意な販売IDを生成(API送信時に同じIDで重複送信を防止)
+        device_id: "dev-001", // 後で localStorage で固定化すると良い
+        sold_at: new Date().toISOString(),// 現在日時をISO文字列で取得
+        total_amount: totalPrice,// 合計金額(カートに入った商品の合計)
+        items: cart.map((c) => {
+          const item = getItemById(c.itemId);
+          return {
+            item_id: item.id,
+            name: item.name,
+            price: item.price,
+            qty: c.quantity,
+          };
+        }),
+        bundles: bundleCart.map((bc) => {
+          const b = getBundleById(bc.bundleId);
+          return {
+            bundle_id: b.id,
+            name: b.name,
+            price: b.price,
+            qty: bc.quantity,
+            lines: b.lines, // 中身も送りたければ
+          };
+        }),
+      };
+
+      const res = await fetch("http://localhost:3000/sales/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json();
+      console.log(json);
+      alert(JSON.stringify(json));
     };
-
-  const res = await fetch("http://localhost:3000/sales/import", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  const json = await res.json();
-  console.log(json);
-  alert(JSON.stringify(json));
-};
 
 
     const visibleItems = enabledItemSet
