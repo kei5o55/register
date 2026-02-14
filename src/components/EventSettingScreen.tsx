@@ -187,11 +187,7 @@ export function EventSettingScreen({
         </p>
 
 
-        <h4 style={{ marginBottom: 8 }}>単品頒布物
-          <button onClick={() => setActiveTag(null)}>
-            フィルタ解除
-          </button>
-        </h4>
+        <h4 style={{ marginBottom: 8 }}>単品頒布物</h4>
         {/* タグフィルタ */}
         {allTags.length > 0 && (
           <div style={{ margin: "8px 0 12px" }}>
@@ -250,6 +246,7 @@ export function EventSettingScreen({
                   border: "1px solid #eee",
                   padding: 10,
                   borderRadius: 8,
+                  cursor: "pointer",
                 }}
               >
                 <input
@@ -266,14 +263,13 @@ export function EventSettingScreen({
                       it.tags?.map((tag) => (
                       <span
                         key={tag}
-                        onClick={() => setActiveTag(tag)}
                         style={{
                           backgroundColor: activeTag === tag ? "#39739d" : "#e1ecf4",
                           color: activeTag === tag ? "#fff" : "#39739d",
                           padding: "2px 6px",
                           borderRadius: 4,
                           fontSize: "0.8em",
-                          cursor: "pointer",
+                          
                         }}
                       >
                         #{tag}
