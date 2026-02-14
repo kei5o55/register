@@ -53,6 +53,7 @@ export function EventSettingScreen({
   const [tags, setTags] = useState<string[]>(event.tags ?? []);
   const [itemIds, setItemIds] = useState<string[]>(selectedItemIds);
   const [bundleIds, setBundleIds] = useState<string[]>(selectedBundleIds);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
   // event切替で同期
   useEffect(() => {
@@ -69,6 +70,10 @@ export function EventSettingScreen({
 
   const itemSet = useMemo(() => new Set(itemIds), [itemIds]);
   const bundleSet = useMemo(() => new Set(bundleIds), [bundleIds]);
+
+  const visibleItems = activeTag
+    ? items.filter((it) => it.tags?.includes(activeTag))
+    : items;
 
   const toggle = (list: string[], id: string) =>
     list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
@@ -171,12 +176,18 @@ export function EventSettingScreen({
           レジ画面には、ここでONにしたものだけ表示される想定
         </p>
 
-        <h4 style={{ marginBottom: 8 }}>単品頒布物</h4>
+
+        <h4 style={{ marginBottom: 8 }}>単品頒布物
+          <button onClick={() => setActiveTag(null)}>
+            フィルタ解除
+          </button>
+        </h4>
+
         {items.length === 0 ? (
           <p>頒布物がまだ登録されていません。</p>
         ) : (
           <div style={{ display: "grid", gap: 8 }}>
-            {items.map((it) => (
+            {visibleItems.map((it) => (
               <label
                 key={it.id}
                 style={{
@@ -195,20 +206,25 @@ export function EventSettingScreen({
                 />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{it.name}</div>
-                 <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>
                     {it.price} 円 / 在庫 {it.stock}
                     {/* event.tags?.length で安全にチェック */}
                     {(it.tags?.length ?? 0) > 0 ? (
                       it.tags?.map((tag, i) => (
-                        <span key={i} style={{
-                          backgroundColor: "#e1ecf4",
-                          color: "#39739d",
+                      <span
+                        key={tag}
+                        onClick={() => setActiveTag(tag)}
+                        style={{
+                          backgroundColor: activeTag === tag ? "#39739d" : "#e1ecf4",
+                          color: activeTag === tag ? "#fff" : "#39739d",
                           padding: "2px 6px",
-                          borderRadius: "4px",
-                          fontSize: "0.85em"
-                        }}>
-                          #{tag}
-                        </span>
+                          borderRadius: 4,
+                          fontSize: "0.8em",
+                          cursor: "pointer",
+                        }}
+                      >
+                        #{tag}
+                      </span>
                       ))
                     ) : (
                       ""
