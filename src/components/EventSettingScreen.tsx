@@ -71,9 +71,19 @@ export function EventSettingScreen({
   const itemSet = useMemo(() => new Set(itemIds), [itemIds]);
   const bundleSet = useMemo(() => new Set(bundleIds), [bundleIds]);
 
-  const visibleItems = activeTag
-    ? items.filter((it) => it.tags?.includes(activeTag))
-    : items;
+  const allTags = useMemo(() => {
+    const set = new Set<string>();
+    for (const it of items) {
+      for (const t of it.tags ?? []) set.add(t);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "ja"));
+  }, [items]);
+
+  const visibleItems = useMemo(() => {
+    if (!activeTag) return items;
+    return items.filter((it) => it.tags?.includes(activeTag));
+  }, [items, activeTag]);
+
 
   const toggle = (list: string[], id: string) =>
     list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
@@ -182,6 +192,49 @@ export function EventSettingScreen({
             フィルタ解除
           </button>
         </h4>
+        {/* タグフィルタ */}
+        {allTags.length > 0 && (
+          <div style={{ margin: "8px 0 12px" }}>
+            <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>
+              タグで絞り込み
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              <button
+                type="button"
+                onClick={() => setActiveTag(null)}
+                style={{
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  border: "1px solid #ddd",
+                  fontSize: 12,
+                  cursor: "pointer",
+                  opacity: activeTag === null ? 1 : 0.75,
+                }}
+              >
+                すべて
+              </button>
+
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setActiveTag(tag)}
+                  style={{
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    border: "1px solid #ddd",
+                    fontSize: 12,
+                    cursor: "pointer",
+                    opacity: activeTag === tag ? 1 : 0.75,
+                  }}
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {items.length === 0 ? (
           <p>頒布物がまだ登録されていません。</p>
@@ -210,7 +263,7 @@ export function EventSettingScreen({
                     {it.price} 円 / 在庫 {it.stock}
                     {/* event.tags?.length で安全にチェック */}
                     {(it.tags?.length ?? 0) > 0 ? (
-                      it.tags?.map((tag, i) => (
+                      it.tags?.map((tag) => (
                       <span
                         key={tag}
                         onClick={() => setActiveTag(tag)}
