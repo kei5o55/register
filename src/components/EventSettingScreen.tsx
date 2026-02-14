@@ -188,6 +188,7 @@ export function EventSettingScreen({
 
 
         <h4 style={{ marginBottom: 8 }}>単品頒布物</h4>
+        
         {/* タグフィルタ */}
         {allTags.length > 0 && (
           <div style={{ margin: "8px 0 12px" }}>

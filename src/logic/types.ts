@@ -34,6 +34,7 @@ export type Bundle = {// バンドル商品
   name: string;// バンドル名
   lines: BundleLine[]; // 中身（アイテムIDと個数）
   price: number;       // バンドル価格（合計 or 割引価格でもOK）
+  tags?: Tags;// タグ（任意）
 };
 
 export type SaleBundle = {// 売上内のバンドル購入分

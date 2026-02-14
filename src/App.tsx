@@ -465,6 +465,9 @@ const handleCheckout = () => {
   const handleChangeItemTags = (id: string, tags: string[]) => {
     setItems(prev => prev.map(it => (it.id === id ? { ...it, tags } : it)));
   };
+  const handleChangeBundleTags = (id: string, tags: string[]) => {
+    setBundles(prev => prev.map(b => (b.id === id ? { ...b, tags } : b)));
+  };
   const handleChangeEventTags = (id: string, tags: string[]) => {
     setEvents(prev => prev.map(ev => (ev.id === id ? { ...ev, tags } : ev)));
   };
@@ -628,6 +631,7 @@ const handleCheckout = () => {
           onAddItem={handleAddItem}
           onDeleteItem={handleDeleteItem}
           onChangeTags={handleChangeItemTags}
+          onChangeBundleTags={handleChangeBundleTags}
         />
       )}
 
