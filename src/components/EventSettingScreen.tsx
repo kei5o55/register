@@ -54,6 +54,7 @@ export function EventSettingScreen({
   const [itemIds, setItemIds] = useState<string[]>(selectedItemIds);
   const [bundleIds, setBundleIds] = useState<string[]>(selectedBundleIds);
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [activeBundleTag, setActiveBundleTag] = useState<string | null>(null);
 
   // event切替で同期
   useEffect(() => {
@@ -91,6 +92,12 @@ export function EventSettingScreen({
     if (!activeTag) return items;
     return items.filter((it) => it.tags?.includes(activeTag));
   }, [items, activeTag]);
+
+  const visibleBundles = useMemo(() => {
+    if (!activeBundleTag) return bundles;
+    return bundles.filter((b) => b.tags?.includes(activeBundleTag));
+  }, [bundles, activeBundleTag]);
+
 
 
   const toggle = (list: string[], id: string) =>
@@ -236,6 +243,7 @@ export function EventSettingScreen({
                 >
                   #{tag}
                 </button>
+                
               ))}
             </div>
           </div>
@@ -296,11 +304,44 @@ export function EventSettingScreen({
         )}
 
         <h4 style={{ margin: "18px 0 8px" }}>バンドル</h4>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              <button
+                type="button"
+                onClick={() => setActiveBundleTag(null)}
+                style={{
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  border: "1px solid #ddd",
+                  fontSize: 12,
+                  cursor: "pointer",
+                  opacity: activeBundleTag === null ? 1 : 0.75,
+                }}
+              >
+                すべて
+              </button>
+              {allBundleTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setActiveBundleTag(tag)}
+                  style={{
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    border: "1px solid #ddd",
+                    fontSize: 12,
+                    cursor: "pointer",
+                    opacity: activeBundleTag === tag ? 1 : 0.75,
+                  }}
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
         {bundles.length === 0 ? (
           <p>バンドルはまだありません。</p>
         ) : (
           <div style={{ display: "grid", gap: 8 }}>
-            {bundles.map((b) => (
+            {visibleBundles.map((b) => (
               <label
                 key={b.id}
                 style={{
@@ -321,26 +362,26 @@ export function EventSettingScreen({
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{b.name}</div>
                   <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>{b.price} 円
+
                     {/* event.tags?.length で安全にチェック */}
-                    {(allBundleTags.length ?? 0) > 0 ? (
-                      allBundleTags.map((tag) => (
-                      <span
-                        key={tag}
-                        style={{
-                          backgroundColor: activeTag === tag ? "#39739d" : "#e1ecf4",
-                          color: activeTag === tag ? "#fff" : "#39739d",
-                          padding: "2px 6px",
-                          borderRadius: 4,
-                          fontSize: "0.8em",
-                          
-                        }}
-                      >
-                          #{tag}
-                      </span>
-                      ))
-                    ) : (
-                      ""
-                    )}
+                    {(b.tags?.length ?? 0) > 0 ? (
+                        b.tags!.map((tag) => (
+                          <span
+                            key={tag}
+                            style={{
+                              backgroundColor: activeBundleTag === tag ? "#39739d" : "#e1ecf4",
+                              color: activeBundleTag === tag ? "#fff" : "#39739d",
+                              padding: "2px 6px",
+                              borderRadius: 4,
+                              fontSize: "0.8em",
+                            }}
+                          >
+                            #{tag}
+                          </span>
+                        ))
+                      ) : (
+                        ""
+                      )}
                   </div>
                   <div style={{ opacity: 0.7, fontSize: 12 }}>
                     {b.lines
