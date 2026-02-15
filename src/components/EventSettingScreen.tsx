@@ -205,7 +205,6 @@ export function EventSettingScreen({
         <h4 style={{ marginBottom: 8 }}>単品頒布物</h4>
         
         {/* タグフィルタ */}
-        {allTags.length > 0 && (
           <div style={{ margin: "8px 0 12px" }}>
             <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>
               タグで絞り込み
@@ -247,7 +246,6 @@ export function EventSettingScreen({
               ))}
             </div>
           </div>
-        )}
 
         {items.length === 0 ? (
           <p>頒布物がまだ登録されていません。</p>
