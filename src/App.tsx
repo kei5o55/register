@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import type { Item, CartItem, Sale,Event,Bundle,BundleLine} from "./logic/types";
 import { loadItems, saveItems, loadSales, saveSales } from "./logic/storage";
 import"./App.css";
+import { DailySalesChart } from "./components/DailySalesChart";//日別売上チャートコンポーネント(APIからデータを取ってきて棒グラフ表示)
 
 //コンポーネントのインポート
 import { HomeScreen } from "./components/HomeScreen";
@@ -705,7 +706,12 @@ const handleCheckout = () => {
             />
           )}
 
+      <div style={{ padding: 16 }}>{/* どこからでも見れるように日別売上チャートを置いてみる */}
+        <DailySalesChart />
+      </div>
+
     </div>
+    
   );
 }
 export default App;
