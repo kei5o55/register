@@ -25,8 +25,11 @@ useEffect(() => {// コンポーネントがマウントされたときにAPIか
     try {// データ取得開始
         setLoading(true);
         setError(null);
+        // fetch("http://localhost:3000/analytics/daily")  ← これを
+        const apiUrl = import.meta.env.VITE_API_URL;      // ← こう呼び出す
+        fetch(`${apiUrl}/analytics/daily`)                // ← こう使う
 
-        const res = await fetch("http://localhost:3000/analytics/daily");// API(url)から日別売上データを取得
+        const res = await fetch(`${apiUrl}/analytics/daily`);// API(url)から日別売上データを取得
         const json = await res.json();// 取得したデータをJSONとしてパース
 
         if (!res.ok || !json.ok) {// HTTPエラーやAPIエラーが発生した場合

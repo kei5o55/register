@@ -47,6 +47,21 @@ export function ItemsScreen({
   const [bundleLines, setBundleLines] = useState<BundleLine[]>([]);
   const [bundlePrice, setBundlePrice] = useState(0);
 
+  // カタログ同期APIを呼び出す関数(追加した頒布物やバンドルを外部システムに反映させるためのもの)
+  const syncCatalog = async () => {
+    const base = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
+    const res = await fetch(`${base}/catalog/sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items, bundles }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.ok) throw new Error(json?.error ?? "sync failed");
+    alert("サーバに保存しました");
+  };
+
+
+
   //vercelデプロイ用にコメントアウト
 
   /*const addLine = () => {
@@ -347,6 +362,10 @@ export function ItemsScreen({
       >
         バンドル追加
       </button>
-          </div>
+        <button onClick={syncCatalog} style={{ marginLeft: 16 }}>
+          カタログ同期
+        </button>
+    </div>
+    
   );
 }
