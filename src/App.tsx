@@ -14,7 +14,6 @@ import { EventListScreen } from "./components/EventListScreen";
 import { EventHistoryScreen } from "./components/EventHistoryScreen";
 import { EventDetailScreen } from "./components/EventDetailScreen";
 import { EventSettingScreen } from "./components/EventSettingScreen";
-//import { Event } from './logic/types';//なんかエラー出るからやめた
 
 
 type SaleItem = {//販売された商品の情報を表す型
@@ -36,7 +35,7 @@ const initialEvents: Event[] = [{//仮データ
   id: "e1",
   name: "コミックマーケット○○",
   date: "20xx-2-2",
-   memo: "同人即売イベント"
+  memo: "同人即売イベント"
 },];
 
 
@@ -393,6 +392,48 @@ const handleCheckout = () => {
 
       setItems(updatedItems);
 
+    //テスト用販売データ送信関数
+    const sendSale = async () => {
+      const payload = {
+        sale_id: crypto.randomUUID(),// 一意な販売IDを生成(API送信時に同じIDで重複送信を防止)
+        event_id: currentEventId!, // 現在のイベントIDをセット（null でない前提）
+        device_id: "dev-001", // 後で localStorage で固定化すると良い
+        sold_at: new Date().toISOString(),// 現在日時をISO文字列で取得
+        total_amount: totalPrice,// 合計金額(カートに入った商品の合計)
+        items: cart.map((c) => {
+          const item = getItemById(c.itemId);
+          return {
+            item_id: item.id,
+            name: item.name,
+            price: item.price,
+            qty: c.quantity,
+          };
+        }),
+        bundles: bundleCart.map((bc) => {
+          const b = getBundleById(bc.bundleId);
+          return {
+            bundle_id: b.id,
+            name: b.name,
+            price: b.price,
+            qty: bc.quantity,
+            lines: b.lines, // 中身も送りたければ
+          };
+        }),
+      };
+
+      const res = await fetch("http://localhost:3000/sales/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json();
+      console.log(json);
+      alert(JSON.stringify(json));
+    };
+    
+    sendSale();
+
       // --- ⑤ カートを空にする ---
       setCart([]);
       setBundleCart([]);
@@ -422,6 +463,9 @@ const handleCheckout = () => {
   };
   const handleChangeItemTags = (id: string, tags: string[]) => {
     setItems(prev => prev.map(it => (it.id === id ? { ...it, tags } : it)));
+  };
+  const handleChangeBundleTags = (id: string, tags: string[]) => {
+    setBundles(prev => prev.map(b => (b.id === id ? { ...b, tags } : b)));
   };
   const handleChangeEventTags = (id: string, tags: string[]) => {
     setEvents(prev => prev.map(ev => (ev.id === id ? { ...ev, tags } : ev)));
@@ -586,6 +630,7 @@ const handleCheckout = () => {
           onAddItem={handleAddItem}
           onDeleteItem={handleDeleteItem}
           onChangeTags={handleChangeItemTags}
+          onChangeBundleTags={handleChangeBundleTags}
         />
       )}
 
@@ -605,7 +650,7 @@ const handleCheckout = () => {
             go("eventHistory");
             //setScreen("eventHistory");
           }}
-         /*onOpenEventDetail={(id) => {
+        /*onOpenEventDetail={(id) => {
             setSelectedEventId(id);
             setScreen("eventDetail");
           }}*/
@@ -663,8 +708,4 @@ const handleCheckout = () => {
     </div>
   );
 }
-
-
-
-
 export default App;

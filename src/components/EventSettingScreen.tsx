@@ -53,6 +53,8 @@ export function EventSettingScreen({
   const [tags, setTags] = useState<string[]>(event.tags ?? []);
   const [itemIds, setItemIds] = useState<string[]>(selectedItemIds);
   const [bundleIds, setBundleIds] = useState<string[]>(selectedBundleIds);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [activeBundleTag, setActiveBundleTag] = useState<string | null>(null);
 
   // event切替で同期
   useEffect(() => {
@@ -70,6 +72,34 @@ export function EventSettingScreen({
   const itemSet = useMemo(() => new Set(itemIds), [itemIds]);
   const bundleSet = useMemo(() => new Set(bundleIds), [bundleIds]);
 
+  const allTags = useMemo(() => {
+    const set = new Set<string>();
+    for (const it of items) {
+      for (const t of it.tags ?? []) set.add(t);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "ja"));
+  }, [items]);
+
+  const allBundleTags = useMemo(() => {
+    const set = new Set<string>();
+    for (const b of bundles) {
+      for (const t of b.tags ?? []) set.add(t);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "ja"));
+  }, [bundles]);
+
+  const visibleItems = useMemo(() => {
+    if (!activeTag) return items;
+    return items.filter((it) => it.tags?.includes(activeTag));
+  }, [items, activeTag]);
+
+  const visibleBundles = useMemo(() => {
+    if (!activeBundleTag) return bundles;
+    return bundles.filter((b) => b.tags?.includes(activeBundleTag));
+  }, [bundles, activeBundleTag]);
+
+
+
   const toggle = (list: string[], id: string) =>
     list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
 
@@ -85,6 +115,7 @@ export function EventSettingScreen({
     onChangeEventBundles(event.id, bundleIds);
 
     alert("保存しました");
+    
   };
 
   const hasChanges =
@@ -170,12 +201,59 @@ export function EventSettingScreen({
           レジ画面には、ここでONにしたものだけ表示される想定
         </p>
 
+
         <h4 style={{ marginBottom: 8 }}>単品頒布物</h4>
+        
+        {/* タグフィルタ */}
+        {allTags.length > 0 && (
+          <div style={{ margin: "8px 0 12px" }}>
+            <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>
+              タグで絞り込み
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              <button
+                type="button"
+                onClick={() => setActiveTag(null)}
+                style={{
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  border: "1px solid #ddd",
+                  fontSize: 12,
+                  cursor: "pointer",
+                  opacity: activeTag === null ? 1 : 0.75,
+                }}
+              >
+                すべて
+              </button>
+
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setActiveTag(tag)}
+                  style={{
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    border: "1px solid #ddd",
+                    fontSize: 12,
+                    cursor: "pointer",
+                    opacity: activeTag === tag ? 1 : 0.75,
+                  }}
+                >
+                  #{tag}
+                </button>
+                
+              ))}
+            </div>
+          </div>
+        )}
+
         {items.length === 0 ? (
           <p>頒布物がまだ登録されていません。</p>
         ) : (
           <div style={{ display: "grid", gap: 8 }}>
-            {items.map((it) => (
+            {visibleItems.map((it) => (
               <label
                 key={it.id}
                 style={{
@@ -185,6 +263,7 @@ export function EventSettingScreen({
                   border: "1px solid #eee",
                   padding: 10,
                   borderRadius: 8,
+                  cursor: "pointer",
                 }}
               >
                 <input
@@ -194,8 +273,29 @@ export function EventSettingScreen({
                 />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{it.name}</div>
-                  <div style={{ opacity: 0.7 }}>
+                <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>
                     {it.price} 円 / 在庫 {it.stock}
+                    {/* event.tags?.length で安全にチェック */}
+                    {(it.tags?.length ?? 0) > 0 ? (
+                      it.tags?.map((tag) => (
+                      <span
+                        key={tag}
+                        style={{
+                          backgroundColor: activeTag === tag ? "#39739d" : "#e1ecf4",
+                          color: activeTag === tag ? "#fff" : "#39739d",
+                          padding: "2px 6px",
+                          borderRadius: 4,
+                          fontSize: "0.8em",
+                          
+                        }}
+                      >
+                        #{tag}
+                      </span>
+                      ))
+                    ) : (
+                      ""
+                    )}
+  
                   </div>
                 </div>
               </label>
@@ -204,11 +304,44 @@ export function EventSettingScreen({
         )}
 
         <h4 style={{ margin: "18px 0 8px" }}>バンドル</h4>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              <button
+                type="button"
+                onClick={() => setActiveBundleTag(null)}
+                style={{
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  border: "1px solid #ddd",
+                  fontSize: 12,
+                  cursor: "pointer",
+                  opacity: activeBundleTag === null ? 1 : 0.75,
+                }}
+              >
+                すべて
+              </button>
+              {allBundleTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setActiveBundleTag(tag)}
+                  style={{
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    border: "1px solid #ddd",
+                    fontSize: 12,
+                    cursor: "pointer",
+                    opacity: activeBundleTag === tag ? 1 : 0.75,
+                  }}
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
         {bundles.length === 0 ? (
           <p>バンドルはまだありません。</p>
         ) : (
           <div style={{ display: "grid", gap: 8 }}>
-            {bundles.map((b) => (
+            {visibleBundles.map((b) => (
               <label
                 key={b.id}
                 style={{
@@ -218,6 +351,7 @@ export function EventSettingScreen({
                   border: "1px solid #eee",
                   padding: 10,
                   borderRadius: 8,
+                  cursor: "pointer",
                 }}
               >
                 <input
@@ -227,7 +361,28 @@ export function EventSettingScreen({
                 />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{b.name}</div>
-                  <div style={{ opacity: 0.75 }}>{b.price} 円</div>
+                  <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>{b.price} 円
+
+                    {/* event.tags?.length で安全にチェック */}
+                    {(b.tags?.length ?? 0) > 0 ? (
+                        b.tags!.map((tag) => (
+                          <span
+                            key={tag}
+                            style={{
+                              backgroundColor: activeBundleTag === tag ? "#39739d" : "#e1ecf4",
+                              color: activeBundleTag === tag ? "#fff" : "#39739d",
+                              padding: "2px 6px",
+                              borderRadius: 4,
+                              fontSize: "0.8em",
+                            }}
+                          >
+                            #{tag}
+                          </span>
+                        ))
+                      ) : (
+                        ""
+                      )}
+                  </div>
                   <div style={{ opacity: 0.7, fontSize: 12 }}>
                     {b.lines
                       .map((l) => {

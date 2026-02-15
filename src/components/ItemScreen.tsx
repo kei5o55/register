@@ -24,6 +24,7 @@ type ItemsScreenProps = {
   onAddItem: (name: string, price: number, stock: number) => void;
   onDeleteItem: (id: string) => void;
   onChangeTags: (id: string, tags: string[]) => void;
+  onChangeBundleTags: (id: string, tags: string[]) => void;
 };
 
 export function ItemsScreen({
@@ -37,6 +38,7 @@ export function ItemsScreen({
   onAddItem,
   onDeleteItem,
   onChangeTags,
+  onChangeBundleTags,
 }: ItemsScreenProps) {
   const [newName, setNewName] = useState("");
   const [newPrice, setNewPrice] = useState("500");
@@ -232,6 +234,13 @@ export function ItemsScreen({
                 <td>{b.price}</td>
                 <td>
                   <button onClick={() => onDeleteBundle(b.id)} style={{ color: "red", marginLeft: 8 }}>削除</button>
+                </td>
+                <td>
+                  <TagEditor
+                    tags={b.tags}
+                    onChange={(next) => onChangeBundleTags(b.id, next)}
+                    placeholder="タグを追加（例：新刊）"
+                  />
                 </td>
               </tr>
             ))}

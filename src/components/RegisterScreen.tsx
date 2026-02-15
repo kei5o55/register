@@ -51,6 +51,9 @@ export function RegisterScreen({
     const enabledItemSet = enabledItemIds ? new Set(enabledItemIds) : null;
     const enabledBundleSet = enabledBundleIds ? new Set(enabledBundleIds) : null;
 
+
+
+
     const visibleItems = enabledItemSet
       ? items.filter((it) => enabledItemSet.has(it.id))
       : items;
@@ -120,6 +123,7 @@ export function RegisterScreen({
                   </tr>
                 ))}
               </tbody>
+              
             </table>
           )}
       </div>
@@ -177,6 +181,7 @@ export function RegisterScreen({
         <button onClick={onCheckout} disabled={cart.length === 0 && bundleCart.length===0}>
           会計確定
         </button>
+        {/* <button onClick={sendSale}>売上送信</button> */}
       </div>
     </div>
   );
