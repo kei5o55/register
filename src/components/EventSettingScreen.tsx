@@ -79,6 +79,14 @@ export function EventSettingScreen({
     return Array.from(set).sort((a, b) => a.localeCompare(b, "ja"));
   }, [items]);
 
+  const allBundleTags = useMemo(() => {
+    const set = new Set<string>();
+    for (const b of bundles) {
+      for (const t of b.tags ?? []) set.add(t);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "ja"));
+  }, [bundles]);
+
   const visibleItems = useMemo(() => {
     if (!activeTag) return items;
     return items.filter((it) => it.tags?.includes(activeTag));
@@ -311,7 +319,28 @@ export function EventSettingScreen({
                 />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{b.name}</div>
-                  <div style={{ opacity: 0.75 }}>{b.price} 円</div>
+                  <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>{b.price} 円
+                    {/* event.tags?.length で安全にチェック */}
+                    {(allBundleTags.length ?? 0) > 0 ? (
+                      allBundleTags.map((tag) => (
+                      <span
+                        key={tag}
+                        style={{
+                          backgroundColor: activeTag === tag ? "#39739d" : "#e1ecf4",
+                          color: activeTag === tag ? "#fff" : "#39739d",
+                          padding: "2px 6px",
+                          borderRadius: 4,
+                          fontSize: "0.8em",
+                          
+                        }}
+                      >
+                          #{tag}
+                      </span>
+                      ))
+                    ) : (
+                      ""
+                    )}
+                  </div>
                   <div style={{ opacity: 0.7, fontSize: 12 }}>
                     {b.lines
                       .map((l) => {
