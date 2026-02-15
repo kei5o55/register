@@ -310,6 +310,7 @@ export function EventSettingScreen({
                   border: "1px solid #eee",
                   padding: 10,
                   borderRadius: 8,
+                  cursor: "pointer",
                 }}
               >
                 <input
