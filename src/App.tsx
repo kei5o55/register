@@ -14,7 +14,6 @@ import { EventListScreen } from "./components/EventListScreen";
 import { EventHistoryScreen } from "./components/EventHistoryScreen";
 import { EventDetailScreen } from "./components/EventDetailScreen";
 import { EventSettingScreen } from "./components/EventSettingScreen";
-//import { Event } from './logic/types';//なんかエラー出るからやめた
 
 
 type SaleItem = {//販売された商品の情報を表す型
