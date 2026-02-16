@@ -37,16 +37,16 @@ useEffect(() => {// コンポーネントがマウントされたときにAPIか
         // fetch("http://localhost:3000/analytics/daily")  ← これを
         const apiUrl = import.meta.env.VITE_API_URL;      // ← こう呼び出す
         fetch(`${apiUrl}/analytics/daily`)                // ← こう使う
-
-        const res = await fetch(`${apiUrl}/analytics/daily`);// API(url)から日別売上データを取得
-        const json = await res.json();// 取得したデータをJSONとしてパース
-
         // URLが設定されていない、またはlocalhostを指している場合はデモデータを表示する（開発環境でAPIが動いていないときの保険）
         if (!apiUrl || apiUrl.includes('localhost')) {
             console.warn("API URLが未設定またはlocalhostです。デモデータを表示します。");
             setData(MOCK_DATA);
             return; // デモデータをセットして以降の処理はスキップ
         }
+        const res = await fetch(`${apiUrl}/analytics/daily`);// API(url)から日別売上データを取得
+        const json = await res.json();// 取得したデータをJSONとしてパース
+
+
 
         if (!res.ok || !json.ok) {// HTTPエラーやAPIエラーが発生した場合
             throw new Error(json?.error ?? `HTTP ${res.status}`);
