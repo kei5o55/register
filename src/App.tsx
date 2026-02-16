@@ -115,6 +115,10 @@ function App() {
     });
   };
   
+  const onChangeImageUrl = (id: string, url: string) => {
+    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, imageUrl: url } : it)));
+  };
+
 
   const buildReservedMap = () => {//カート内の確保済み個数(バンドル＋単品)を itemId ごとに集計する関数
     const reserved = new Map<string, number>();
@@ -632,6 +636,7 @@ const handleCheckout = () => {
           onDeleteItem={handleDeleteItem}
           onChangeTags={handleChangeItemTags}
           onChangeBundleTags={handleChangeBundleTags}
+          onChangeImageUrl={onChangeImageUrl}
         />
       )}
 

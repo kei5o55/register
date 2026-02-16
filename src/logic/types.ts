@@ -16,6 +16,7 @@ export type Item = {// 同人アイテム
   price: number;// 価格（円）
   stock: number;// 在庫数
   tags?: Tags;// タグ（任意）
+  imageUrl?: string;// 画像URL（任意）
 };
 
 export type CartItem = { itemId: string; quantity: number }// カート内の単品アイテム行

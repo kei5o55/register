@@ -5,6 +5,7 @@
 import { useState } from "react";
 import type { Item,Bundle,BundleLine } from "../logic/types";
 import { TagEditor } from "./TagEditor";
+import { publicItemImages } from "../logic/publicImages";
 
 type ItemsScreenProps = {
   items: Item[];
@@ -25,6 +26,7 @@ type ItemsScreenProps = {
   onDeleteItem: (id: string) => void;
   onChangeTags: (id: string, tags: string[]) => void;
   onChangeBundleTags: (id: string, tags: string[]) => void;
+  onChangeImageUrl: (id: string, url: string) => void;
 };
 
 export function ItemsScreen({
@@ -39,6 +41,7 @@ export function ItemsScreen({
   onDeleteItem,
   onChangeTags,
   onChangeBundleTags,
+  onChangeImageUrl,
 }: ItemsScreenProps) {
   const [newName, setNewName] = useState("");
   const [newPrice, setNewPrice] = useState("500");
@@ -139,6 +142,7 @@ export function ItemsScreen({
         >
           <thead>
             <tr>
+              <th>画像</th>
               <th>頒布物</th>
               <th>価格(円)</th>
               <th>在庫</th>
@@ -148,6 +152,64 @@ export function ItemsScreen({
           <tbody>
             {items.map((item) => (
               <tr key={item.id}>
+              {/* ★追加：サムネ */}
+              <td>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={`${item.name} thumbnail`}
+                      style={{
+                        width: 56,
+                        height: 56,
+                        objectFit: "cover",
+                        borderRadius: 8,
+                        border: "1px solid #ddd",
+                      }}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: 8,
+                        border: "1px dashed #bbb",
+                        display: "grid",
+                        placeItems: "center",
+                        fontSize: 12,
+                        opacity: 0.7,
+                      }}
+                    >
+                      No Image
+                    </div>
+                  )}
+
+                  {/* ★ドロップダウン */}
+                  <select
+                    value={item.imageUrl ?? ""}
+                    onChange={(e) => onChangeImageUrl(item.id, e.target.value)}
+                    style={{ width: 240 }}
+                  >
+                    <option value="">（画像なし）</option>
+                    {publicItemImages.map((path) => (
+                      <option key={path} value={path}>
+                        {path}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* ★任意：手入力も残す（コピペ用） */}
+                  <input
+                    placeholder='/items/shinkan1.jpg'
+                    value={item.imageUrl ?? ""}
+                    onChange={(e) => onChangeImageUrl(item.id, e.target.value)}
+                    style={{ width: 220 }}
+                  />
+                </div>
+              </td>
                 <td>
                   <input
                     value={item.name}
