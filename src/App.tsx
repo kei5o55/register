@@ -706,7 +706,7 @@ const handleCheckout = () => {
             />
           )}
 
-      <div style={{ padding: 16 }}>{/* どこからでも見れるように日別売上チャートを置いてみる */}
+      <div style={{ padding: 16 }}>{/* どこからでも見れるように日別売上チャートを置いてみる(デバッグ用) */}
         <DailySalesChart />
       </div>
 

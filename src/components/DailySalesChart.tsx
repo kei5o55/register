@@ -1,3 +1,6 @@
+// 日別売上チャートコンポーネント
+// APIから日別売上データを取得して棒グラフで表示する
+
 import { useEffect, useState } from "react";
 import {
     ResponsiveContainer,
@@ -15,6 +18,12 @@ type DailyRow = {
     total_amount: number;// 売上金額の合計
 };
 
+const MOCK_DATA: DailyRow[] = [
+    { date: "2026-01-01", sale_count: 5, total_amount: 5000 },
+    { date: "2026-01-02", sale_count: 8, total_amount: 8500 },
+    { date: "2026-01-03", sale_count: 3, total_amount: 3000 },
+];
+
 export function DailySalesChart() {
     const [data, setData] = useState<DailyRow[]>([]);
     const [loading, setLoading] = useState(true);
@@ -31,6 +40,13 @@ useEffect(() => {// コンポーネントがマウントされたときにAPIか
 
         const res = await fetch(`${apiUrl}/analytics/daily`);// API(url)から日別売上データを取得
         const json = await res.json();// 取得したデータをJSONとしてパース
+
+        // URLが設定されていない、またはlocalhostを指している場合はデモデータを表示する（開発環境でAPIが動いていないときの保険）
+        if (!apiUrl || apiUrl.includes('localhost')) {
+            console.warn("API URLが未設定またはlocalhostです。デモデータを表示します。");
+            setData(MOCK_DATA);
+            return; // デモデータをセットして以降の処理はスキップ
+        }
 
         if (!res.ok || !json.ok) {// HTTPエラーやAPIエラーが発生した場合
             throw new Error(json?.error ?? `HTTP ${res.status}`);
