@@ -35,6 +35,8 @@ https://github.com/kei5o55/cashier-server
   - 頒布物情報（名称・価格）および在庫数の編集
   - 頒布物の削除
   - セット頒布(バンドル）の作成・管理
+  - 頒布物ごとのタグ登録
+   
   
 - イベント管理
  ![Animation](https://github.com/user-attachments/assets/759e9508-1c6e-46e3-a880-7373c58df3c6)
@@ -47,6 +49,11 @@ https://github.com/kei5o55/cashier-server
   - 頒布物別頒布数グラフ
  ![Animation4](https://github.com/user-attachments/assets/45a153ed-1374-488e-a976-ec1a9826589c)
 （過去のgifとなるため現DEMOとの相違箇所がありますが機能には変更はありません．）
+
+  - イベントごとに使用する頒布物の選択
+  - 頒布物のタグによるフィルタ
+    ![Animation](https://github.com/user-attachments/assets/27c3b421-5599-43ce-8df6-50bf899def31)
+
     
  
 ### 設計のポイント
@@ -58,6 +65,7 @@ https://github.com/kei5o55/cashier-server
    - 単品・セットを跨いだ正確な在庫管理とアイテム別頒布数の集計を両立
    - バンドル自体もIDで管理することでバンドル別の頒布数集計が可能
 - ISO形式で日時を保存し，時間別の集計に対応
+- 現場での長期的な運用を想定し、イベントごとに頒布物の設定・売上の集計
     
 ### 使用技術
 - **TypeScript**
@@ -99,6 +107,6 @@ https://github.com/kei5o55/cashier-server
   - サーバに集約されたデータをもとに売上チャートや詳細な履歴の分析が可能
   - vite+next.js(移行予定）によるモダンなUIを実装予定
   - 
-- データ競合の帽子、エクスポート形式等の具体的な設計を詳しく練る
+- データ競合の防止、エクスポート形式等の具体的な設計を詳しく練る
 -------------------------
 今後はイベントでの実運用や、知り合いの他イベント参加者からのレビューを通してフィードバックを集め、現場の視点をもとに継続的な改善につなげていきたいと考えています。
