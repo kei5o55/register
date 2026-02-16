@@ -200,14 +200,6 @@ export function ItemsScreen({
                       </option>
                     ))}
                   </select>
-
-                  {/* ★任意：手入力も残す（コピペ用） */}
-                  <input
-                    placeholder='/items/shinkan1.jpg'
-                    value={item.imageUrl ?? ""}
-                    onChange={(e) => onChangeImageUrl(item.id, e.target.value)}
-                    style={{ width: 220 }}
-                  />
                 </div>
               </td>
                 <td>
