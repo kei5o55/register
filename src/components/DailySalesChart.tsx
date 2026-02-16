@@ -69,7 +69,7 @@ if (data.length === 0) return <p>データがありません</p>;// データが
 
 return (
     <div style={{ width: "100%", height: 320 }}>
-    <h3 style={{ margin: "8px 0" }}>日別売上（合計金額）</h3>
+    <h3 style={{ margin: "8px 0" }}>日別売上（合計金額）（APIデバッグ用）</h3>
     <ResponsiveContainer>
         <BarChart data={data}>{/* データを棒グラフで表示dataKey="date"で日付をX軸、dataKey="total_amount"で売上金額をY軸に設定(APIから取得したデータのフィールド名に合わせること) */}
         <CartesianGrid strokeDasharray="3 3" />
