@@ -9,7 +9,7 @@ const ITEMS_KEY = `${STORAGE_PREFIX}:items`;
 const SALES_KEY = `${STORAGE_PREFIX}:sales`;
 
 const DB_NAME = "doujin-regi-db";
-const DB_VERSION = 1;
+const DB_VERSION = 2; // バージョン管理（将来のDBスキーマ変更に備える）
 
 interface RegiDB extends DBSchema {
   items: {
@@ -24,6 +24,7 @@ interface RegiDB extends DBSchema {
     key: string; // "migrated"
     value: boolean;
   };
+  images: { key: string; value: Blob }; // ★追加（key=itemId）
 }
 
 const dbPromise = openDB<RegiDB>(DB_NAME, DB_VERSION, {
@@ -31,6 +32,7 @@ const dbPromise = openDB<RegiDB>(DB_NAME, DB_VERSION, {
     db.createObjectStore("items");
     db.createObjectStore("sales");
     db.createObjectStore("meta");
+    db.createObjectStore("images");
   },
 });
 
@@ -149,4 +151,36 @@ export async function saveSales(sales: Sale[]): Promise<void> {
   } catch (e) {
     console.error("Failed to save sales to IndexedDB:", e);
   }
+}
+
+export async function saveItemImage(itemId: string, file: File): Promise<void> {
+  const db = await dbPromise;
+
+  // 縮小して軽く（長辺1024px、JPEG品質0.85）
+  const bitmap = await createImageBitmap(file);
+  const max = 1024;
+  const scale = Math.min(max / bitmap.width, max / bitmap.height, 1);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+  const blob: Blob = await new Promise((res) =>
+    canvas.toBlob((b) => res(b!), "image/jpeg", 0.85)
+  );
+
+  await db.put("images", blob, itemId);
+}
+
+export async function loadItemImageBlob(itemId: string): Promise<Blob | null> {
+  const db = await dbPromise;
+  return (await db.get("images", itemId)) ?? null;
+}
+
+export async function deleteItemImage(itemId: string): Promise<void> {
+  const db = await dbPromise;
+  await db.delete("images", itemId);
 }

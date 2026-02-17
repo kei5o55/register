@@ -2,10 +2,12 @@
 // 頒布物管理画面コンポーネント
 // 頒布物（Item）とバンドル（Bundle）を一覧表示・編集・追加・削除する
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import type { Item,Bundle,BundleLine } from "../logic/types";
 import { TagEditor } from "./TagEditor";
-import { publicItemImages } from "../logic/publicImages";
+//import { publicItemImages } from "../logic/publicImages";(今回はローカル保存に切り替えるのでpublic画像は廃止)
+import { saveItemImage,deleteItemImage,loadItemImageBlob } from "../logic/storage";
+
 
 type ItemsScreenProps = {
   items: Item[];
@@ -41,7 +43,7 @@ export function ItemsScreen({
   onDeleteItem,
   onChangeTags,
   onChangeBundleTags,
-  onChangeImageUrl,
+  //onChangeImageUrl,(今回はローカル保存に切り替えるのでURL変更は廃止)
 }: ItemsScreenProps) {
   const [newName, setNewName] = useState("");
   const [newPrice, setNewPrice] = useState("500");
@@ -49,7 +51,9 @@ export function ItemsScreen({
   const [bundleName, setBundleName] = useState("");
   const [bundleLines, setBundleLines] = useState<BundleLine[]>([]);
   const [bundlePrice, setBundlePrice] = useState(0);
+  const [localImageUrls, setLocalImageUrls] = useState<Record<string, string>>({});
 
+  
   // カタログ同期APIを呼び出す関数(追加した頒布物やバンドルを外部システムに反映させるためのもの)
   const syncCatalog = async () => {
     const base = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
@@ -85,7 +89,38 @@ export function ItemsScreen({
   };
 
   const bundleTotal = calcBundleTotal(bundleLines);
+  useEffect(() => {
+    let cancelled = false;
 
+    (async () => {
+      // 既存URLを一旦全部revokeして入れ替え（安全）
+      setLocalImageUrls((prev) => {
+        Object.values(prev).forEach((u) => URL.revokeObjectURL(u));
+        return {};
+      });
+
+      const entries: [string, string][] = [];
+
+      for (const it of items) {
+        const blob = await loadItemImageBlob(it.id);
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          entries.push([it.id, url]);
+        }
+      }
+
+      if (!cancelled) {
+        setLocalImageUrls(Object.fromEntries(entries));
+      } else {
+        // 途中キャンセル時は作ったURLを掃除
+        for (const [, url] of entries) URL.revokeObjectURL(url);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [items]);
 
   return (
     <div>
@@ -115,43 +150,55 @@ export function ItemsScreen({
               {/* ★追加：サムネ */}
               <td>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  {item.imageUrl ? (
-                    <img
-                      src={item.imageUrl}
-                      alt={`${item.name} thumbnail`}
-                      style={{
-                        width: 56,
-                        height: 56,
-                        objectFit: "cover",
-                        borderRadius: 8,
-                        border: "1px solid #ddd",
-                      }}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                      }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: 8,
-                        border: "1px dashed #bbb",
-                        display: "grid",
-                        placeItems: "center",
-                        fontSize: 12,
-                        opacity: 0.7,
-                      }}
-                    >
-                      No Image
-                    </div>
-                  )}
+                  {(() => {
+                    const localUrl = localImageUrls[item.id]; // ★追加：端末内画像
+                    const src = localUrl ?? item.imageUrl;    // ★ローカル優先→なければ既存URL
 
-                  {/* ★ドロップダウン */}
-                  <select
+                    return src ? (
+                      <img
+                        key={src} // ★超重要：srcが変わったらimgを作り直す
+                        src={src}
+                        alt={`${item.name} thumbnail`}
+                        style={{
+                          width: 56,
+                          height: 56,
+                          objectFit: "cover",
+                          borderRadius: 8,
+                          border: "1px solid #ddd",
+                        }}
+                        onLoad={(e) => {
+                          // ★ onErrorで消された場合に復活させる
+                          (e.currentTarget as HTMLImageElement).style.display = "";
+                        }}
+                        onError={(e) => {
+                          // ★ display:none はやめるか、最小限に
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: 56,
+                          height: 56,
+                          borderRadius: 8,
+                          border: "1px dashed #bbb",
+                          display: "grid",
+                          placeItems: "center",
+                          fontSize: 12,
+                          opacity: 0.7,
+                        }}
+                      >
+                        No Image
+                      </div>
+                    );
+                  })()}
+
+                  {/* ★ 既存: public画像URLを選ぶ（remote） */}
+                  {/*<select
                     value={item.imageUrl ?? ""}
                     onChange={(e) => onChangeImageUrl(item.id, e.target.value)}
                     style={{ width: 240 }}
+                    title="オンライン画像URL（remote）"
                   >
                     <option value="">（画像なし）</option>
                     {publicItemImages.map((path) => (
@@ -159,7 +206,76 @@ export function ItemsScreen({
                         {path}
                       </option>
                     ))}
-                  </select>
+                  </select>*/}
+
+                  {/* ★ 新規: 端末から画像を選んで保存（local） */}
+                  <label
+                    style={{
+                      border: "1px solid #ddd",
+                      borderRadius: 8,
+                      padding: "6px 10px",
+                      cursor: "pointer",
+                      userSelect: "none",
+                      fontSize: 12,
+                      whiteSpace: "nowrap",
+                    }}
+                    title="端末から画像を選択（オフラインでも表示）"
+                  >
+                    端末から…
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+
+                        await saveItemImage(item.id, file);
+
+                        // 直ちにUI反映：古いobjectURLがあればrevokeして差し替え
+                        const blob = await loadItemImageBlob(item.id);
+                        if (!blob) return;
+                        const newUrl = URL.createObjectURL(blob);
+
+                        setLocalImageUrls((prev) => {
+                          const old = prev[item.id];
+                          if (old) URL.revokeObjectURL(old);
+                          return { ...prev, [item.id]: newUrl };
+                        });
+
+                        // 同じファイルを選び直せるようにクリア
+                        e.currentTarget.value = "";
+                      }}
+                    />
+                  </label>
+
+                  {/* ★ 新規: 端末内画像を消す */}
+                  {localImageUrls[item.id] && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await deleteItemImage(item.id);
+                        setLocalImageUrls((prev) => {
+                          const old = prev[item.id];
+                          if (old) URL.revokeObjectURL(old);
+                          const { [item.id]: _, ...rest } = prev;
+                          return rest;
+                        });
+                      }}
+                      style={{
+                        border: "1px solid #ddd",
+                        borderRadius: 8,
+                        padding: "6px 10px",
+                        cursor: "pointer",
+                        fontSize: 12,
+                        whiteSpace: "nowrap",
+                        background: "white",
+                      }}
+                      title="端末内に保存した画像を削除"
+                    >
+                      削除
+                    </button>
+                  )}
                 </div>
               </td>
                 <td>
