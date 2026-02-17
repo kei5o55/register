@@ -193,6 +193,7 @@ export function ItemsScreen({
                   </select>*/}
 
                   {/* ★ 新規: 端末から画像を選んで保存（local） */}
+                  {!localImageUrls[item.id] && (
                   <label
                     style={{
                       border: "1px solid #ddd",
@@ -229,6 +230,7 @@ export function ItemsScreen({
                       }}
                     />
                   </label>
+                  )}
 
                   {/* ★ 新規: 端末内画像を消す */}
                   {localImageUrls[item.id] && (
@@ -373,17 +375,14 @@ export function ItemsScreen({
           </tbody>
         </table>
       )}
-
       {/* 新規バンドル追加 */}
       <h4>新規バンドルを追加</h4>
-
       <input
         placeholder="バンドル名"
         value={bundleName}
         onChange={(e) => setBundleName(e.target.value)}
         style={{ marginBottom: 8 }}
       />
-
       {/* 中身 */}
       {bundleLines.map((line, idx) => (
         <div key={idx} style={{ display: "flex", gap: 8, marginBottom: 4 }}>
