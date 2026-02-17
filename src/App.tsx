@@ -571,8 +571,8 @@ const handleCheckout = () => {
         <nav style={{ display: "flex", gap: 8 ,flexWrap: "nowrap"}}>
           <button onClick={() => setScreen("home")}>ホーム</button>
           <button onClick={() => setScreen("register")}>レジ</button>
+          <button onClick={() => setScreen("events")}>イベント管理</button>
           <button onClick={() => setScreen("items")}>頒布物管理</button>
-          <button onClick={() => setScreen("events")}>イベント履歴</button>
           <button onClick={() => setScreen("history")}>売上履歴</button>
         </nav>
       </header>

@@ -4,6 +4,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { TagEditor } from "./TagEditor";
 import type { Bundle, Event, Item } from "../logic/types";
+import { loadItemImageBlob } from "../logic/storage";
+
 
 type Props = {
   event: Event;
@@ -55,6 +57,40 @@ export function EventSettingScreen({
   const [bundleIds, setBundleIds] = useState<string[]>(selectedBundleIds);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [activeBundleTag, setActiveBundleTag] = useState<string | null>(null);
+  const [localImageUrls, setLocalImageUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let alive = true;
+    const created: string[] = [];
+
+    (async () => {
+      const entries: [string, string][] = [];
+
+      for (const it of items) {
+        const blob = await loadItemImageBlob(it.id);
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          created.push(url);
+          entries.push([it.id, url]);
+        }
+      }
+
+      if (alive) {
+        // 既存URLを掃除してから入れ替え（メモリ漏れ防止）
+        setLocalImageUrls((prev) => {
+          Object.values(prev).forEach((u) => URL.revokeObjectURL(u));
+          return Object.fromEntries(entries);
+        });
+      } else {
+        created.forEach(URL.revokeObjectURL);
+      }
+    })();
+
+    return () => {
+      alive = false;
+      created.forEach(URL.revokeObjectURL);
+    };
+  }, [items]);
 
   // event切替で同期
   useEffect(() => {
@@ -269,6 +305,23 @@ export function EventSettingScreen({
                   checked={itemSet.has(it.id)}
                   onChange={() => setItemIds((prev) => toggle(prev, it.id))}
                 />
+                <div style={{ fontWeight: 600 }}>
+                  {(() => {
+                    const src = localImageUrls[it.id] ?? it.imageUrl; // ★ローカル優先
+                    return src ? (
+                      <img
+                        key={src}
+                        src={src}
+                        alt={it.name}
+                        style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, border: "1px solid #ddd" }}
+                        onLoad={(e) => ((e.currentTarget as HTMLImageElement).style.display = "")}
+                        onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = "none")}
+                      />
+                    ) : (
+                      "No Image"
+                    );
+                  })()}
+                </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{it.name}</div>
                 <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>

@@ -3,6 +3,9 @@
 // 頒布物の一覧表示、カート操作、会計処理を行う
 
 import type{ Item, CartItem, Bundle } from "../logic/types";
+import { useEffect, useState } from "react";
+import { loadItemImageBlob } from "../logic/storage";
+
 
 type BundleCartItem = { bundleId: string; quantity: number };
 
@@ -50,10 +53,8 @@ export function RegisterScreen({
 }: RegisterProps) {
     const enabledItemSet = enabledItemIds ? new Set(enabledItemIds) : null;
     const enabledBundleSet = enabledBundleIds ? new Set(enabledBundleIds) : null;
-
-
-
-
+    const [localImageUrls, setLocalImageUrls] = useState<Record<string, string>>({});
+    
     const visibleItems = enabledItemSet
       ? items.filter((it) => enabledItemSet.has(it.id))
       : items;
@@ -61,6 +62,42 @@ export function RegisterScreen({
     const visibleBundles = enabledBundleSet
       ? bundles.filter((b) => enabledBundleSet.has(b.id))
       : bundles;
+
+    
+
+    useEffect(() => {
+    let alive = true;
+    const created: string[] = [];
+
+    (async () => {
+      const entries: [string, string][] = [];
+
+      // 表示対象だけ読む（軽い）
+      for (const it of visibleItems) {
+        const blob = await loadItemImageBlob(it.id);
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          created.push(url);
+          entries.push([it.id, url]);
+        }
+      }
+
+      if (alive) {
+        // 以前のURLを掃除して差し替え
+        setLocalImageUrls((prev) => {
+          Object.values(prev).forEach((u) => URL.revokeObjectURL(u));
+          return Object.fromEntries(entries);
+        });
+      } else {
+        created.forEach(URL.revokeObjectURL);
+      }
+    })();
+
+    return () => {
+      alive = false;
+      created.forEach(URL.revokeObjectURL);
+    };
+  }, []);
 
   return (
     <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
@@ -74,9 +111,50 @@ export function RegisterScreen({
             const remaining = getRemainingStock(item.id);//在庫からカート分を引いた残り数を取得
             return (
               <li key={item.id} style={{ marginBottom: 8 }}>
-                <div>
-                  {item.name} / {item.price}円 / 在庫: {item.stock}
-                  {"（残り: "}{remaining}{"）"}
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  {(() => {
+                    const src = localImageUrls[item.id] ?? item.imageUrl;
+                    return src ? (
+                      <img
+                        key={src}
+                        src={src}
+                        alt={item.name}
+                        style={{
+                          width: 44,
+                          height: 44,
+                          objectFit: "cover",
+                          borderRadius: 8,
+                          border: "1px solid #ddd",
+                          flex: "0 0 auto",
+                        }}
+                        onLoad={(e) => ((e.currentTarget as HTMLImageElement).style.display = "")}
+                        onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = "none")}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: 44,
+                          height: 44,
+                          borderRadius: 8,
+                          border: "1px dashed #bbb",
+                          display: "grid",
+                          placeItems: "center",
+                          fontSize: 10,
+                          opacity: 0.7,
+                          flex: "0 0 auto",
+                        }}
+                      >
+                        No
+                      </div>
+                    );
+                  })()}
+
+                  <div>
+                    <div>
+                      {item.name} / {item.price}円 / 在庫: {item.stock}
+                      {"（残り: "}{remaining}{"）"}
+                    </div>
+                  </div>
                 </div>
                 <button
                   onClick={() => onAddToCart(item.id)}

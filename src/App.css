@@ -183,3 +183,10 @@
   border-width: 0 3px 3px 0; /* 右と下だけ線をつける */
   transform: rotate(45deg);  /* 45度回転させてレ点にする */
 }
+
+/* Chrome, Safari, Edge, Opera用 */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

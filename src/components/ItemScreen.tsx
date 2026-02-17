@@ -52,6 +52,7 @@ export function ItemsScreen({
   const [bundleLines, setBundleLines] = useState<BundleLine[]>([]);
   const [bundlePrice, setBundlePrice] = useState(0);
   const [localImageUrls, setLocalImageUrls] = useState<Record<string, string>>({});
+  
 
   
   // カタログ同期APIを呼び出す関数(追加した頒布物やバンドルを外部システムに反映させるためのもの)
@@ -275,6 +276,7 @@ export function ItemsScreen({
                       onChangePrice(item.id, Number(e.target.value) || 0)
                     }
                     style={{ width: 80 }}
+                    className="no-spinner"
                   />
                 </td>
                 <td>
@@ -314,6 +316,7 @@ export function ItemsScreen({
           value={newPrice}
           onChange={(e) => setNewPrice(e.target.value)}
           style={{ width: 80 }}
+          className="no-spinner"
         />
         <input
           type="number"
@@ -321,6 +324,7 @@ export function ItemsScreen({
           value={newStock}
           onChange={(e) => setNewStock(e.target.value)}
           style={{ width: 80 }}
+          className="no-spinner"
         />
         <button onClick={handleSubmitNew}>追加</button>
       </div>
@@ -448,6 +452,7 @@ export function ItemsScreen({
           value={bundlePrice}
           onChange={(e) => setBundlePrice(Number(e.target.value) || 0)}
           placeholder="価格"
+          className="no-spinner"
           style={{ width: 100 }}
         />
 
