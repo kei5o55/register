@@ -1,5 +1,5 @@
 //src/App.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import type { Item, CartItem, Sale,Event,Bundle,BundleLine} from "./logic/types";
 import { loadItems, saveItems, loadSales, saveSales } from "./logic/storage";
 import"./App.css";
@@ -44,18 +44,17 @@ const initialEvents: Event[] = [{//仮データ
 function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [,setScreenStack] = useState<Screen[]>([]);
-  const [items, setItems] = useState<Item[]>(() => loadItems(initialItems)); 
+  const [items, setItems] = useState<Item[]>(initialItems);
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [sales, setSales] = useState<Sale[]>(() => loadSales());
-  const [events, setEvents] = useState<Event[]>(initialEvents);
+  const [sales, setSales] = useState<Sale[]>([]);
+  const [events, setEvents] = useState<Event[]>(initialEvents);//initialEvents=初期値
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
   const [currentEventId, setCurrentEventId] = useState<string | null>(null);
   const [selectedEventIdForHistory,setSelectedEventIdForHistory]= useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [bundles, setBundles] = useState<Bundle[]>([]);
-  const [selectedEventIdForSetting, setSelectedEventIdForSetting] =
-  useState<string | null>(null);
-
+  const [selectedEventIdForSetting, setSelectedEventIdForSetting] =useState<string | null>(null);
+  const hydrated = useRef(false);
   const selectedEventForSetting =events.find((e) => e.id === selectedEventIdForSetting) ?? null;
   
   // イベントID → 有効な itemId 配列
@@ -67,11 +66,10 @@ function App() {
     setEventItemMap((prev) => ({ ...prev, [eventId]: itemIds }));
   };
 
+  //イベントごとの有効なバンドルIDを更新する関数
   const handleChangeEventBundles = (eventId: string, bundleIds: string[]) => {
     setEventBundleMap((prev) => ({ ...prev, [eventId]: bundleIds }));
   };
-
-  
   const selectedEventForHistory = selectedEventIdForHistory ? events.find(e => e.id === selectedEventIdForHistory) ?? null : null;
   const selectedEventSalesForHistory = selectedEventForHistory ? sales.filter(s => s.eventId === selectedEventForHistory.id) : [];
   const selectedEvent =selectedEventId ? events.find(e => e.id === selectedEventId) ?? null : null;
@@ -81,11 +79,25 @@ function App() {
   const [bundleCart, setBundleCart] = useState<BundleCartItem[]>([]);
   type BundleCartItem = { bundleId: string; quantity: number };
 
-  useEffect(() => {//商品データの保存(itemsが変化したときに実行)
+  useEffect(() => {
+    (async () => {
+      const [i, s] = await Promise.all([
+        loadItems(initialItems),
+        loadSales(),
+      ]);
+      setItems(i);
+      setSales(s);
+      hydrated.current = true;
+    })();
+  }, [initialItems]);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
     saveItems(items);
   }, [items]);
 
-  useEffect(() => {//販売データの保存(salesが変化したときに実行)
+  useEffect(() => {
+    if (!hydrated.current) return;
     saveSales(sales);
   }, [sales]);
 
@@ -101,12 +113,12 @@ function App() {
   const getBundleById = (id: string) => bundles.find((b) => b.id === id)!;
   const getItemById = (id: string) => items.find((i) => i.id === id)!;
 
-  const go = (next: Screen) => {//
+  /*--- 画面遷移と履歴管理のロジック ---*/
+  const go = (next: Screen) => {// 画面遷移関数（遷移前の画面をスタックに保存）
     setScreenStack((prev) => [...prev,screen]);
     setScreen(next);
   };
-
-  const back = () => {
+  const back = () => {// 画面戻る関数（スタックから前の画面を取り出して遷移）
     setScreenStack((prev) => {
       if(prev.length === 0)return prev;
       const last = prev[prev.length -1];
@@ -114,6 +126,7 @@ function App() {
       return prev.slice(0, -1);
     });
   };
+  /*------------------------*/
   
   const onChangeImageUrl = (id: string, url: string) => {
     setItems((prev) => prev.map((it) => (it.id === id ? { ...it, imageUrl: url } : it)));
@@ -445,8 +458,6 @@ const handleCheckout = () => {
 
       alert(`合計金額: ${total} 円`);
       console.log("saved sale (full)", JSON.stringify(sale, null, 2));
-
-
 };
 
   const handleChangeItemName = (id: string, name: string) => {
@@ -479,10 +490,10 @@ const handleCheckout = () => {
   const handleAddItem = (name: string, price: number, stock: number) => {
     if (!name.trim()) return;
     const newItem: Item = {
-      id: crypto.randomUUID(),
-      name,
-      price,
-      stock,
+      id: crypto.randomUUID(),// 一意なIDを生成
+      name,// name: name の略
+      price, // price: price の略
+      stock,// stock: stock の略
     };
     setItems((prev) => [...prev, newItem]);
   };
@@ -495,7 +506,7 @@ const handleCheckout = () => {
 
   const handleDeleteSale = (id: string) => {
     if (!confirm("この売上履歴を削除しますか？")) return;
-    setSales((prev) => prev.filter((s) => s.id !== id));
+    setSales((prev) => prev.filter((s) => s.id !== id));// 売上履歴から削除(idが一致しないものだけ残す)
   };
 
   const handleAddEvent=(name:string,date:string,memo?:string)=>{//いったん追加
@@ -505,7 +516,7 @@ const handleCheckout = () => {
       date,
       memo,
     };
-    setEvents((prev) => [...prev, newEvent]);
+    setEvents((prev) => [...prev, newEvent]);//イベントリストに新しいイベントを追加(...prevで既存のイベントを展開してから末尾newEventを追加
   };
 
   const handleDeleteEvent = (id: string) => {
@@ -534,8 +545,6 @@ const handleCheckout = () => {
     }
   };
 
-
-  
   const getRemainingStock = (itemId: string) => {//在庫からカート分を引いた残り数を取得
     const item = getItemById(itemId);
     const cartItem = cart.find((c) => c.itemId === itemId);

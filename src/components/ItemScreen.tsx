@@ -63,46 +63,6 @@ export function ItemsScreen({
     alert("サーバに保存しました");
   };
 
-
-
-  //vercelデプロイ用にコメントアウト
-
-  /*const addLine = () => {
-    const firstItem = items[0];
-    if (!firstItem) return;
-    const next = [...bundleLines, { itemId: firstItem.id, quantity: 1 }];
-    setBundleLines(next);
-    // 初期値は合計：新しく作り始めた直後は合計に寄せる
-    setBundlePrice(calcBundleTotal(next));
-  };
-
-  const updateLineQty = (idx: number, quantity: number) => {
-    const q = Math.max(1, quantity || 1);
-    const next = bundleLines.map((l, i) => (i === idx ? { ...l, quantity: q } : l));
-    setBundleLines(next);
-    // price 自動更新しない
-  };
-
-  const reflectTotalToPrice = () => setBundlePrice(bundleTotal);
-
-  const submitBundle = () => {
-    if (!bundleName.trim()) return;
-    if (bundleLines.length === 0) return;
-    if (bundlePrice <= 0) return;
-
-    onAddBundle(bundleName.trim(), bundleLines, bundlePrice);
-
-    setBundleName("");
-    setBundleLines([]);
-    setBundlePrice(0);
-  };
-
-  const updateLineItem = (idx: number, itemId: string) => {
-    const next = bundleLines.map((l, i) => (i === idx ? { ...l, itemId } : l));
-    setBundleLines(next);
-    // ここでは price は自動更新しない（割引が消えるのを防ぐ）
-  };*/
-
   const handleSubmitNew = () => {
     const price = Number(newPrice);
     const stock = Number(newStock);

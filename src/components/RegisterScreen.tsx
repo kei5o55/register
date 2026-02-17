@@ -181,7 +181,6 @@ export function RegisterScreen({
         <button onClick={onCheckout} disabled={cart.length === 0 && bundleCart.length===0}>
           会計確定
         </button>
-        {/* <button onClick={sendSale}>売上送信</button> */}
       </div>
     </div>
   );
