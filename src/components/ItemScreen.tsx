@@ -89,38 +89,22 @@ export function ItemsScreen({
   };
 
   const bundleTotal = calcBundleTotal(bundleLines);
+
   useEffect(() => {
-    let cancelled = false;
-
     (async () => {
-      // 既存URLを一旦全部revokeして入れ替え（安全）
-      setLocalImageUrls((prev) => {
-        Object.values(prev).forEach((u) => URL.revokeObjectURL(u));
-        return {};
-      });
-
       const entries: [string, string][] = [];
 
       for (const it of items) {
         const blob = await loadItemImageBlob(it.id);
         if (blob) {
-          const url = URL.createObjectURL(blob);
-          entries.push([it.id, url]);
+          entries.push([it.id, URL.createObjectURL(blob)]);
         }
       }
 
-      if (!cancelled) {
-        setLocalImageUrls(Object.fromEntries(entries));
-      } else {
-        // 途中キャンセル時は作ったURLを掃除
-        for (const [, url] of entries) URL.revokeObjectURL(url);
-      }
+      setLocalImageUrls(Object.fromEntries(entries));
     })();
+  }, []); // ← items依存やめる
 
-    return () => {
-      cancelled = true;
-    };
-  }, [items]);
 
   return (
     <div>
@@ -230,20 +214,17 @@ export function ItemsScreen({
                         const file = e.target.files?.[0];
                         if (!file) return;
 
-                        await saveItemImage(item.id, file);
-
-                        // 直ちにUI反映：古いobjectURLがあればrevokeして差し替え
-                        const blob = await loadItemImageBlob(item.id);
-                        if (!blob) return;
-                        const newUrl = URL.createObjectURL(blob);
+                        // 即プレビュー
+                        const previewUrl = URL.createObjectURL(file);
 
                         setLocalImageUrls((prev) => {
                           const old = prev[item.id];
                           if (old) URL.revokeObjectURL(old);
-                          return { ...prev, [item.id]: newUrl };
+                          return { ...prev, [item.id]: previewUrl };
                         });
 
-                        // 同じファイルを選び直せるようにクリア
+                        await saveItemImage(item.id, file);
+
                         e.currentTarget.value = "";
                       }}
                     />
