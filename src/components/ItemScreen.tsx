@@ -56,7 +56,7 @@ export function ItemsScreen({
 
   
   // カタログ同期APIを呼び出す関数(追加した頒布物やバンドルを外部システムに反映させるためのもの)
-  const syncCatalog = async () => {
+  /*const syncCatalog = async () => {
     const base = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
     const res = await fetch(`${base}/catalog/sync`, {
       method: "POST",
@@ -66,7 +66,7 @@ export function ItemsScreen({
     const json = await res.json();
     if (!res.ok || !json.ok) throw new Error(json?.error ?? "sync failed");
     alert("サーバに保存しました");
-  };
+  };*/
 
   const handleSubmitNew = () => {
     const price = Number(newPrice);
