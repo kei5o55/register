@@ -54,22 +54,20 @@ function App() {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [bundles, setBundles] = useState<Bundle[]>([]);
   const [selectedEventIdForSetting, setSelectedEventIdForSetting] =useState<string | null>(null);
-  const hydrated = useRef(false);
+  
   const selectedEventForSetting =events.find((e) => e.id === selectedEventIdForSetting) ?? null;
   
   // イベントID → 有効な itemId 配列
   const [eventItemMap, setEventItemMap] = useState<Record<string, string[]>>({});
-
   // イベントID → 有効な bundleId 配列
   const [eventBundleMap, setEventBundleMap] = useState<Record<string, string[]>>({});
   const handleChangeEventItems = (eventId: string, itemIds: string[]) => {
     setEventItemMap((prev) => ({ ...prev, [eventId]: itemIds }));
   };
-
-  //イベントごとの有効なバンドルIDを更新する関数
   const handleChangeEventBundles = (eventId: string, bundleIds: string[]) => {
     setEventBundleMap((prev) => ({ ...prev, [eventId]: bundleIds }));
   };
+
   const selectedEventForHistory = selectedEventIdForHistory ? events.find(e => e.id === selectedEventIdForHistory) ?? null : null;
   const selectedEventSalesForHistory = selectedEventForHistory ? sales.filter(s => s.eventId === selectedEventForHistory.id) : [];
   const selectedEvent =selectedEventId ? events.find(e => e.id === selectedEventId) ?? null : null;
@@ -79,6 +77,8 @@ function App() {
   const [bundleCart, setBundleCart] = useState<BundleCartItem[]>([]);
   type BundleCartItem = { bundleId: string; quantity: number };
 
+  const hydrated = useRef(false);// データの水和が完了したかどうかを追跡するフラグ（初回ロード時の副作用を制御するため）
+                                 //useeffectを使用すると無限ループになるのを防ぐため、最初のロード時は保存処理をスキップするためのもの。データの水和が完了した後は、以降の変更で保存処理が走るようになる。
   useEffect(() => {
     (async () => {
       const [i, s] = await Promise.all([
@@ -571,10 +571,13 @@ const handleCheckout = () => {
         <nav style={{ display: "flex", gap: 8 ,flexWrap: "nowrap"}}>
           <button onClick={() => setScreen("home")}>ホーム</button>
           <button onClick={() => setScreen("register")}>レジ</button>
+          <button onClick={() => setScreen("events")}>イベント管理</button>
           <button onClick={() => setScreen("items")}>頒布物管理</button>
-          <button onClick={() => setScreen("events")}>イベント履歴</button>
           <button onClick={() => setScreen("history")}>売上履歴</button>
         </nav>
+        <label style={{ marginLeft: "auto" }}>
+          選択中の頒布物id:{enabledItemIds}
+        </label>
       </header>
 
       {screen === "home" && (
