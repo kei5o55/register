@@ -55,7 +55,7 @@ export function ItemsScreen({
   
 
   
-  // カタログ同期APIを呼び出す関数(追加した頒布物やバンドルを外部システムに反映させるためのもの)
+  // カタログ同期APIを呼び出す関数(追加した頒布物やバンドルを外部システムに反映させるためのもの,pwaで完結予定なのでいったんは未実装)
   /*const syncCatalog = async () => {
     const base = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
     const res = await fetch(`${base}/catalog/sync`, {
