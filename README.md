@@ -7,6 +7,11 @@
 現在は試作段階ですが、以下のURLから実際に体験できます。
 https://register-3k2l.vercel.app/
 
+**（※ IndexedDB / LocalStorage を使用しているため、過去のデータが残っている場合があります。
+主に画像の表示や動作に問題がある場合は、DevTools の
+Application → Storage → Clear site data
+からサイトデータを削除してください。）**
+
 以下リポジトリにて当プロダクトのバックエンドにあたる部分の開発も並行して進めています
 https://github.com/kei5o55/cashier-server
 
