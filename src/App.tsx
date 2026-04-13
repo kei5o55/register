@@ -1,7 +1,19 @@
 //src/App.tsx
 import { useState, useEffect,useRef } from "react";
 import type { Item, CartItem, Sale,Event,Bundle,BundleLine} from "./logic/types";
-import { loadItems, saveItems, loadSales, saveSales } from "./logic/storage";
+import {
+  loadItems,
+  saveItems,
+  loadSales,
+  saveSales,
+  loadEvents,
+  saveEvents,
+  loadBundles,
+  saveBundles,
+  loadAppState,
+  saveAppState,
+  type PersistedAppState,
+} from "./logic/storage";
 import"./App.css";
 //import { DailySalesChart } from "./components/DailySalesChart";//日別売上チャートコンポーネント(APIからデータを取ってきて棒グラフ表示)
 
@@ -47,13 +59,13 @@ function App() {
   const [items, setItems] = useState<Item[]>(initialItems);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
-  const [events, setEvents] = useState<Event[]>(initialEvents);//initialEvents=初期値
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
-  const [currentEventId, setCurrentEventId] = useState<string | null>(null);
   const [selectedEventIdForHistory,setSelectedEventIdForHistory]= useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const [bundles, setBundles] = useState<Bundle[]>([]);
   const [selectedEventIdForSetting, setSelectedEventIdForSetting] =useState<string | null>(null);
+  const [events, setEvents] = useState<Event[]>(initialEvents);
+  const [currentEventId, setCurrentEventId] = useState<string | null>(null);
+  const [bundles, setBundles] = useState<Bundle[]>([]);
   
   const selectedEventForSetting =events.find((e) => e.id === selectedEventIdForSetting) ?? null;
   
@@ -81,15 +93,42 @@ function App() {
                                  //useeffectを使用すると無限ループになるのを防ぐため、最初のロード時は保存処理をスキップするためのもの。データの水和が完了した後は、以降の変更で保存処理が走るようになる。
   useEffect(() => {
     (async () => {
-      const [i, s] = await Promise.all([
+      const [i, s, e, b, appState] = await Promise.all([
         loadItems(initialItems),
         loadSales(),
+        loadEvents(initialEvents),
+        loadBundles([]),
+        loadAppState(),
       ]);
+
       setItems(i);
       setSales(s);
+      setEvents(e);
+      setBundles(b);
+
+      setCurrentEventId(appState.currentEventId);
+      setEventItemMap(appState.eventItemMap);
+      setEventBundleMap(appState.eventBundleMap);
+      setCart(appState.cart);
+      setBundleCart(appState.bundleCart);
+
+      if (
+        appState.screen === "home" ||
+        appState.screen === "register" ||
+        appState.screen === "history" ||
+        appState.screen === "saleDetail" ||
+        appState.screen === "items" ||
+        appState.screen === "events" ||
+        appState.screen === "eventHistory" ||
+        appState.screen === "eventDetail" ||
+        appState.screen === "eventSetting"
+      ) {
+        setScreen(appState.screen);
+      }
+
       hydrated.current = true;
     })();
-  }, [initialItems]);
+  }, []);
 
   useEffect(() => {
     if (!hydrated.current) return;
@@ -100,6 +139,30 @@ function App() {
     if (!hydrated.current) return;
     saveSales(sales);
   }, [sales]);
+  useEffect(() => {
+    if (!hydrated.current) return;
+    saveEvents(events);
+  }, [events]);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
+    saveBundles(bundles);
+  }, [bundles]);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
+
+    const appState: PersistedAppState = {
+      currentEventId,
+      eventItemMap,
+      eventBundleMap,
+      cart,
+      bundleCart,
+      screen,
+    };
+
+    saveAppState(appState);
+  }, [currentEventId, eventItemMap, eventBundleMap, cart, bundleCart, screen]);
 
   useEffect(() => {
     // イベントが存在し、かつ現在何も選択されていない場合
@@ -411,7 +474,7 @@ const handleCheckout = () => {
       setItems(updatedItems);
 
     //テスト用販売データ送信関数
-    const sendSale = async () => {
+    /*const sendSale = async () => {
       const payload = {
         sale_id: crypto.randomUUID(),// 一意な販売IDを生成(API送信時に同じIDで重複送信を防止)
         event_id: currentEventId!, // 現在のイベントIDをセット（null でない前提）
@@ -450,7 +513,7 @@ const handleCheckout = () => {
       alert(JSON.stringify(json));
     };
     
-    sendSale();
+    sendSale();*/
 
       // --- ⑤ カートを空にする ---
       setCart([]);
