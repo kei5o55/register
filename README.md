@@ -10,8 +10,8 @@ RejiStellaを開発しています。
 
  頒布データの時間推移からイベント撤退時間の目安を立てたり、頒布数から増刷や新刊部数の参考にしたりと、単純なレジ機能にとどまらず、創作活動に役立つ機能の実装を目指しています。
 
-現在は試作段階ですが、以下のURLから実際に体験できます。
-https://register-3k2l.vercel.app/
+
+**DEMO:** https://register-3k2l.vercel.app/
 
 **（※ IndexedDB / LocalStorage を使用しているため、過去のデータが残っている場合があります。
 主に画像の表示や動作に問題がある場合は、DevTools の
