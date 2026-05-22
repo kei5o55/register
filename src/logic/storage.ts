@@ -2,6 +2,7 @@
 import { openDB, type DBSchema } from "idb";
 import type { Item, Sale, Event, Bundle, CartItem } from "./types";
 
+
 const STORAGE_PREFIX = "doujin-regi";
 const ITEMS_KEY = `${STORAGE_PREFIX}:items`;
 const SALES_KEY = `${STORAGE_PREFIX}:sales`;
