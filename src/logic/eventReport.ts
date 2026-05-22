@@ -1,9 +1,8 @@
 // src/logic/eventReport.ts
 // イベントごとの売上・頒布数サマリを生成するロジック
 
-
-
 import type { Sale } from "./types";
+
 
 export type ItemSummary = {// アイテムごとの頒布数サマリ
   itemId: string;
