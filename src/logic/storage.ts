@@ -160,17 +160,18 @@ export async function saveItems(items: Item[]): Promise<void> {
   }
 }
 
-export async function loadSales(): Promise<Sale[]> {
-  if (typeof window === "undefined") return [];
+export async function loadSales(defaultSales: Sale[]): Promise<Sale[]> {
+  if (typeof window === "undefined") return defaultSales;
 
   await migrateLocalStorageToIDBOnce();
 
   try {
     const db = await dbPromise;
-    return await db.getAll("sales");
+    const all = await db.getAll("sales");
+    return all.length ? all : defaultSales;
   } catch (e) {
     console.error("Failed to load sales from IndexedDB:", e);
-    return [];
+    return defaultSales;
   }
 }
 

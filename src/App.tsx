@@ -51,14 +51,111 @@ const initialEvents: Event[] = [{//仮データ
   memo: "同人即売イベント"
 },];
 
-
+const initialSales: Sale[] = [
+  {
+    id: "1",
+    datetime: "2026-05-22T11:14:02.345+09:00",
+    total: 1700, // 500*2 + 700*1
+    items: [
+      { itemId: "1", name: "新刊 A", price: 500, quantity: 2 },
+      { itemId: "2", name: "既刊 B", price: 700, quantity: 1 }
+    ],
+    eventId: "e1",
+  },
+  {
+    id: "2",
+    datetime: "2026-05-22T11:36:25.456+09:00",
+    total: 500, // 500*1
+    items: [
+      { itemId: "1", name: "新刊 A", price: 500, quantity: 1 }
+    ],
+    eventId: "e1",
+  },
+  {
+    id: "3",
+    datetime: "2026-05-22T11:58:31.904+09:00",
+    total: 1300, // 500*2 + 300*1
+    items: [
+      { itemId: "1", name: "新刊 A", price: 500, quantity: 2 },
+      { itemId: "3", name: "グッズ C", price: 300, quantity: 1 }
+    ],
+    eventId: "e1",
+  },
+  {
+    id: "4",
+    datetime: "2026-05-22T12:05:55.123+09:00",
+    total: 1500, // 500*1 + 700*1 + 300*1 (全部セット)
+    items: [
+      { itemId: "1", name: "新刊 A", price: 500, quantity: 1 },
+      { itemId: "2", name: "既刊 B", price: 700, quantity: 1 },
+      { itemId: "3", name: "グッズ C", price: 300, quantity: 1 }
+    ],
+    eventId: "e1",
+  },
+  {
+    id: "5",
+    datetime: "2026-05-22T12:18:43.045+09:00",
+    total: 600, // 300*2
+    items: [
+      { itemId: "3", name: "グッズ C", price: 300, quantity: 2 }
+    ],
+    eventId: "e1",
+  },
+  {
+    id: "6",
+    datetime: "2026-05-22T12:23:14.567+09:00",
+    total: 1000, // 500*2
+    items: [
+      { itemId: "1", name: "新刊 A", price: 500, quantity: 2 }
+    ],
+    eventId: "e1",
+  },
+  {
+    id: "7",
+    datetime: "2026-05-22T12:51:08.789+09:00",
+    total: 700, // 700*1
+    items: [
+      { itemId: "2", name: "既刊 B", price: 700, quantity: 1 }
+    ],
+    eventId: "e1",
+  },
+  {
+    id: "8",
+    datetime: "2026-05-22T13:09:47.234+09:00",
+    total: 800, // 500*1 + 300*1
+    items: [
+      { itemId: "1", name: "新刊 A", price: 500, quantity: 1 },
+      { itemId: "3", name: "グッズ C", price: 300, quantity: 1 }
+    ],
+    eventId: "e1",
+  },
+  {
+    id: "9",
+    datetime: "2026-05-22T13:27:50.612+09:00",
+    total: 1300, // 700*1 + 300*2
+    items: [
+      { itemId: "2", name: "既刊 B", price: 700, quantity: 1 },
+      { itemId: "3", name: "グッズ C", price: 300, quantity: 2 }
+    ],
+    eventId: "e1",
+  },
+  {
+    id: "10",
+    datetime: "2026-05-22T13:42:19.812+09:00",
+    total: 500, // 500*1
+    items: [
+      { itemId: "1", name: "新刊 A", price: 500, quantity: 1 }
+    ],
+    eventId: "e1",
+  }
+];
 
 function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [,setScreenStack] = useState<Screen[]>([]);
   const [items, setItems] = useState<Item[]>(initialItems);
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [sales, setSales] = useState<Sale[]>([]);
+  const [sales, setSales] = useState<Sale[]>(initialSales);
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
   const [selectedEventIdForHistory,setSelectedEventIdForHistory]= useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -95,7 +192,7 @@ function App() {
     (async () => {
       const [i, s, e, b, appState] = await Promise.all([
         loadItems(initialItems),
-        loadSales(),
+        loadSales(initialSales),
         loadEvents(initialEvents),
         loadBundles([]),
         loadAppState(),
