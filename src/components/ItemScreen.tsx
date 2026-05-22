@@ -477,9 +477,6 @@ export function ItemsScreen({
       >
         バンドル追加
       </button>
-        <button /*onClick={syncCatalog}*/ style={{ marginLeft: 16 }}>
-          カタログ同期(データベース保存機能ができるまでは未実装)
-        </button>
     </div>
     
   );

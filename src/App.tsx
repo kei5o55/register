@@ -16,7 +16,6 @@ import {
   type PersistedAppState,
 } from "./logic/storage";
 import"./App.css";
-//import { DailySalesChart } from "./components/DailySalesChart";//日別売上チャートコンポーネント(APIからデータを取ってきて棒グラフ表示)
 
 //コンポーネントのインポート
 import { HomeScreen } from "./components/HomeScreen";
@@ -41,6 +40,8 @@ type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events
 
 
 function App() {
+
+  //stateの管理
   const [screen, setScreen] = useState<Screen>("home");
   const [,setScreenStack] = useState<Screen[]>([]);
   const [items, setItems] = useState<Item[]>(initialItems);
@@ -53,7 +54,8 @@ function App() {
   const [events, setEvents] = useState<Event[]>(initialEvents);
   const [currentEventId, setCurrentEventId] = useState<string | null>(null);
   const [bundles, setBundles] = useState<Bundle[]>(initialBundles);
-  
+  const [bundleCart, setBundleCart] = useState<BundleCartItem[]>([]);
+
   const selectedEventForSetting =events.find((e) => e.id === selectedEventIdForSetting) ?? null;
   
   // イベントID → 有効な itemId 配列
@@ -67,18 +69,19 @@ function App() {
     setEventBundleMap((prev) => ({ ...prev, [eventId]: bundleIds }));
   };
 
+  // 現在選択されているイベントとそのイベントに紐づく売上データを取得
   const selectedEventForHistory = selectedEventIdForHistory ? events.find(e => e.id === selectedEventIdForHistory) ?? null : null;
   const selectedEventSalesForHistory = selectedEventForHistory ? sales.filter(s => s.eventId === selectedEventForHistory.id) : [];
   const selectedEvent =selectedEventId ? events.find(e => e.id === selectedEventId) ?? null : null;
   const selectedEventSalesForDetail = selectedEvent ? sales.filter(s => s.eventId === selectedEvent.id) : [];
   const currentEvent =currentEventId ? events.find(e => e.id === currentEventId) ?? null : null;
 
-  const [bundleCart, setBundleCart] = useState<BundleCartItem[]>([]);
+  
   type BundleCartItem = { bundleId: string; quantity: number };
 
   const hydrated = useRef(false);// データの水和が完了したかどうかを追跡するフラグ（初回ロード時の副作用を制御するため）
                                  //useeffectを使用すると無限ループになるのを防ぐため、最初のロード時は保存処理をスキップするためのもの。データの水和が完了した後は、以降の変更で保存処理が走るようになる。
-  useEffect(() => {
+  useEffect(() => {//アプリ起動時処理
     (async () => {
       const [i, s, e, b, appState] = await Promise.all([
         loadItems(initialItems),
@@ -163,7 +166,7 @@ function App() {
   const getBundleById = (id: string) => bundles.find((b) => b.id === id)!;
   const getItemById = (id: string) => items.find((i) => i.id === id)!;
 
-  /*--- 画面遷移と履歴管理のロジック ---*/
+  //画面遷移と履歴管理のロジック
   const go = (next: Screen) => {// 画面遷移関数（遷移前の画面をスタックに保存）
     setScreenStack((prev) => [...prev,screen]);
     setScreen(next);
@@ -176,7 +179,6 @@ function App() {
       return prev.slice(0, -1);
     });
   };
-  /*------------------------*/
   
   const onChangeImageUrl = (id: string, url: string) => {
     setItems((prev) => prev.map((it) => (it.id === id ? { ...it, imageUrl: url } : it)));
@@ -212,7 +214,7 @@ function App() {
     // いまカートで確保済みの個数（単品＋バンドル）
     const reserved = buildReservedMap();
 
-    // 「このバンドルをさらに1個」追加したときに必要な個数をチェック
+    // このバンドルをさらに1個追加したときに必要な個数をチェック
     for (const line of bundle.lines) {
       const item = items.find((i) => i.id === line.itemId);
       if (!item) continue;
@@ -229,8 +231,7 @@ function App() {
       }
     }
 
-    // ここまで来たら追加OK
-    setBundleCart((prev) => {
+    setBundleCart((prev) => {//追加するバンドルの中身を展開して必要数を計算、在庫が足りない場合はアラートを出す。問題なければ bundleCart に追加する
       const existing = prev.find((b) => b.bundleId === bundleId);
       if (existing) {
         return prev.map((b) =>
@@ -243,7 +244,7 @@ function App() {
 
   
 
-  const handleAddBundle = (name: string, lines: BundleLine[], price: number) => {
+  const handleAddBundle = (name: string, lines: BundleLine[], price: number) => {//新しいバンドルを追加する関数
     const newBundle: Bundle = {
       id: crypto.randomUUID(),
       name,
@@ -253,7 +254,7 @@ function App() {
     setBundles(prev => [...prev, newBundle]);
   };
   
-  const handleUpdateEventBasics = (
+  const handleUpdateEventBasics = (//イベントの基本情報を更新する関数
     eventId: string,
     patch: { name?: string; date?: string; memo?: string }
   ) => {
@@ -263,11 +264,13 @@ function App() {
       )
     );
   };
-const enabledItemIds = currentEventId ? (eventItemMap[currentEventId] ?? []) : undefined;
-const enabledBundleIds = currentEventId ? (eventBundleMap[currentEventId] ?? []) : undefined;
+
+//現在選択されているイベントに対して有効なアイテムIDとバンドルIDのリストを取得する。イベントが選択されていない場合は undefined を返す。
+  const enabledItemIds = currentEventId ? (eventItemMap[currentEventId] ?? []) : undefined;
+  const enabledBundleIds = currentEventId ? (eventBundleMap[currentEventId] ?? []) : undefined;
 
 
-  const handleRemoveBundleFromCart = (bundleId: string) => {
+  const handleRemoveBundleFromCart = (bundleId: string) => {//バンドルをカートから削除する関数。数量が1以上なら数量を-1、数量が1なら行ごと削除する
     setBundleCart((prev) => {
       const target = prev.find((b) => b.bundleId === bundleId);
       if (!target) return prev;
@@ -286,13 +289,11 @@ const enabledBundleIds = currentEventId ? (eventBundleMap[currentEventId] ?? [])
     setBundles(prev => prev.filter(b => b.id !== id));
   };
 
-  const selectedSale = selectedSaleId
-    ? sales.find((s) => s.id === selectedSaleId) ?? null
-    : null;
+  const selectedSale = selectedSaleId ? sales.find((s) => s.id === selectedSaleId) ?? null: null;
 
   
 
-  const handleAddToCart = (itemId: string) => {
+  const handleAddToCart = (itemId: string) => {//選択されたアイテムをカートに追加する関数。カート内の確保済み個数（単品＋バンドル）を itemId ごとに集計して、追加したときに在庫が足りるかチェックする
     const reserved = buildReservedMap();
     const item = getItemById(itemId);
 
@@ -315,7 +316,7 @@ const enabledBundleIds = currentEventId ? (eventBundleMap[currentEventId] ?? [])
     });
   };
 
-  const handleRemoveFromCart = (itemId: string) => {
+  const handleRemoveFromCart = (itemId: string) => {//選択されたアイテムをカートから削除する関数。数量が1以上なら数量を-1、数量が1なら行ごと削除する
     setCart((prev) => {
       const target = prev.find((c) => c.itemId === itemId);
       if (!target) return prev;
@@ -345,7 +346,7 @@ const enabledBundleIds = currentEventId ? (eventBundleMap[currentEventId] ?? [])
       return sum + bundle.price * bc.quantity;
   }, 0);
 
-const handleCheckout = () => {
+const handleCheckout = () => {// チェックアウト処理（在庫チェック、売上データ作成、在庫更新）
   
       // 単品もバンドルも空なら何もしない
       if (cart.length === 0 && bundleCart.length === 0) return;
@@ -355,7 +356,7 @@ const handleCheckout = () => {
         return;
       }
 
-      // --- ① 必要数を itemId ごとに集計（単品 + バンドル展開） ---
+      //必要数を itemId ごとに集計（単品 + バンドル展開
       const required = new Map<string, number>();
 
       // 単品
@@ -374,7 +375,7 @@ const handleCheckout = () => {
         }
       }
 
-      // --- ② 在庫チェック（バンドル込み） ---
+      //在庫チェック（バンドル込み）
       for (const [itemId, need] of required) {
         const item = items.find((i) => i.id === itemId);
         if (!item) continue; // 念のため
@@ -384,7 +385,7 @@ const handleCheckout = () => {
           return;
         }
       }
-      // --- バンドル由来の内訳（itemIdごと）をスナップショット保存する ---
+      //バンドル由来の内訳（itemIdごと）をスナップショット保存する
       const bundleExpandedMap = new Map<string, { name: string; quantity: number }>();
 
       for (const bc of bundleCart) {
@@ -418,8 +419,7 @@ const handleCheckout = () => {
           : undefined;
 
 
-      // --- ③ 売上データを作る（単品は items に、バンドルは bundles に保存） ---
-      //const now = new Date();
+      // 売上データを作る（単品は items に、バンドルは bundles に保存
 
       const saleItems: SaleItem[] = cart.map((c) => {
         const item = getItemById(c.itemId);
@@ -451,7 +451,7 @@ const handleCheckout = () => {
 
       setSales((prev) => [sale, ...prev]);
 
-      // --- ④ 在庫更新（required 分まとめて引く） ---
+      //在庫更新（required 分まとめて引く
       const updatedItems = items.map((item) => {
         const need = required.get(item.id) ?? 0;
         if (need === 0) return item;
@@ -716,12 +716,7 @@ const handleCheckout = () => {
           onOpenEventHistory={(id) => {
             setSelectedEventIdForHistory(id);
             go("eventHistory");
-            //setScreen("eventHistory");
           }}
-        /*onOpenEventDetail={(id) => {
-            setSelectedEventId(id);
-            setScreen("eventDetail");
-          }}*/
           onAddEvent={handleAddEvent}
           onDeleteEvent={handleDeleteEvent}
           onChangeEventTags={handleChangeEventTags}
@@ -772,11 +767,6 @@ const handleCheckout = () => {
               onBack={back}
             />
           )}
-
-      <div style={{ padding: 16 }}>{/* どこからでも見れるように日別売上チャートを置いてみる(デバッグ用) */}
-        {/* <DailySalesChart /> 一旦バックエンドは未実装 */}
-      </div>
-
     </div>
     
   );
