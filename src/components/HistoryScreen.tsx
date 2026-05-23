@@ -14,8 +14,8 @@ type HistoryProps = {
 export function HistoryScreen({ sales, events, onSelectSale }: HistoryProps) {
 
   const getEventName = (eventId: string) =>
-    events?.find((e) => e.id === eventId)?.name ?? `(不明なイベント: ${eventId})`;
-  
+    events?.find((e) => e.id === eventId)?.name || null;
+
   return (
     <div>
       <div className="pageHeader">
@@ -29,7 +29,7 @@ export function HistoryScreen({ sales, events, onSelectSale }: HistoryProps) {
           {sales.map((sale) => (
             <li key={sale.id} style={{ marginBottom: 8 }}>
               <button onClick={() => onSelectSale(sale.id)}>
-                {getEventName(sale.eventId)} - {sale.total} 円  : {sale.items.length}点
+                {getEventName(sale.eventId) || toMinuteKey(sale.datetime)} - {sale.total} 円  : {sale.items.length}点
               </button>
             </li>
           ))}
