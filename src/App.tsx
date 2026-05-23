@@ -120,6 +120,7 @@ function App() {
     })();
   }, []);
 
+  //保存処理（items, sales, events, bundles, appState の変更を IndexedDB に保存する）
   useEffect(() => {
     if (!hydrated.current) return;
     saveItems(items);
@@ -129,6 +130,7 @@ function App() {
     if (!hydrated.current) return;
     saveSales(sales);
   }, [sales]);
+
   useEffect(() => {
     if (!hydrated.current) return;
     saveEvents(events);
@@ -139,6 +141,7 @@ function App() {
     saveBundles(bundles);
   }, [bundles]);
 
+  //appstate＝画面遷移やカートの中身など、ユーザーの操作に伴う状態を変更があるたびに最新のものにまとめたもの。dbには1つだけ保存しておいて、アプリ起動時に読み込む（工夫ポイント）。
   useEffect(() => {
     if (!hydrated.current) return;
 
