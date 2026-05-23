@@ -3,11 +3,12 @@
 // 指定されたイベントに関連する売上データを表示する
 
 import type { Event, Sale } from "../logic/types";
-import { HistoryScreen } from "./HistoryScreen"; // 既存を再利用するなら
+import { HistoryScreen } from "./HistoryScreen"; 
 
 type EventHistoryScreenProps = {
   event: Event;
   sales: Sale[];                // すでにフィルタ済みの配列をもらう
+  currentEvent: Event | null; // 追加: 現在のイベント情報も渡す
   onBack: () => void;
   onOpenEventDetail: (id: string) => void;
   onSelectSale: (id: string) => void;
@@ -16,6 +17,7 @@ type EventHistoryScreenProps = {
 export function EventHistoryScreen({
   event,
   sales,
+  currentEvent,
   onBack,
   onSelectSale,
   onOpenEventDetail,
@@ -29,7 +31,8 @@ export function EventHistoryScreen({
       <hr style={{ margin: "16px 0" }} />
 
       {/* 既存の HistoryScreen をそのまま再利用 */}
-      <HistoryScreen sales={sales} onSelectSale={onSelectSale} />
+      <HistoryScreen sales={sales} currentEvent={currentEvent} onSelectSale={onSelectSale} />
+      
       <button style={{ marginTop: 16 }} onClick={onBack}>
               戻る
       </button>

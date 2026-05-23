@@ -665,7 +665,6 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
           onSelectSale={(id) => {
             setSelectedSaleId(id);
             go("saleDetail");
-            //setScreen("saleDetail");
           }}
         />
       )}
@@ -679,8 +678,8 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
           onDelete={() => {
             handleDeleteSale(selectedSale.id);
             go("history");
-            //setScreen("history");
-          }}        />
+          }}        
+        />
       )}
 
       {screen === "items" && (
@@ -730,6 +729,7 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
           <EventHistoryScreen
           event={selectedEventForHistory}
           sales={selectedEventSalesForHistory}
+          currentEvent={currentEvent}
           onBack={back}
           onSelectSale={(id) =>{
             setSelectedSaleId(id);
