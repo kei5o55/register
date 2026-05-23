@@ -705,7 +705,6 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
           currentEventId={currentEventId}
           onSelectCurrentEvent={(id) => {
             if (id === currentEventId) return;
-
             setCurrentEventId(id);
             setCart([]);
             setBundleCart([]);
@@ -729,7 +728,6 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
           <EventHistoryScreen
           event={selectedEventForHistory}
           sales={selectedEventSalesForHistory}
-          currentEvent={currentEvent}
           onBack={back}
           onSelectSale={(id) =>{
             setSelectedSaleId(id);
