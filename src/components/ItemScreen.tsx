@@ -43,7 +43,6 @@ export function ItemsScreen({
   onDeleteItem,
   onChangeTags,
   onChangeBundleTags,
-  //onChangeImageUrl,(今回はローカル保存に切り替えるのでURL変更は廃止)
 }: ItemsScreenProps) {
   const [newName, setNewName] = useState("");
   const [newPrice, setNewPrice] = useState("500");

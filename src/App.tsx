@@ -502,7 +502,7 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
     
     sendSale();*/
 
-      // --- ⑤ カートを空にする ---
+      // カートを空にする
       setCart([]);
       setBundleCart([]);
 
@@ -625,9 +625,6 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
           <button onClick={() => setScreen("items")}>頒布物管理</button>
           <button onClick={() => setScreen("history")}>売上履歴</button>
         </nav>
-        <label style={{ marginLeft: "auto" }}>
-          選択中の頒布物id:{enabledItemIds}
-        </label>
       </header>
 
       {screen === "home" && (
@@ -664,6 +661,7 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
       {screen === "history" && (
         <HistoryScreen
           sales={sales}
+          currentEvent={currentEvent}
           onSelectSale={(id) => {
             setSelectedSaleId(id);
             go("saleDetail");

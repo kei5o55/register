@@ -2,15 +2,15 @@
 // eventの売上履歴画面コンポーネント
 // 指定されたイベントに関連する売上データを表示する
 
-import type { Sale } from "../logic/types";
-import { toMinuteKey } from "../logic/time";
+import type { Sale,Event } from "../logic/types";
 
 type HistoryProps = {
   sales: Sale[];
+  currentEvent: Event | null;
   onSelectSale: (id: string) => void;
 };
 
-export function HistoryScreen({ sales, onSelectSale }: HistoryProps) {
+export function HistoryScreen({ sales, currentEvent, onSelectSale }: HistoryProps) {
   return (
     <div>
       <div className="pageHeader">
@@ -24,7 +24,7 @@ export function HistoryScreen({ sales, onSelectSale }: HistoryProps) {
           {sales.map((sale) => (
             <li key={sale.id} style={{ marginBottom: 8 }}>
               <button onClick={() => onSelectSale(sale.id)}>
-                {toMinuteKey(sale.datetime)} - {sale.total} 円
+                {currentEvent ? currentEvent.name : sale.eventId} - {sale.total} 円  : {sale.items.length}点
               </button>
             </li>
           ))}
