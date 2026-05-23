@@ -661,7 +661,7 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
       {screen === "history" && (
         <HistoryScreen
           sales={sales}
-          currentEvent={currentEvent}
+          events={events}
           onSelectSale={(id) => {
             setSelectedSaleId(id);
             go("saleDetail");

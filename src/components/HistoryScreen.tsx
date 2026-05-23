@@ -7,11 +7,15 @@ import { toMinuteKey } from "../logic/time";
 
 type HistoryProps = {
   sales: Sale[];
-  currentEvent?: Event | null;//EventHistoryScreenから呼ばれた場合は値を受け取らず、時間を表示・HomeScreenから呼ばれた場合はcurrentEventを受け取ってイベント名を表示する(こだわりポイント)
+  events?: Event[];//EventHistoryScreenから呼ばれた場合は値を受け取らず、時間を表示・HomeScreenから呼ばれた場合はcurrentEventを受け取ってイベント名を表示する(こだわりポイント)
   onSelectSale: (id: string) => void;
 };
 
-export function HistoryScreen({ sales, currentEvent, onSelectSale }: HistoryProps) {
+export function HistoryScreen({ sales, events, onSelectSale }: HistoryProps) {
+
+  const getEventName = (eventId: string) =>
+    events?.find((e) => e.id === eventId)?.name ?? `(不明なイベント: ${eventId})`;
+  
   return (
     <div>
       <div className="pageHeader">
@@ -25,7 +29,7 @@ export function HistoryScreen({ sales, currentEvent, onSelectSale }: HistoryProp
           {sales.map((sale) => (
             <li key={sale.id} style={{ marginBottom: 8 }}>
               <button onClick={() => onSelectSale(sale.id)}>
-                {currentEvent ? currentEvent.name : toMinuteKey(sale.datetime)} - {sale.total} 円  : {sale.items.length}点
+                {getEventName(sale.eventId)} - {sale.total} 円  : {sale.items.length}点
               </button>
             </li>
           ))}
