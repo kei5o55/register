@@ -572,6 +572,8 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
   const handleDeleteEvent = (id: string) => {
     // イベント本体削除
     setEvents((prev) => prev.filter((e) => e.id !== id));
+    // そのイベントに紐づく売上も削除
+    setSales((prev) => prev.filter((sale) => sale.eventId !== id));
 
     // eventItemMap からも削除
     setEventItemMap((prev) => {
@@ -586,6 +588,8 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
       delete next[id];
       return next;
     });
+
+
 
     // もし削除したイベントが現在選択中なら解除＋カート初期化
     if (id === currentEventId) {
