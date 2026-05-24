@@ -13,7 +13,7 @@
 Application→Storage→Clear site data
 からサイトデータを削除した後再リロードしてください。）**
 
-以下リポジトリにて当プロダクトのバックエンドにあたる部分の開発も並行して進めています
+バックエンド領域の知見を得るため、下記リポジトリにて当プロジェクトの簡易的なDB・APIの作成もしています
 https://github.com/kei5o55/cashier-server
 
 ## 開発背景
