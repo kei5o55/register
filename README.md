@@ -13,7 +13,8 @@
 Application→Storage→Clear site data
 からサイトデータを削除した後再リロードしてください。）**
 
-以下リポジトリにて当プロダクトのバックエンドにあたる部分の開発も並行して進めています
+バックエンド領域への理解を深めるため、  
+Dockerを用いたRails+DB環境の構築や、簡易的なAPIサーバの作成にも取り組みました。
 https://github.com/kei5o55/cashier-server
 
 ## 開発背景
