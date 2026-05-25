@@ -24,7 +24,6 @@ export function EventListScreen({
   currentEventId,
   onSelectCurrentEvent,
   onOpenEventHistory,
-  //onOpenEventDetail,
   onDeleteEvent,
   onAddEvent,
   onOpenEventSetting,

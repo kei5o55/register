@@ -624,7 +624,7 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
           marginBottom: 16,
         }}
       >
-        <h1>レジ（プロトタイプ）</h1>
+        <h1>Rejistella（プロトタイプ）</h1>
         <nav style={{ display: "flex", gap: 8 ,flexWrap: "nowrap"}}>
           <button onClick={() => setScreen("home")}>ホーム</button>
           <button onClick={() => setScreen("register")}>レジ</button>
