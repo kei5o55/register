@@ -40,7 +40,7 @@ export const initialEvents: Event[] = [{//仮データ
     id: "e2",
     name: "あおぞら創作オンリー2026",
     date: "2026-05-24",
-    memo: "地方都市での創作オンリーイベント"
+    memo: "地方都市での創作イベント"
   }
 ];
 
