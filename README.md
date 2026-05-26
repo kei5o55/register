@@ -91,10 +91,12 @@ https://github.com/kei5o55/cashier-server
   - 頒布物のタグによるフィルタ
     ![Animation](https://github.com/user-attachments/assets/27c3b421-5599-43ce-8df6-50bf899def31)
 
-    
+
 ## 設計面の工夫した点
 - 集計ロジックと表示ロジックを分離
   - 将来的な拡張性を確保
+  - ```scr/components```と```src/logic```とで分離
+  - App.tsxは主にコンポーネント切り替えを担当、componentsには表示する画面をまとめることで分かりやすいディレクトリ構成を図っています
 - イベント単位での売上データ設計
   - 売上ごとにEventIdを紐づけ、集計しやすいデータ型としています。
 - バンドル内頒布物を展開して在庫・集計に反映
