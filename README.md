@@ -69,6 +69,7 @@ https://github.com/kei5o55/cashier-server
 - 頒布物管理
   ![Animation2](https://github.com/user-attachments/assets/d4a977d0-35b6-49be-b233-200b9f824130)
   - 頒布物の追加
+  - 頒布物ごとの画像設定
   - 頒布物情報（名称・価格）および在庫数の編集
   - 頒布物の削除
   - セット頒布(バンドル）の作成・管理
