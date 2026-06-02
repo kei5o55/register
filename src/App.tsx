@@ -17,7 +17,7 @@ import {
 } from "./logic/storage";
 import"./App.css";
 
-//コンポーネントのインポート
+//コンポーネント
 import { HomeScreen } from "./components/HomeScreen";
 import { HistoryScreen } from "./components/HistoryScreen";
 import { SaleDetailScreen } from "./components/SaleDetailScreen";
@@ -188,7 +188,7 @@ function App() {
   };
 
 
-  const buildReservedMap = () => {//カート内の確保済み個数(バンドル＋単品)を itemId ごとに集計する関数
+  const buildReservedMap = () => {//カート内の確保済み個数(バンドル＋単品)を itemId ごとに集計する関数。カート追加時などの在庫チェックで使用する
     const reserved = new Map<string, number>();
 
     // 単品カート分
