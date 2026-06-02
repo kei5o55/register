@@ -62,6 +62,8 @@ function App() {
   const [eventItemMap, setEventItemMap] = useState<Record<string, string[]>>({});
   // イベントID → 有効な bundleId 配列
   const [eventBundleMap, setEventBundleMap] = useState<Record<string, string[]>>({});
+
+
   const handleChangeEventItems = (eventId: string, itemIds: string[]) => {
     setEventItemMap((prev) => ({ ...prev, [eventId]: itemIds }));
   };
@@ -412,6 +414,7 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
         }
       }
 
+      // bundleExpandedItems は、今回の販売でバンドル由来で売れた商品の内訳。itemId, name, quantity を保存しておく
       const bundleExpandedItems =
         bundleExpandedMap.size > 0
           ? Array.from(bundleExpandedMap.entries()).map(([itemId, v]) => ({
@@ -423,7 +426,6 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
 
 
       // 売上データを作る（単品は items に、バンドルは bundles に保存
-
       const saleItems: SaleItem[] = cart.map((c) => {
         const item = getItemById(c.itemId);
         return {
@@ -460,51 +462,7 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
         if (need === 0) return item;
         return { ...item, stock: item.stock - need };
       });
-
       setItems(updatedItems);
-
-    //テスト用販売データ送信関数
-    /*const sendSale = async () => {
-      const payload = {
-        sale_id: crypto.randomUUID(),// 一意な販売IDを生成(API送信時に同じIDで重複送信を防止)
-        event_id: currentEventId!, // 現在のイベントIDをセット（null でない前提）
-        device_id: "dev-001", // 後で localStorage で固定化すると良い
-        sold_at: new Date().toISOString(),// 現在日時をISO文字列で取得
-        total_amount: totalPrice,// 合計金額(カートに入った商品の合計)
-        items: cart.map((c) => {
-          const item = getItemById(c.itemId);
-          return {
-            item_id: item.id,
-            name: item.name,
-            price: item.price,
-            qty: c.quantity,
-          };
-        }),
-        bundles: bundleCart.map((bc) => {
-          const b = getBundleById(bc.bundleId);
-          return {
-            bundle_id: b.id,
-            name: b.name,
-            price: b.price,
-            qty: bc.quantity,
-            lines: b.lines, // 中身も送りたければ
-          };
-        }),
-      };
-
-      const res = await fetch("http://localhost:3000/sales/import", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const json = await res.json();
-      console.log(json);
-      alert(JSON.stringify(json));
-    };
-    
-    sendSale();*/
-
       // カートを空にする
       setCart([]);
       setBundleCart([]);
