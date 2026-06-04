@@ -40,7 +40,6 @@ type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events
 
 
 function App() {
-
   //stateの管理
   const [screen, setScreen] = useState<Screen>("home");
   const [,setScreenStack] = useState<Screen[]>([]);
@@ -58,7 +57,7 @@ function App() {
 
   const selectedEventForSetting =events.find((e) => e.id === selectedEventIdForSetting) ?? null;
   
-  // イベントID → 有効な itemId 配列
+  // イベントID → 有効な itemId 配
   const [eventItemMap, setEventItemMap] = useState<Record<string, string[]>>({});
   // イベントID → 有効な bundleId 配列
   const [eventBundleMap, setEventBundleMap] = useState<Record<string, string[]>>({});
