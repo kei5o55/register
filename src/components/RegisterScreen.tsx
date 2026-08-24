@@ -100,32 +100,56 @@ export function RegisterScreen({
   }, []);
 
   return (
-    <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-      <div style={{ flex: 1 }}>
-        <h2>商品一覧</h2>
-        {visibleItems.length === 0 ? (
-          <p>頒布物がありません（イベント履歴→設定 から登録できます）</p>
-        ) : (
-        <ul>
+  <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
+    {/* 左側：商品一覧・バンドル */}
+    <div style={{ flex: 1 }}>
+      <h2>商品一覧</h2>
+      {visibleItems.length === 0 ? (
+        <p>頒布物がありません（イベント履歴→設定 から登録できます）</p>
+      ) : (
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {visibleItems.map((item) => {
-            const remaining = getRemainingStock(item.id);//在庫からカート分を引いた残り数を取得
+            const remaining = getRemainingStock(item.id);
+            const isOutOfStock = remaining <= 0;
+            const src = localImageUrls[item.id] ?? item.imageUrl;
+
             return (
-              <li key={item.id} style={{ marginBottom: 8 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  {(() => {
-                    const src = localImageUrls[item.id] ?? item.imageUrl;
-                    return src ? (
+              <li key={item.id} style={{ marginBottom: 10 }}>
+                {/* カード全体をボタン化 */}
+                <button
+                  type="button"
+                  onClick={() => onAddToCart(item.id)}
+                  disabled={isOutOfStock}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                   
+                    gap: 12,
+                    padding: "10px 14px",
+                    borderRadius: 8,
+                    border: "1px solid #ccc",
+                    backgroundColor: isOutOfStock ? "#f5f5f5" : "#fff",
+                    cursor: isOutOfStock ? "not-allowed" : "pointer",
+                    textAlign: "left",
+                    opacity: isOutOfStock ? 0.6 : 1,
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    {/* 画像エリア */}
+                    {src ? (
                       <img
                         key={src}
                         src={src}
                         alt={item.name}
                         style={{
-                          width: 44,
-                          height: 44,
+                          width: 48,
+                          height: 48,
                           objectFit: "cover",
-                          borderRadius: 8,
+                          borderRadius: 6,
                           border: "1px solid #ddd",
-                          flex: "0 0 auto",
+                          flexShrink: 0,
                         }}
                         onLoad={(e) => ((e.currentTarget as HTMLImageElement).style.display = "")}
                         onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = "none")}
@@ -133,133 +157,175 @@ export function RegisterScreen({
                     ) : (
                       <div
                         style={{
-                          width: 44,
-                          height: 44,
-                          borderRadius: 8,
+                          width: 48,
+                          height: 48,
+                          borderRadius: 6,
                           border: "1px dashed #bbb",
                           display: "grid",
                           placeItems: "center",
                           fontSize: 10,
-                          opacity: 0.7,
-                          flex: "0 0 auto",
+                          color: "#888",
+                          flexShrink: 0,
                         }}
                       >
-                        No
+                        No Img
                       </div>
-                    );
-                  })()}
+                    )}
 
-                  <div>
+                    {/* テキスト情報 */}
                     <div>
-                      {item.name} / {item.price}円 / 在庫: {item.stock}
-                      {"（残り: "}{remaining}{"）"}
+                      <div style={{ fontWeight: "bold", fontSize: 15, color: "#222" }}>
+                        {item.name}
+                      </div>
+                      <div style={{ fontSize: 13, color: "#555", marginTop: 2 }}>
+                        {item.price}円 / 在庫: {item.stock}（残り: {remaining}）
+                      </div>
                     </div>
                   </div>
-                </div>
-                <button
-                  onClick={() => onAddToCart(item.id)}
-                  disabled={remaining <= 0}//在庫が0以下ならボタンを無効化
-                >
-                  カートに追加
+
+                  {/* 右端のラベル */}
+                  <span style={{ fontSize: 13, fontWeight: "bold", color: isOutOfStock ? "#999" : "#0066cc", flexShrink: 0 }}>
+                    {isOutOfStock ? "売り切れ" : "＋追加"}
+                  </span>
                 </button>
               </li>
             );
           })}
         </ul>
-        )}
-        <h3>バンドル</h3>
-          {visibleBundles.length === 0 ? (
-            <p>バンドルがありません（イベント履歴→設定 から登録できます）</p>
-          ) : (
-            <table border={1} cellPadding={4} style={{ borderCollapse: "collapse", marginBottom: 16 }}>
-              <thead>
-                <tr>
-                  <th>バンドル名</th>
-                  <th>中身</th>
-                  <th>価格(円)</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visibleBundles.map((b) => (
-                  <tr key={b.id}>
-                    <td>{b.name}</td>
-                    <td>
-                      {b.lines.map((l, i) => {
-                        const item = getItemById(l.itemId);
-                        return (
-                          <div key={i}>
-                            {item.name} × {l.quantity}
-                          </div>
-                        );
-                      })}
-                    </td>
-                    <td>{b.price}</td>
-                    <td>
-                      <button onClick={() => onAddBundleToCart(b.id)}>カートに追加</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              
-            </table>
-          )}
-      </div>
+      )}
 
-      <div style={{ flex: 1 }}>
-        <h2>カート</h2>
-        {cart.length === 0 ? (
-          <p>カートは空です</p>
-        ) : (
-          <ul>
-            {cart.map((c) => {
-              const item = getItemById(c.itemId);
+      <h3>バンドル</h3>
+      {visibleBundles.length === 0 ? (
+        <p>バンドルがありません（イベント履歴→設定 から登録できます）</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+          {visibleBundles.map((b) => (
+            <button
+              key={b.id}
+              type="button"
+              onClick={() => onAddBundleToCart(b.id)}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 14px",
+                borderRadius: 8,
+                border: "1px solid #cce",
+                backgroundColor: "#fcfaff",
+                cursor: "pointer",
+                textAlign: "left",
+                boxSizing: "border-box",
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: "bold", fontSize: 14, color: "#333" }}>
+                  {b.name}（{b.price}円）
+                </div>
+                <div style={{ fontSize: 12, color: "#666", marginTop: 2 }}>
+                  {b.lines.map((l) => {
+                    const item = getItemById(l.itemId);
+                    return `${item.name} × ${l.quantity}`;
+                  }).join(" / ")}
+                </div>
+              </div>
+              <span style={{ fontSize: 13, fontWeight: "bold", color: "#6600cc", flexShrink: 0 }}>
+                ＋追加
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {/* 右側：カート（ボタンの押しやすさを微調整） */}
+    <div style={{ flex: 1, padding: 16, border: "1px solid #ddd", borderRadius: 8, backgroundColor: "#fafafa" }}>
+      <h2>カート</h2>
+      {cart.length === 0 ? (
+        <p style={{ color: "#888" }}>カートは空です</p>
+      ) : (
+        <ul style={{ paddingLeft: 0, listStyle: "none" }}>
+          {cart.map((c) => {
+            const item = getItemById(c.itemId);
+            return (
+              <li
+                key={c.itemId}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 8,
+                  padding: "6px 8px",
+                  backgroundColor: "#fff",
+                  borderRadius: 6,
+                  border: "1px solid #eee"
+                }}
+              >
+                <span>
+                  {item.name} × {c.quantity}
+                </span>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <button onClick={() => onAddToCart(c.itemId)} style={{ padding: "4px 10px", fontSize: 14 }}>＋</button>
+                  <button onClick={() => onRemoveFromCart(c.itemId)} style={{ padding: "4px 10px", fontSize: 14 }}>−</button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {bundleCart.length > 0 && (
+        <>
+          <h4>バンドル</h4>
+          <ul style={{ paddingLeft: 0, listStyle: "none" }}>
+            {bundleCart.map((bc) => {
+              const b = getBundleById(bc.bundleId);
+              const subtotal = b.price * bc.quantity;
+
               return (
-                <div
-                  key={c.itemId}
-                  style={{ display: "flex", alignItems: "center", gap: 8 }}
+                <li
+                  key={bc.bundleId}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 8,
+                    padding: "6px 8px",
+                    backgroundColor: "#fff",
+                    borderRadius: 6,
+                    border: "1px solid #eee"
+                  }}
                 >
                   <span>
-                    {item.name} × {c.quantity}
+                    {b.name} × {bc.quantity}（{subtotal}円）
                   </span>
-
-                  <button onClick={() => onAddToCart(c.itemId)}>＋</button>
-                  <button onClick={() => onRemoveFromCart(c.itemId)}>−</button>
-                </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button onClick={() => onAddBundleToCart(bc.bundleId)} style={{ padding: "4px 10px", fontSize: 14 }}>＋</button>
+                    <button onClick={() => onRemoveBundleFromCart(bc.bundleId)} style={{ padding: "4px 10px", fontSize: 14 }}>−</button>
+                  </div>
+                </li>
               );
             })}
           </ul>
-        )}
-        {bundleCart.length > 0 && (
-            <>
-              <h4>バンドル</h4>
-              {bundleCart.map((bc) => {
-                const b = getBundleById(bc.bundleId);
-                const subtotal = b.price * bc.quantity;
+        </>
+      )}
 
-                return (
-                  <div
-                    key={bc.bundleId}
-                    style={{ display: "flex", alignItems: "center", gap: 8 }}
-                  >
-                    <span>
-                      {b.name} × {bc.quantity}（{subtotal}円）
-                    </span>
-
-                    <button onClick={() => onAddBundleToCart(bc.bundleId)}>＋</button>
-                    <button onClick={() => onRemoveBundleFromCart(bc.bundleId)}>−</button>
-
-                  </div>
-                );
-              })}
-            </>
-          )}
-        <hr />
-        <p>合計: {totalPrice} 円</p>
-        <button onClick={onCheckout} disabled={cart.length === 0 && bundleCart.length===0}>
-          会計確定
-        </button>
-      </div>
+      <hr style={{ border: "none", borderTop: "1px solid #ccc", margin: "16px 0" }} />
+      <p style={{ fontSize: 18, fontWeight: "bold" }}>合計: {totalPrice} 円</p>
+      <button
+        onClick={onCheckout}
+        disabled={cart.length === 0 && bundleCart.length === 0}
+        style={{
+          width: "100%",
+          padding: "12px",
+          fontSize: 16,
+          fontWeight: "bold",
+          cursor: cart.length === 0 && bundleCart.length === 0 ? "not-allowed" : "pointer"
+        }}
+      >
+        会計確定
+      </button>
     </div>
-  );
+  </div>
+);
 }
