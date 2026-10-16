@@ -22,7 +22,8 @@
   }
 
   #root {
-    @apply mx-auto max-w-[900px] p-8;
+    /* body が flex のため w-full がないと中身の幅に縮み、画面ごとに横幅が変わる */
+    @apply mx-auto w-full max-w-[900px] p-8;
   }
 
   h1 {
