@@ -26,6 +26,7 @@ import { EventListScreen } from "./components/EventListScreen";
 import { EventHistoryScreen } from "./components/EventHistoryScreen";
 import { EventDetailScreen } from "./components/EventDetailScreen";
 import { EventSettingScreen } from "./components/EventSettingScreen";
+import { StandbyScreen } from "./components/StandbyScreen";
 
 
 type SaleItem = {//販売された商品の情報を表す型
@@ -36,6 +37,15 @@ type SaleItem = {//販売された商品の情報を表す型
 };
 
 type Screen = "home" | "register" | "history" | "saleDetail" | "items" | "events" | "eventHistory" | "eventDetail" | "eventSetting";//画面の種類を定義
+
+// ヘッダーのナビ項目（match に含まれる画面を表示中ならアクティブ表示）
+const NAV_ITEMS: { label: string; screen: Screen; match: Screen[] }[] = [
+  { label: "ホーム", screen: "home", match: ["home"] },
+  { label: "レジ", screen: "register", match: ["register"] },
+  { label: "イベント", screen: "events", match: ["events", "eventHistory", "eventDetail", "eventSetting"] },
+  { label: "頒布物", screen: "items", match: ["items"] },
+  { label: "売上履歴", screen: "history", match: ["history", "saleDetail"] },
+];
 
 
 function App() {
@@ -55,6 +65,7 @@ function App() {
   const currentEventId = selectedCurrentEventId ?? events[0]?.id ?? null;
   const [bundles, setBundles] = useState<Bundle[]>(initialBundles);
   const [bundleCart, setBundleCart] = useState<BundleCartItem[]>([]);
+  const [isStandby, setIsStandby] = useState(false);// 待機画面をオーバーレイ表示中か
 
   const selectedEventForSetting =events.find((e) => e.id === selectedEventIdForSetting) ?? null;
   
@@ -564,15 +575,57 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
 
   return (
     <div className="mx-auto max-w-[900px] p-4">
-      <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1>Rejistella（プロトタイプ）</h1>
-        <nav className="flex flex-nowrap gap-2">
-          <button onClick={() => setScreen("home")}>ホーム</button>
-          <button onClick={() => setScreen("register")}>レジ</button>
-          <button onClick={() => setScreen("events")}>イベント管理</button>
-          <button onClick={() => setScreen("items")}>頒布物管理</button>
-          <button onClick={() => setScreen("history")}>売上履歴</button>
-        </nav>
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-black/10 pb-4 dark:border-white/10">
+        <button
+          type="button"
+          onClick={() => setScreen("home")}
+          className="flex items-center gap-2.5 border-0 bg-transparent p-0"
+          aria-label="ホームへ"
+        >
+          <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/30">
+            <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.5l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 16.9 6.3 20l1.2-6.4-4.7-4.4 6.4-.8z" />
+            </svg>
+          </span>
+          <h1 className="m-0 text-xl font-bold tracking-tight">
+            Reji<span className="text-indigo-500">Stella</span>
+          </h1>
+          <span className="rounded-full border border-current px-1.5 text-[10px] leading-4 font-semibold tracking-wider uppercase opacity-50">
+            beta
+          </span>
+        </button>
+
+        <div className="flex items-center gap-2">
+          <nav className="flex flex-nowrap gap-1 overflow-x-auto rounded-xl bg-black/5 p-1 dark:bg-white/10">
+            {NAV_ITEMS.map((nav) => {
+              const active = nav.match.includes(screen);
+              return (
+                <button
+                  key={nav.screen}
+                  type="button"
+                  onClick={() => setScreen(nav.screen)}
+                  aria-current={active ? "page" : undefined}
+                  className={`rounded-lg border-0 px-3 py-1.5 text-sm whitespace-nowrap transition ${
+                    active
+                      ? "bg-white font-semibold text-indigo-600 shadow-sm dark:bg-[#1a1a1a] dark:text-indigo-300"
+                      : "bg-transparent opacity-70 hover:opacity-100"
+                  }`}
+                >
+                  {nav.label}
+                </button>
+              );
+            })}
+          </nav>
+
+          <button
+            type="button"
+            onClick={() => setIsStandby(true)}
+            className="rounded-xl border border-black/10 px-3 py-2 text-sm whitespace-nowrap dark:border-white/15"
+            title="待機画面を表示"
+          >
+            待機画面
+          </button>
+        </div>
       </header>
 
       {screen === "home" && (
@@ -712,6 +765,10 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
               onBack={back}
             />
           )}
+
+      {isStandby && (
+        <StandbyScreen currentEvent={currentEvent} onClose={() => setIsStandby(false)} />
+      )}
     </div>
     
   );

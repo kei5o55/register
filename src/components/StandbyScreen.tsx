@@ -21,7 +21,6 @@ export function StandbyScreen({ currentEvent, onClose }: StandbyProps) {
       }}
       className="fixed inset-0 z-50 flex cursor-pointer flex-col items-center justify-center gap-4 bg-[#111] text-white"
     >
-      <div className="text-4xl font-bold">Rejistella</div>
       {currentEvent && <div className="text-xl opacity-80">{currentEvent.name}</div>}
       <div className="text-sm opacity-60">画面をタップするとレジに戻ります</div>
     </div>
