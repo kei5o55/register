@@ -114,11 +114,7 @@ export function ItemsScreen({
       {items.length === 0 ? (
         <p>頒布物が登録されていません</p>
       ) : (
-        <table
-          border={1}
-          cellPadding={4}
-          style={{ borderCollapse: "collapse", marginBottom: 16 }}
-        >
+        <table className="mb-4 border-collapse">
           <thead>
             <tr>
               <th>画像</th>
@@ -133,7 +129,7 @@ export function ItemsScreen({
               <tr key={item.id}>
               {/* ★追加：サムネ */}
               <td>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div className="flex items-center gap-2">
                   {(() => {
                     const localUrl = localImageUrls[item.id]; // ★追加：端末内画像
                     const src = localUrl ?? item.imageUrl;    // ★ローカル優先→なければ既存URL
@@ -143,13 +139,7 @@ export function ItemsScreen({
                         key={src} // ★超重要：srcが変わったらimgを作り直す
                         src={src}
                         alt={`${item.name} thumbnail`}
-                        style={{
-                          width: 56,
-                          height: 56,
-                          objectFit: "cover",
-                          borderRadius: 8,
-                          border: "1px solid #ddd",
-                        }}
+                        className="size-14 rounded-lg border border-[#ddd] object-cover"
                         onLoad={(e) => {
                           // ★ onErrorで消された場合に復活させる
                           (e.currentTarget as HTMLImageElement).style.display = "";
@@ -160,18 +150,7 @@ export function ItemsScreen({
                         }}
                       />
                     ) : (
-                      <div
-                        style={{
-                          width: 56,
-                          height: 56,
-                          borderRadius: 8,
-                          border: "1px dashed #bbb",
-                          display: "grid",
-                          placeItems: "center",
-                          fontSize: 12,
-                          opacity: 0.7,
-                        }}
-                      >
+                      <div className="grid size-14 place-items-center rounded-lg border border-dashed border-[#bbb] text-xs opacity-70">
                         No Image
                       </div>
                     );
@@ -195,22 +174,14 @@ export function ItemsScreen({
                   {/* ★ 新規: 端末から画像を選んで保存（local） */}
                   {!localImageUrls[item.id] && (
                   <label
-                    style={{
-                      border: "1px solid #ddd",
-                      borderRadius: 8,
-                      padding: "6px 10px",
-                      cursor: "pointer",
-                      userSelect: "none",
-                      fontSize: 12,
-                      whiteSpace: "nowrap",
-                    }}
+                    className="cursor-pointer rounded-lg border border-[#ddd] px-2.5 py-1.5 text-xs whitespace-nowrap select-none"
                     title="端末から画像を選択（オフラインでも表示）"
                   >
                     端末から…
                     <input
                       type="file"
                       accept="image/*"
-                      style={{ display: "none" }}
+                      className="hidden"
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
@@ -245,15 +216,7 @@ export function ItemsScreen({
                           return rest;
                         });
                       }}
-                      style={{
-                        border: "1px solid #ddd",
-                        borderRadius: 8,
-                        padding: "6px 10px",
-                        cursor: "pointer",
-                        fontSize: 12,
-                        whiteSpace: "nowrap",
-                        background: "white",
-                      }}
+                      className="cursor-pointer rounded-lg border border-[#ddd] bg-white px-2.5 py-1.5 text-xs whitespace-nowrap"
                       title="端末内に保存した画像を削除"
                     >
                       削除
@@ -274,8 +237,7 @@ export function ItemsScreen({
                     onChange={(e) =>
                       onChangePrice(item.id, Number(e.target.value) || 0)
                     }
-                    style={{ width: 80 }}
-                    className="no-spinner"
+                    className="no-spinner w-20"
                   />
                 </td>
                 <td>
@@ -285,17 +247,19 @@ export function ItemsScreen({
                     onChange={(e) =>
                       onChangeStock(item.id, Number(e.target.value) || 0)
                     }
-                    style={{ width: 80 }}
+                    className="w-20"
                   />
                 </td>
                 <td>
-                  <button onClick={() => onDeleteItem(item.id)} style={{ color: "red", marginLeft: 8 }}>削除</button>
+                  <button onClick={() => onDeleteItem(item.id)} className="ml-2 text-[red]">削除</button>
                 </td>
-                <TagEditor
-                  tags={item.tags}
-                  onChange={(next) => onChangeTags(item.id, next)}
-                  placeholder="タグを追加（例：新刊）"
-                />
+                <td>
+                  <TagEditor
+                    tags={item.tags}
+                    onChange={(next) => onChangeTags(item.id, next)}
+                    placeholder="タグを追加（例：新刊）"
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -303,7 +267,7 @@ export function ItemsScreen({
       )}
 
       <h3>新規頒布物を追加</h3>
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <div className="flex items-center gap-2">
         <input
           placeholder="頒布物名"
           value={newName}
@@ -314,20 +278,18 @@ export function ItemsScreen({
           placeholder="価格"
           value={newPrice}
           onChange={(e) => setNewPrice(e.target.value)}
-          style={{ width: 80 }}
-          className="no-spinner"
+          className="no-spinner w-20"
         />
         <input
           type="number"
           placeholder="在庫"
           value={newStock}
           onChange={(e) => setNewStock(e.target.value)}
-          style={{ width: 80 }}
-          className="no-spinner"
+          className="no-spinner w-20"
         />
         <button onClick={handleSubmitNew}>追加</button>
       </div>
-      <hr style={{ margin: "24px 0" }} />
+      <hr className="my-6" />
 
       <h3>バンドル管理</h3>
 
@@ -335,11 +297,7 @@ export function ItemsScreen({
       {bundles.length === 0 ? (
         <p>バンドルはまだありません</p>
       ) : (
-        <table
-          border={1}
-          cellPadding={4}
-          style={{ borderCollapse: "collapse", marginBottom: 16 }}
-        >
+        <table className="mb-4 border-collapse">
           <thead>
             <tr>
               <th>バンドル名</th>
@@ -364,7 +322,7 @@ export function ItemsScreen({
                 </td>
                 <td>{b.price}</td>
                 <td>
-                  <button onClick={() => onDeleteBundle(b.id)} style={{ color: "red", marginLeft: 8 }}>削除</button>
+                  <button onClick={() => onDeleteBundle(b.id)} className="ml-2 text-[red]">削除</button>
                 </td>
                 <td>
                   <TagEditor
@@ -384,11 +342,11 @@ export function ItemsScreen({
         placeholder="バンドル名"
         value={bundleName}
         onChange={(e) => setBundleName(e.target.value)}
-        style={{ marginBottom: 8 }}
+        className="mb-2"
       />
       {/* 中身 */}
       {bundleLines.map((line, idx) => (
-        <div key={idx} style={{ display: "flex", gap: 8, marginBottom: 4 }}>
+        <div key={idx} className="mb-1 flex gap-2">
           <select
             value={line.itemId}
             onChange={(e) => {
@@ -414,7 +372,7 @@ export function ItemsScreen({
               next[idx] = { ...next[idx], quantity: q };
               setBundleLines(next);
             }}
-            style={{ width: 60 }}
+            className="w-[60px]"
           />
 
           <button
@@ -441,18 +399,17 @@ export function ItemsScreen({
         中身を追加
       </button>
 
-      <div style={{ marginTop: 8 }}>
+      <div className="mt-2">
         合計（参考）: {bundleTotal} 円
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+      <div className="mt-2 flex gap-2">
         <input
           type="number"
           value={bundlePrice}
           onChange={(e) => setBundlePrice(Number(e.target.value) || 0)}
           placeholder="価格"
-          className="no-spinner"
-          style={{ width: 100 }}
+          className="no-spinner w-[100px]"
         />
 
         <button onClick={() => setBundlePrice(bundleTotal)}>
@@ -461,7 +418,7 @@ export function ItemsScreen({
       </div>
 
       <button
-        style={{ marginTop: 8 }}
+        className="mt-2"
         onClick={() => {
           if (!bundleName.trim()) return;
           if (bundleLines.length === 0) return;

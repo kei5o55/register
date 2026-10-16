@@ -165,24 +165,33 @@ export function EventSettingScreen({
   // UIで合計点数を出したい時用（任意）
   const enabledCount = itemIds.length + bundleIds.length;
 
+  const sectionClass = "rounded-lg border border-[#ddd] p-4";
+  const fieldClass = "grid gap-1.5";
+  const selectableRowClass =
+    "flex cursor-pointer items-center gap-2.5 rounded-lg border border-[#eee] p-2.5";
+  const filterButtonClass = (active: boolean) =>
+    `cursor-pointer rounded-full border border-[#ddd] px-2 py-0.5 text-xs ${active ? "opacity-100" : "opacity-75"}`;
+  const tagBadgeClass = (active: boolean) =>
+    `rounded px-1.5 py-0.5 text-[0.8em] ${active ? "bg-[#39739d] text-white" : "bg-[#e1ecf4] text-[#39739d]"}`;
+
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+    <div className="mx-auto max-w-[900px]">
+      <div className="flex items-center gap-3">
         <button onClick={onBack}>← 戻る</button>
-        <h2 style={{ margin: "16px 0" }}>イベント設定</h2>
+        <h2 className="my-4">イベント設定</h2>
       </div>
 
       {/* 基本情報 */}
-      <section style={{ border: "1px solid #ddd", padding: 16, borderRadius: 8 }}>
-        <h3 style={{ marginTop: 0 }}>基本情報</h3>
+      <section className={sectionClass}>
+        <h3 className="mt-0">基本情報</h3>
 
-        <div style={{ display: "grid", gap: 10 }}>
-          <label style={{ display: "grid", gap: 6 }}>
+        <div className="grid gap-2.5">
+          <label className={fieldClass}>
             <span>開催日</span>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </label>
 
-          <label style={{ display: "grid", gap: 6 }}>
+          <label className={fieldClass}>
             <span>イベント名</span>
             <input
               type="text"
@@ -192,7 +201,7 @@ export function EventSettingScreen({
             />
           </label>
 
-          <label style={{ display: "grid", gap: 6 }}>
+          <label className={fieldClass}>
             <span>メモ</span>
             <textarea
               value={memo}
@@ -205,15 +214,8 @@ export function EventSettingScreen({
       </section>
 
       {/* タグ */}
-      <section
-        style={{
-          border: "1px solid #ddd",
-          padding: 16,
-          borderRadius: 8,
-          marginTop: 16,
-        }}
-      >
-        <h3 style={{ marginTop: 0 }}>タグ</h3>
+      <section className={`${sectionClass} mt-4`}>
+        <h3 className="mt-0">タグ</h3>
         <TagEditor
           tags={tags}
           onChange={setTags}
@@ -222,42 +224,28 @@ export function EventSettingScreen({
       </section>
 
       {/* 使用頒布物 */}
-      <section
-        style={{
-          border: "1px solid #ddd",
-          padding: 16,
-          borderRadius: 8,
-          marginTop: 16,
-        }}
-      >
-        <h3 style={{ marginTop: 0 }}>
+      <section className={`${sectionClass} mt-4`}>
+        <h3 className="mt-0">
           使用する頒布物 / バンドル（合計 {enabledCount} 件）
         </h3>
-        <p style={{ opacity: 0.8, marginTop: 0 }}>
+        <p className="mt-0 opacity-80">
           レジ画面には、ここでONにしたものだけ表示される想定
         </p>
 
 
-        <h4 style={{ marginBottom: 8 }}>単品頒布物</h4>
+        <h4 className="mb-2">単品頒布物</h4>
         
         {/* タグフィルタ */}
-          <div style={{ margin: "8px 0 12px" }}>
-            <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>
+          <div className="mt-2 mb-3">
+            <div className="mb-1.5 text-xs opacity-70">
               タグで絞り込み
             </div>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
                 onClick={() => setActiveTag(null)}
-                style={{
-                  padding: "2px 8px",
-                  borderRadius: 999,
-                  border: "1px solid #ddd",
-                  fontSize: 12,
-                  cursor: "pointer",
-                  opacity: activeTag === null ? 1 : 0.75,
-                }}
+                className={filterButtonClass(activeTag === null)}
               >
                 すべて
               </button>
@@ -267,14 +255,7 @@ export function EventSettingScreen({
                   key={tag}
                   type="button"
                   onClick={() => setActiveTag(tag)}
-                  style={{
-                    padding: "2px 8px",
-                    borderRadius: 999,
-                    border: "1px solid #ddd",
-                    fontSize: 12,
-                    cursor: "pointer",
-                    opacity: activeTag === tag ? 1 : 0.75,
-                  }}
+                  className={filterButtonClass(activeTag === tag)}
                 >
                   #{tag}
                 </button>
@@ -286,26 +267,15 @@ export function EventSettingScreen({
         {items.length === 0 ? (
           <p>頒布物がまだ登録されていません。</p>
         ) : (
-          <div style={{ display: "grid", gap: 8 }}>
+          <div className="grid gap-2">
             {visibleItems.map((it) => (
-              <label
-                key={it.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  border: "1px solid #eee",
-                  padding: 10,
-                  borderRadius: 8,
-                  cursor: "pointer",
-                }}
-              >
+              <label key={it.id} className={selectableRowClass}>
                 <input
                   type="checkbox"
                   checked={itemSet.has(it.id)}
                   onChange={() => setItemIds((prev) => toggle(prev, it.id))}
                 />
-                <div style={{ fontWeight: 600 }}>
+                <div className="font-semibold">
                   {(() => {
                     const src = localImageUrls[it.id] ?? it.imageUrl; // ★ローカル優先
                     return src ? (
@@ -313,7 +283,7 @@ export function EventSettingScreen({
                         key={src}
                         src={src}
                         alt={it.name}
-                        style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, border: "1px solid #ddd" }}
+                        className="size-14 rounded-lg border border-[#ddd] object-cover"
                         onLoad={(e) => ((e.currentTarget as HTMLImageElement).style.display = "")}
                         onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = "none")}
                       />
@@ -322,24 +292,14 @@ export function EventSettingScreen({
                     );
                   })()}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600 }}>{it.name}</div>
-                <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                <div className="flex-1">
+                  <div className="font-semibold">{it.name}</div>
+                <div className="mt-1 flex flex-wrap gap-1.5">
                     {it.price} 円 / 在庫 {it.stock}
                     {/* event.tags?.length で安全にチェック */}
                     {(it.tags?.length ?? 0) > 0 ? (
                       it.tags?.map((tag) => (
-                      <span
-                        key={tag}
-                        style={{
-                          backgroundColor: activeTag === tag ? "#39739d" : "#e1ecf4",
-                          color: activeTag === tag ? "#fff" : "#39739d",
-                          padding: "2px 6px",
-                          borderRadius: 4,
-                          fontSize: "0.8em",
-                          
-                        }}
-                      >
+                      <span key={tag} className={tagBadgeClass(activeTag === tag)}>
                         #{tag}
                       </span>
                       ))
@@ -354,19 +314,12 @@ export function EventSettingScreen({
           </div>
         )}
 
-        <h4 style={{ margin: "18px 0 8px" }}>バンドル</h4>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        <h4 className="mt-[18px] mb-2">バンドル</h4>
+        <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
                 onClick={() => setActiveBundleTag(null)}
-                style={{
-                  padding: "2px 8px",
-                  borderRadius: 999,
-                  border: "1px solid #ddd",
-                  fontSize: 12,
-                  cursor: "pointer",
-                  opacity: activeBundleTag === null ? 1 : 0.75,
-                }}
+                className={filterButtonClass(activeBundleTag === null)}
               >
                 すべて
               </button>
@@ -375,14 +328,7 @@ export function EventSettingScreen({
                   key={tag}
                   type="button"
                   onClick={() => setActiveBundleTag(tag)}
-                  style={{
-                    padding: "2px 8px",
-                    borderRadius: 999,
-                    border: "1px solid #ddd",
-                    fontSize: 12,
-                    cursor: "pointer",
-                    opacity: activeBundleTag === tag ? 1 : 0.75,
-                  }}
+                  className={filterButtonClass(activeBundleTag === tag)}
                 >
                   #{tag}
                 </button>
@@ -391,42 +337,22 @@ export function EventSettingScreen({
         {bundles.length === 0 ? (
           <p>バンドルはまだありません。</p>
         ) : (
-          <div style={{ display: "grid", gap: 8 }}>
+          <div className="grid gap-2">
             {visibleBundles.map((b) => (
-              <label
-                key={b.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  border: "1px solid #eee",
-                  padding: 10,
-                  borderRadius: 8,
-                  cursor: "pointer",
-                }}
-              >
+              <label key={b.id} className={selectableRowClass}>
                 <input
                   type="checkbox"
                   checked={bundleSet.has(b.id)}
                   onChange={() => setBundleIds((prev) => toggle(prev, b.id))}
                 />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600 }}>{b.name}</div>
-                  <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>{b.price} 円
+                <div className="flex-1">
+                  <div className="font-semibold">{b.name}</div>
+                  <div className="mt-1 flex flex-wrap gap-1.5">{b.price} 円
 
                     {/* event.tags?.length で安全にチェック */}
                     {(b.tags?.length ?? 0) > 0 ? (
                         b.tags!.map((tag) => (
-                          <span
-                            key={tag}
-                            style={{
-                              backgroundColor: activeBundleTag === tag ? "#39739d" : "#e1ecf4",
-                              color: activeBundleTag === tag ? "#fff" : "#39739d",
-                              padding: "2px 6px",
-                              borderRadius: 4,
-                              fontSize: "0.8em",
-                            }}
-                          >
+                          <span key={tag} className={tagBadgeClass(activeBundleTag === tag)}>
                             #{tag}
                           </span>
                         ))
@@ -434,7 +360,7 @@ export function EventSettingScreen({
                         ""
                       )}
                   </div>
-                  <div style={{ opacity: 0.7, fontSize: 12 }}>
+                  <div className="text-xs opacity-70">
                     {b.lines
                       .map((l) => {
                         const it = items.find((x) => x.id === l.itemId);
@@ -450,7 +376,7 @@ export function EventSettingScreen({
       </section>
 
       {/* 操作 */}
-      <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+      <div className="mt-4 flex gap-2.5">
         <button onClick={handleSave} disabled={!hasChanges}>
           保存
         </button>
@@ -458,7 +384,7 @@ export function EventSettingScreen({
 
         {onDeleteEvent && (
           <button
-            style={{ marginLeft: "auto", color: "red" }}
+            className="ml-auto text-[red]"
             onClick={() => {
               if (
                 window.confirm(

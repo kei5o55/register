@@ -26,12 +26,12 @@ export function EventHistoryScreen({
       <p>開催日: {event.date}</p>
       {event.memo && <p>メモ: {event.memo}</p>}
 
-      <hr style={{ margin: "16px 0" }} />
+      <hr className="my-4" />
 
       {/* 既存の HistoryScreen をそのまま再利用 */}
       <HistoryScreen sales={sales} onSelectSale={onSelectSale} />
       
-      <button style={{ marginTop: 16 }} onClick={onBack}>
+      <button className="mt-4" onClick={onBack}>
               戻る
       </button>
 

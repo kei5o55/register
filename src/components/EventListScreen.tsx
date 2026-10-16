@@ -51,11 +51,7 @@ export function EventListScreen({
       {events.length === 0 ? (
         <p>まだイベントが登録されていません。</p>
       ) : (
-        <table
-          border={1}
-          cellPadding={4}
-          style={{ borderCollapse: "collapse", marginTop: 16, marginBottom: 24 }}
-        >
+        <table className="mt-4 mb-6 border-collapse">
           <thead>
             <tr>
               <th>使用</th>
@@ -69,11 +65,11 @@ export function EventListScreen({
           <tbody>
             {events.map((event) => (
               <tr key={event.id}>
-                <td style={{ textAlign: "center" }}>
+                <td className="text-center">
                   <input
                     type="radio"
                     name="currentEvent"
-                    className="custom-check-radio"
+                    className="relative size-[22px] cursor-pointer appearance-none rounded border-2 border-[#ccc] bg-white align-middle transition-all duration-200 hover:border-[#007bff] checked:border-[#007bff] checked:bg-[#007bff] checked:before:absolute checked:before:top-[-1px] checked:before:left-[6px] checked:before:h-3 checked:before:w-1 checked:before:rotate-45 checked:before:border-r-[3px] checked:before:border-b-[3px] checked:before:border-white"
                     checked={currentEventId === event.id}
                     onChange={() => onSelectCurrentEvent(event.id)}
                   />
@@ -84,17 +80,11 @@ export function EventListScreen({
                 </td>
                 <td>{event.memo ?? "-"}</td>
                 <td>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                  <div className="flex flex-wrap gap-1">
                     {/* event.tags?.length で安全にチェック */}
                     {(event.tags?.length ?? 0) > 0 ? (
                       event.tags?.map((tag, i) => (
-                        <span key={i} style={{
-                          backgroundColor: "#e1ecf4",
-                          color: "#39739d",
-                          padding: "2px 6px",
-                          borderRadius: "4px",
-                          fontSize: "0.85em"
-                        }}>
+                        <span key={i} className="rounded bg-[#e1ecf4] px-1.5 py-0.5 text-[0.85em] text-[#39739d]">
                           #{tag}
                         </span>
                       ))
@@ -108,7 +98,7 @@ export function EventListScreen({
                     売上履歴
                   </button>
                   <button
-                    style={{ marginLeft: 8,color:"red" }}
+                    className="ml-2 text-[red]"
                     onClick={() => {
                       if (
                         window.confirm(
@@ -123,7 +113,7 @@ export function EventListScreen({
                   </button>
                 </td>
                 <td>
-                  <button style={{ marginLeft: 8 }} onClick={() => onOpenEventSetting(event.id)}>
+                  <button className="ml-2" onClick={() => onOpenEventSetting(event.id)}>
                     設定
                   </button>
                 </td>
@@ -134,7 +124,7 @@ export function EventListScreen({
       )}
 
       <h3>イベントを追加</h3>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, maxWidth: 400 }}>
+      <div className="flex max-w-[400px] flex-col gap-2">
         <input
           type="date"
           value={newDate}

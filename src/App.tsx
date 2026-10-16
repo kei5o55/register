@@ -15,7 +15,6 @@ import {
   saveAppState,
   type PersistedAppState,
 } from "./logic/storage";
-import"./App.css";
 
 //コンポーネント
 import { HomeScreen } from "./components/HomeScreen";
@@ -570,19 +569,10 @@ const handleCheckout = () => {// チェックアウト処理（在庫チェッ�
 
 
   return (
-    <div style={{ padding: 16, maxWidth: 900, margin: "0 auto" }}>
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: 12,
-          marginBottom: 16,
-        }}
-      >
+    <div className="mx-auto max-w-[900px] p-4">
+      <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1>Rejistella（プロトタイプ）</h1>
-        <nav style={{ display: "flex", gap: 8 ,flexWrap: "nowrap"}}>
+        <nav className="flex flex-nowrap gap-2">
           <button onClick={() => setScreen("home")}>ホーム</button>
           <button onClick={() => setScreen("register")}>レジ</button>
           <button onClick={() => setScreen("events")}>イベント管理</button>

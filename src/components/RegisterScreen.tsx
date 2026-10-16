@@ -99,92 +99,68 @@ export function RegisterScreen({
     };
   }, []);
 
+  const cartLineClass =
+    "mb-2 flex items-center justify-between rounded-md border border-[#eee] bg-white px-2 py-1.5";
+  const qtyButtonClass = "px-2.5 py-1 text-sm";
+  const isCartEmpty = cart.length === 0 && bundleCart.length === 0;
+
   return (
-  <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
+  <div className="flex items-start gap-6">
     {/* 左側：商品一覧・バンドル */}
-    <div style={{ flex: 1 }}>
+    <div className="flex-1">
       <h2>商品一覧</h2>
       {visibleItems.length === 0 ? (
         <p>頒布物がありません（イベント履歴→設定 から登録できます）</p>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <ul className="m-0 list-none p-0">
           {visibleItems.map((item) => {
             const remaining = getRemainingStock(item.id);
             const isOutOfStock = remaining <= 0;
             const src = localImageUrls[item.id] ?? item.imageUrl;
 
             return (
-              <li key={item.id} style={{ marginBottom: 10 }}>
+              <li key={item.id} className="mb-2.5">
                 {/* カード全体をボタン化 */}
                 <button
                   type="button"
                   onClick={() => onAddToCart(item.id)}
                   disabled={isOutOfStock}
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                   
-                    gap: 12,
-                    padding: "10px 14px",
-                    borderRadius: 8,
-                    border: "1px solid #ccc",
-                    backgroundColor: isOutOfStock ? "#f5f5f5" : "#fff",
-                    cursor: isOutOfStock ? "not-allowed" : "pointer",
-                    textAlign: "left",
-                    opacity: isOutOfStock ? 0.6 : 1,
-                    boxSizing: "border-box",
-                  }}
+                  className={`box-border flex w-full items-center gap-3 rounded-lg border border-[#ccc] px-3.5 py-2.5 text-left ${
+                    isOutOfStock
+                      ? "cursor-not-allowed bg-[#f5f5f5] opacity-60"
+                      : "cursor-pointer bg-white"
+                  }`}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div className="flex items-center gap-3">
                     {/* 画像エリア */}
                     {src ? (
                       <img
                         key={src}
                         src={src}
                         alt={item.name}
-                        style={{
-                          width: 48,
-                          height: 48,
-                          objectFit: "cover",
-                          borderRadius: 6,
-                          border: "1px solid #ddd",
-                          flexShrink: 0,
-                        }}
+                        className="size-12 shrink-0 rounded-md border border-[#ddd] object-cover"
                         onLoad={(e) => ((e.currentTarget as HTMLImageElement).style.display = "")}
                         onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = "none")}
                       />
                     ) : (
-                      <div
-                        style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: 6,
-                          border: "1px dashed #bbb",
-                          display: "grid",
-                          placeItems: "center",
-                          fontSize: 10,
-                          color: "#888",
-                          flexShrink: 0,
-                        }}
-                      >
+                      <div className="grid size-12 shrink-0 place-items-center rounded-md border border-dashed border-[#bbb] text-[10px] text-[#888]">
                         No Img
                       </div>
                     )}
 
                     {/* テキスト情報 */}
                     <div>
-                      <div style={{ fontWeight: "bold", fontSize: 15, color: "#222" }}>
+                      <div className="text-[15px] font-bold text-[#222]">
                         {item.name}
                       </div>
-                      <div style={{ fontSize: 13, color: "#555", marginTop: 2 }}>
+                      <div className="mt-0.5 text-[13px] text-[#555]">
                         {item.price}円 / 在庫: {item.stock}（残り: {remaining}）
                       </div>
                     </div>
                   </div>
 
                   {/* 右端のラベル */}
-                  <span style={{ fontSize: 13, fontWeight: "bold", color: isOutOfStock ? "#999" : "#0066cc", flexShrink: 0 }}>
+                  <span className={`shrink-0 text-[13px] font-bold ${isOutOfStock ? "text-[#999]" : "text-[#0066cc]"}`}>
                     {isOutOfStock ? "売り切れ" : "＋追加"}
                   </span>
                 </button>
@@ -198,38 +174,26 @@ export function RegisterScreen({
       {visibleBundles.length === 0 ? (
         <p>バンドルがありません（イベント履歴→設定 から登録できます）</p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+        <div className="mb-4 flex flex-col gap-2">
           {visibleBundles.map((b) => (
             <button
               key={b.id}
               type="button"
               onClick={() => onAddBundleToCart(b.id)}
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "10px 14px",
-                borderRadius: 8,
-                border: "1px solid #cce",
-                backgroundColor: "#fcfaff",
-                cursor: "pointer",
-                textAlign: "left",
-                boxSizing: "border-box",
-              }}
+              className="box-border flex w-full cursor-pointer items-center justify-between rounded-lg border border-[#cce] bg-[#fcfaff] px-3.5 py-2.5 text-left"
             >
               <div>
-                <div style={{ fontWeight: "bold", fontSize: 14, color: "#333" }}>
+                <div className="text-sm font-bold text-[#333]">
                   {b.name}（{b.price}円）
                 </div>
-                <div style={{ fontSize: 12, color: "#666", marginTop: 2 }}>
+                <div className="mt-0.5 text-xs text-[#666]">
                   {b.lines.map((l) => {
                     const item = getItemById(l.itemId);
                     return `${item.name} × ${l.quantity}`;
                   }).join(" / ")}
                 </div>
               </div>
-              <span style={{ fontSize: 13, fontWeight: "bold", color: "#6600cc", flexShrink: 0 }}>
+              <span className="shrink-0 text-[13px] font-bold text-[#6600cc]">
                 ＋追加
               </span>
             </button>
@@ -239,34 +203,22 @@ export function RegisterScreen({
     </div>
 
     {/* 右側：カート（ボタンの押しやすさを微調整） */}
-    <div style={{ flex: 1, padding: 16, border: "1px solid #ddd", borderRadius: 8, backgroundColor: "#fafafa" }}>
+    <div className="flex-1 rounded-lg border border-[#ddd] bg-[#fafafa] p-4">
       <h2>カート</h2>
       {cart.length === 0 ? (
-        <p style={{ color: "#888" }}>カートは空です</p>
+        <p className="text-[#888]">カートは空です</p>
       ) : (
-        <ul style={{ paddingLeft: 0, listStyle: "none" }}>
+        <ul className="list-none pl-0">
           {cart.map((c) => {
             const item = getItemById(c.itemId);
             return (
-              <li
-                key={c.itemId}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 8,
-                  padding: "6px 8px",
-                  backgroundColor: "#fff",
-                  borderRadius: 6,
-                  border: "1px solid #eee"
-                }}
-              >
+              <li key={c.itemId} className={cartLineClass}>
                 <span>
                   {item.name} × {c.quantity}
                 </span>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <button onClick={() => onAddToCart(c.itemId)} style={{ padding: "4px 10px", fontSize: 14 }}>＋</button>
-                  <button onClick={() => onRemoveFromCart(c.itemId)} style={{ padding: "4px 10px", fontSize: 14 }}>−</button>
+                <div className="flex gap-1.5">
+                  <button onClick={() => onAddToCart(c.itemId)} className={qtyButtonClass}>＋</button>
+                  <button onClick={() => onRemoveFromCart(c.itemId)} className={qtyButtonClass}>−</button>
                 </div>
               </li>
             );
@@ -277,31 +229,19 @@ export function RegisterScreen({
       {bundleCart.length > 0 && (
         <>
           <h4>バンドル</h4>
-          <ul style={{ paddingLeft: 0, listStyle: "none" }}>
+          <ul className="list-none pl-0">
             {bundleCart.map((bc) => {
               const b = getBundleById(bc.bundleId);
               const subtotal = b.price * bc.quantity;
 
               return (
-                <li
-                  key={bc.bundleId}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 8,
-                    padding: "6px 8px",
-                    backgroundColor: "#fff",
-                    borderRadius: 6,
-                    border: "1px solid #eee"
-                  }}
-                >
+                <li key={bc.bundleId} className={cartLineClass}>
                   <span>
                     {b.name} × {bc.quantity}（{subtotal}円）
                   </span>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button onClick={() => onAddBundleToCart(bc.bundleId)} style={{ padding: "4px 10px", fontSize: 14 }}>＋</button>
-                    <button onClick={() => onRemoveBundleFromCart(bc.bundleId)} style={{ padding: "4px 10px", fontSize: 14 }}>−</button>
+                  <div className="flex gap-1.5">
+                    <button onClick={() => onAddBundleToCart(bc.bundleId)} className={qtyButtonClass}>＋</button>
+                    <button onClick={() => onRemoveBundleFromCart(bc.bundleId)} className={qtyButtonClass}>−</button>
                   </div>
                 </li>
               );
@@ -310,18 +250,12 @@ export function RegisterScreen({
         </>
       )}
 
-      <hr style={{ border: "none", borderTop: "1px solid #ccc", margin: "16px 0" }} />
-      <p style={{ fontSize: 18, fontWeight: "bold" }}>合計: {totalPrice} 円</p>
+      <hr className="my-4 border-t border-[#ccc]" />
+      <p className="text-lg font-bold">合計: {totalPrice} 円</p>
       <button
         onClick={onCheckout}
-        disabled={cart.length === 0 && bundleCart.length === 0}
-        style={{
-          width: "100%",
-          padding: "12px",
-          fontSize: 16,
-          fontWeight: "bold",
-          cursor: cart.length === 0 && bundleCart.length === 0 ? "not-allowed" : "pointer"
-        }}
+        disabled={isCartEmpty}
+        className={`w-full p-3 text-base font-bold ${isCartEmpty ? "cursor-not-allowed" : "cursor-pointer"}`}
       >
         会計確定
       </button>

@@ -17,10 +17,10 @@ export function EventTimeChartPanel({ sales }: { sales: Sale[] }) {
   );
 
   return (
-    <div style={{ marginTop: 16 }}>
+    <div className="mt-4">
       <h3>時間別 {metric === "yen" ? "売上" : "注文件数"}</h3>
 
-      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+      <div className="flex flex-wrap items-center gap-3">
         <label>
           粒度：
           <select value={group} onChange={(e) => setGroup(e.target.value as TimeGroup)}>
@@ -38,7 +38,7 @@ export function EventTimeChartPanel({ sales }: { sales: Sale[] }) {
         </label>
       </div>
 
-      <div style={{ marginTop: 12 }}>
+      <div className="mt-3">
         <EventSalesBarChart data={data} />
       </div>
     </div>

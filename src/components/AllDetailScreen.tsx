@@ -58,7 +58,7 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
       <p>総売上: {sales.reduce((sum, s) => sum + s.total, 0)} 円</p>
 
 
-      <hr style={{ margin: "16px 0" }} />
+      <hr className="my-4" />
 
       <h3>サマリ</h3>
       <ul>
@@ -71,7 +71,7 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
       {report.items.length === 0 ? (
         <p>売上がありません</p>
       ) : (
-        <table border={1} cellPadding={6} style={{ borderCollapse: "collapse" }}>
+        <table className="border-collapse [&_td]:p-1.5 [&_th]:p-1.5">
           <thead>
             <tr>
               <th>頒布物</th>
@@ -94,7 +94,7 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
       )}
       <h3>グラフ</h3>
 
-      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+      <div className="flex flex-wrap items-center gap-3">
         <label>
           表示：
           <select value={chartMode} onChange={(e) => setChartMode(e.target.value as ChartMode)}>
@@ -116,7 +116,7 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
         )}
       </div>
 
-      <div style={{ marginTop: 12 }}>
+      <div className="mt-3">
         {chartMode === "time" && (
           <EventSalesBarChart data={hourlyData} unit="円" />
         )}
@@ -130,7 +130,7 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
         )}
       </div>
 
-      <button style={{ marginTop: 16 }} onClick={onBack}>
+      <button className="mt-4" onClick={onBack}>
         戻る
       </button>
     </div>

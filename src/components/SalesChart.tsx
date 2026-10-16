@@ -6,7 +6,7 @@ import type { ChartRow } from "../logic/chart";
 
 export function SalesBarChart({ data }: { data: ChartRow[] }) {
   return (
-    <div style={{ width: "100%", height: 320 }}>
+    <div className="h-80 w-full">
       <ResponsiveContainer>
         <BarChart data={data}>
           <XAxis dataKey="label" tick={{ fontSize: 12 }} interval={0} />

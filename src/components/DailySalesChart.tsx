@@ -64,12 +64,12 @@ useEffect(() => {// コンポーネントがマウントされたときにAPIか
 }, []);
 
 if (loading) return <p>読み込み中...</p>;//(setLoading(true)の間)データが読み込まれていることを表示
-if (error) return <p style={{ color: "crimson" }}>エラー: {error}</p>;// エラーが発生した場合はエラーメッセージを表示
+if (error) return <p className="text-[crimson]">エラー: {error}</p>;// エラーが発生した場合はエラーメッセージを表示
 if (data.length === 0) return <p>データがありません</p>;// データが空の場合はその旨を表示
 
 return (
-    <div style={{ width: "100%", height: 320 }}>
-    <h3 style={{ margin: "8px 0" }}>日別売上（合計金額）（APIデバッグ用）</h3>
+    <div className="h-80 w-full">
+    <h3 className="my-2">日別売上（合計金額）（APIデバッグ用）</h3>
     <ResponsiveContainer>
         <BarChart data={data}>{/* データを棒グラフで表示dataKey="date"で日付をX軸、dataKey="total_amount"で売上金額をY軸に設定(APIから取得したデータのフィールド名に合わせること) */}
         <CartesianGrid strokeDasharray="3 3" />

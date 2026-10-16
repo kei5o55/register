@@ -32,7 +32,7 @@ export function EventSalesBarChart({ data, unit }: Props) {
       : "値";
 
   return (
-    <div style={{ width: "100%", height: 320 }}>
+    <div className="h-80 w-full">
       <ResponsiveContainer>
         <BarChart data={data}>
           <XAxis dataKey="label" />

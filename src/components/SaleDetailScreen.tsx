@@ -39,7 +39,7 @@ export function SaleDetailScreen({ sale, bundles, events, onBack, onDelete }: Sa
       {sale.items.length === 0 ? (
         <p>単品の内訳データがありません</p>
       ) : (
-        <table border={1} cellPadding={4} style={{ borderCollapse: "collapse", marginBottom: 16 }}>
+        <table className="mb-4 border-collapse">
           <thead>
             <tr>
               <th>頒布物</th>
@@ -66,7 +66,7 @@ export function SaleDetailScreen({ sale, bundles, events, onBack, onDelete }: Sa
       {bundleLines.length === 0 ? (
         <p>バンドル購入はありません</p>
       ) : (
-        <table border={1} cellPadding={4} style={{ borderCollapse: "collapse", marginBottom: 16 }}>
+        <table className="mb-4 border-collapse">
           <thead>
             <tr>
               <th>バンドル</th>
@@ -96,7 +96,7 @@ export function SaleDetailScreen({ sale, bundles, events, onBack, onDelete }: Sa
       {expanded.length === 0 ? (
         <p>バンドル内訳データがありません</p>
       ) : (
-        <table border={1} cellPadding={4} style={{ borderCollapse: "collapse" }}>
+        <table className="border-collapse">
           <thead>
             <tr>
               <th>頒布物</th>
@@ -114,11 +114,11 @@ export function SaleDetailScreen({ sale, bundles, events, onBack, onDelete }: Sa
         </table>
       )}
 
-      <button style={{ marginTop: 16 }} onClick={onBack}>
+      <button className="mt-4" onClick={onBack}>
         戻る
       </button>
 
-      <button onClick={onDelete} style={{ color: "red", marginLeft: 8 }}>
+      <button onClick={onDelete} className="ml-2 text-[red]">
         この売り上げを削除
       </button>
     </div>

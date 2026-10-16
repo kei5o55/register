@@ -26,8 +26,8 @@ export function TagEditor({ tags, onChange, placeholder }: Props) {
   };
 
   return (
-    <div style={{ display: "grid", gap: 8 }}>
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+    <div className="grid gap-2">
+      <div className="flex items-center gap-2">
         <input
           value={input}
           placeholder={placeholder ?? "タグ名"}
@@ -45,27 +45,19 @@ export function TagEditor({ tags, onChange, placeholder }: Props) {
       </div>
 
       {list.length === 0 ? (
-        <div style={{ fontSize: 12, opacity: 0.7 }}>タグなし</div>
+        <div className="text-xs opacity-70">タグなし</div>
       ) : (
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div className="flex flex-wrap gap-2">
           {list.map((t) => (
             <span
               key={t}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "4px 8px",
-                border: "1px solid #ccc",
-                borderRadius: 999,
-                fontSize: 12,
-              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#ccc] px-2 py-1 text-xs"
             >
               #{t}
               <button
                 type="button"
                 onClick={() => onChange(list.filter((x) => x !== t))}
-                style={{ border: "none", background: "transparent", cursor: "pointer" }}
+                className="cursor-pointer border-none bg-transparent"
                 aria-label={`remove ${t}`}
                 title="削除"
               >

@@ -18,7 +18,7 @@ export function HistoryScreen({ sales, events, onSelectSale }: HistoryProps) {
 
   return (
     <div>
-      <div className="pageHeader">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <h2>売上履歴（{sales.length}件）</h2>
       </div>
 
@@ -27,7 +27,7 @@ export function HistoryScreen({ sales, events, onSelectSale }: HistoryProps) {
       ) : (
         <ul>
           {sales.map((sale) => (
-            <li key={sale.id} style={{ marginBottom: 8 }}>
+            <li key={sale.id} className="mb-2">
               <button onClick={() => onSelectSale(sale.id)}>
                 {getEventName(sale.eventId) || toMinuteKey(sale.datetime)} - {sale.total} 円  : {sale.items.length}点
               </button>
