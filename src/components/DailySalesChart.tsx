@@ -53,8 +53,8 @@ useEffect(() => {// コンポーネントがマウントされたときにAPIか
         }
 
         setData(json.data ?? []);// 取得したデータをstateに保存（APIのレスポンス形式に合わせてjson.dataを使用）
-        } catch (e: any) {// エラー発生
-            setError(e?.message ?? "failed");
+        } catch (e) {// エラー発生
+            setError(e instanceof Error ? e.message : "failed");
         } finally {// データ取得完了
         setLoading(false);
     }

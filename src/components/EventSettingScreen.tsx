@@ -49,6 +49,7 @@ export function EventSettingScreen({
   onDeleteEvent,
 }: Props) {
   // --- ローカル編集状態（保存ボタン方式）
+  // イベント切替時は App 側で key={event.id} を渡して再マウントし、初期値を取り直す
   const [name, setName] = useState(event.name);
   const [date, setDate] = useState(event.date);
   const [memo, setMemo] = useState(event.memo ?? "");
@@ -91,19 +92,6 @@ export function EventSettingScreen({
       created.forEach(URL.revokeObjectURL);
     };
   }, [items]);
-
-  // event切替で同期
-  useEffect(() => {
-    setName(event.name);
-    setDate(event.date);
-    setMemo(event.memo ?? "");
-    setTags(event.tags ?? []);
-  }, [event.id]);
-
-  useEffect(() => {
-    setItemIds(selectedItemIds);
-    setBundleIds(selectedBundleIds);
-  }, [event.id, selectedItemIds, selectedBundleIds]);
 
   const itemSet = useMemo(() => new Set(itemIds), [itemIds]);
   const bundleSet = useMemo(() => new Set(bundleIds), [bundleIds]);

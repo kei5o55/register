@@ -90,20 +90,39 @@ export function ItemsScreen({
 
   const bundleTotal = calcBundleTotal(bundleLines);
 
+  // 名前・価格の編集では画像を読み直さないよう、IDの増減だけを依存にする
+  const itemIdsKey = items.map((it) => it.id).join(",");
+
   useEffect(() => {
+    let alive = true;
+    const created: string[] = [];
+
     (async () => {
       const entries: [string, string][] = [];
 
-      for (const it of items) {
-        const blob = await loadItemImageBlob(it.id);
+      for (const id of itemIdsKey.split(",").filter(Boolean)) {
+        const blob = await loadItemImageBlob(id);
         if (blob) {
-          entries.push([it.id, URL.createObjectURL(blob)]);
+          const url = URL.createObjectURL(blob);
+          created.push(url);
+          entries.push([id, url]);
         }
       }
 
-      setLocalImageUrls(Object.fromEntries(entries));
+      if (alive) {
+        setLocalImageUrls((prev) => {
+          Object.values(prev).forEach((u) => URL.revokeObjectURL(u));
+          return Object.fromEntries(entries);
+        });
+      } else {
+        created.forEach(URL.revokeObjectURL);
+      }
     })();
-  }, []); // ← items依存やめる
+
+    return () => {
+      alive = false;
+    };
+  }, [itemIdsKey]);
 
 
   return (
@@ -212,7 +231,8 @@ export function ItemsScreen({
                         setLocalImageUrls((prev) => {
                           const old = prev[item.id];
                           if (old) URL.revokeObjectURL(old);
-                          const { [item.id]: _, ...rest } = prev;
+                          const rest = { ...prev };
+                          delete rest[item.id];
                           return rest;
                         });
                       }}

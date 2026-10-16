@@ -65,6 +65,9 @@ export function RegisterScreen({
 
     
 
+    // 表示対象のIDが変わったときだけ画像を読み直す
+    const visibleItemIdsKey = visibleItems.map((it) => it.id).join(",");
+
     useEffect(() => {
     let alive = true;
     const created: string[] = [];
@@ -73,12 +76,12 @@ export function RegisterScreen({
       const entries: [string, string][] = [];
 
       // 表示対象だけ読む（軽い）
-      for (const it of visibleItems) {
-        const blob = await loadItemImageBlob(it.id);
+      for (const id of visibleItemIdsKey.split(",").filter(Boolean)) {
+        const blob = await loadItemImageBlob(id);
         if (blob) {
           const url = URL.createObjectURL(blob);
           created.push(url);
-          entries.push([it.id, url]);
+          entries.push([id, url]);
         }
       }
 
@@ -97,7 +100,7 @@ export function RegisterScreen({
       alive = false;
       created.forEach(URL.revokeObjectURL);
     };
-  }, []);
+  }, [visibleItemIdsKey]);
 
   const cartLineClass =
     "mb-2 flex items-center justify-between rounded-md border border-[#eee] bg-white px-2 py-1.5";
