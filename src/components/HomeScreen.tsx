@@ -2,9 +2,11 @@
 // eventのホーム画面コンポーネント
 // 現在のイベント情報やイベント別売上合計グラフを表示する
 
+import { useState } from "react";
 import type { Sale,Event } from "../logic/types";
 import { buildEventSalesChart } from "../logic/eventSalesChart";
 import { EventSalesBarChart } from "./EventSalesBarChart";
+import { StandbyScreen } from "./StandbyScreen";
 
 
 type HomeProps = {
@@ -18,6 +20,7 @@ type HomeProps = {
 
 export function HomeScreen({ sales,events,currentEvent,onGoRegister, onGoHistory,onGoEvents}: HomeProps) {
   const chartData = buildEventSalesChart(sales, events);
+  const [isStandby, setIsStandby] = useState(false);
   return (
     <div>
       <h2>ホーム</h2>
@@ -49,7 +52,12 @@ export function HomeScreen({ sales,events,currentEvent,onGoRegister, onGoHistory
           レジへ
         </button>
         <button onClick={onGoHistory}>売上履歴へ</button>
+        <button onClick={() => setIsStandby(true)}>待機画面</button>
       </div>
+
+      {isStandby && (
+        <StandbyScreen currentEvent={currentEvent} onClose={() => setIsStandby(false)} />
+      )}
     </div>
   );
 }
