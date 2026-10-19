@@ -51,100 +51,130 @@ export function EventListScreen({
       {events.length === 0 ? (
         <p>まだイベントが登録されていません。</p>
       ) : (
-        <table className="mt-4 mb-6 border-collapse">
-          <thead>
-            <tr>
-              <th>使用</th>
-              <th>開催日</th>
-              <th>イベント名</th>
-              <th>メモ</th>
-              <th>タグ</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((event) => (
-              <tr key={event.id}>
-                <td className="text-center">
-                  <input
-                    type="radio"
-                    name="currentEvent"
-                    className="relative size-[22px] cursor-pointer appearance-none rounded border-2 border-[#ccc] bg-white align-middle transition-all duration-200 hover:border-[#007bff] checked:border-[#007bff] checked:bg-[#007bff] checked:before:absolute checked:before:top-[-1px] checked:before:left-[6px] checked:before:h-3 checked:before:w-1 checked:before:rotate-45 checked:before:border-r-[3px] checked:before:border-b-[3px] checked:before:border-white"
-                    checked={currentEventId === event.id}
-                    onChange={() => onSelectCurrentEvent(event.id)}
-                  />
-                </td>
-                <td>{event.date}</td>
-                <td>
-                  {event.name}
-                </td>
-                <td>{event.memo ?? "-"}</td>
-                <td>
-                  <div className="flex flex-wrap gap-1">
-                    {/* event.tags?.length で安全にチェック */}
-                    {(event.tags?.length ?? 0) > 0 ? (
-                      event.tags?.map((tag, i) => (
-                        <span key={i} className="rounded bg-[#e1ecf4] px-1.5 py-0.5 text-[0.85em] text-[#39739d]">
-                          #{tag}
-                        </span>
-                      ))
-                    ) : (
-                      "-"
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <button onClick={() => onOpenEventHistory(event.id)}>
-                    売上履歴
-                  </button>
-                  <button
-                    className="ml-2 text-[red]"
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          `"${event.name}" を削除しますか？関連する売上履歴も削除されます。`
-                        )
-                      ) {
-                        onDeleteEvent(event.id);
-                      }
-                    }}
-                  >
-                    削除
-                  </button>
-                </td>
-                <td>
-                  <button className="ml-2" onClick={() => onOpenEventSetting(event.id)}>
-                    設定
-                  </button>
-                </td>
+        <div className="mt-4 mb-6 overflow-x-auto">
+          <table className="w-full border-collapse leading-relaxed [&_td]:px-3 [&_td]:py-2 [&_td]:align-middle [&_th]:px-3 [&_th]:py-2 [&_th]:whitespace-nowrap">
+            <thead>
+              <tr>
+                <th>使用</th>
+                <th>開催日</th>
+                <th>イベント名</th>
+                <th>メモ</th>
+                <th>タグ</th>
+                <th>操作</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {events.map((event) => (
+                <tr key={event.id}>
+                  <td className="text-center">
+                    <input
+                      type="radio"
+                      name="currentEvent"
+                      className="relative size-[22px] cursor-pointer appearance-none rounded border-2 border-[#ccc] bg-white align-middle transition-all duration-200 hover:border-[#007bff] checked:border-[#007bff] checked:bg-[#007bff] checked:before:absolute checked:before:top-[-1px] checked:before:left-[6px] checked:before:h-3 checked:before:w-1 checked:before:rotate-45 checked:before:border-r-[3px] checked:before:border-b-[3px] checked:before:border-white"
+                      checked={currentEventId === event.id}
+                      onChange={() => onSelectCurrentEvent(event.id)}
+                    />
+                  </td>
+                  <td className="whitespace-nowrap">{event.date}</td>
+                  <td className="min-w-[8em] break-words">{event.name}</td>
+                  <td className="min-w-[10em] text-sm break-words whitespace-pre-wrap">
+                    {event.memo || "-"}
+                  </td>
+                  <td className="min-w-[6em]">
+                    <div className="flex flex-wrap gap-1">
+                      {/* event.tags?.length で安全にチェック */}
+                      {(event.tags?.length ?? 0) > 0 ? (
+                        event.tags?.map((tag, i) => (
+                          <span key={i} className="rounded bg-[#e1ecf4] px-1.5 py-0.5 text-[0.85em] whitespace-nowrap text-[#39739d]">
+                            #{tag}
+                          </span>
+                        ))
+                      ) : (
+                        "-"
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex gap-2 whitespace-nowrap [&_button]:px-3 [&_button]:py-1 [&_button]:text-sm">
+                      <button onClick={() => onOpenEventHistory(event.id)}>
+                        売上履歴
+                      </button>
+                      <button onClick={() => onOpenEventSetting(event.id)}>
+                        設定
+                      </button>
+                      <button
+                        className="text-[red]"
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `"${event.name}" を削除しますか？関連する売上履歴も削除されます。`
+                            )
+                          ) {
+                            onDeleteEvent(event.id);
+                          }
+                        }}
+                      >
+                        削除
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <h3>イベントを追加</h3>
-      <div className="flex max-w-[400px] flex-col gap-2">
-        <input
-          type="date"
-          value={newDate}
-          onChange={(e) => setNewDate(e.target.value)}
-        />
-        <input
-          type="text"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          placeholder="イベント名（例: コミティア●●●）"
-        />
-        <textarea
-          value={newMemo}
-          onChange={(e) => setNewMemo(e.target.value)}
-          placeholder="スペース番号や配置メモなど（任意）"
-          rows={3}
-        />
+      <form
+        className="flex max-w-[480px] flex-col gap-4 rounded-lg border border-[#ddd] p-4 [&_input]:px-2 [&_input]:py-1.5 [&_textarea]:px-2 [&_textarea]:py-1.5"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-bold">
+            イベント名<span className="ml-1 text-[#b45309]">*</span>
+          </span>
+          <input
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="例: コミティア●●●"
+          />
+        </label>
 
-        <button onClick={handleSubmit}>イベントを追加</button>
-      </div>
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-bold">
+            開催日<span className="ml-1 text-[#b45309]">*</span>
+          </span>
+          <input
+            type="date"
+            className="w-fit"
+            value={newDate}
+            onChange={(e) => setNewDate(e.target.value)}
+          />
+        </label>
+
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-bold">
+            メモ<span className="ml-1 text-xs font-normal opacity-70">（任意）</span>
+          </span>
+          <textarea
+            className="leading-relaxed"
+            value={newMemo}
+            onChange={(e) => setNewMemo(e.target.value)}
+            placeholder="スペース番号や配置メモなど"
+            rows={3}
+          />
+        </label>
+
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs opacity-70">* は必須項目です</span>
+          <button type="submit">イベントを追加</button>
+        </div>
+      </form>
     </div>
   );
 }
