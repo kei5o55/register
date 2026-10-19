@@ -137,39 +137,30 @@ export function EventDetailScreen({ event, sales, onBack }: Props) {
       
       <h3>グラフ</h3>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <label>
-          表示：
-          <select value={chartMode} onChange={(e) => setChartMode(e.target.value as ChartMode)}>
-            <option value="time">時間別売上</option>
-            <option value="bundle">バンドル別頒布数</option>
-            <option value="item">頒布物別頒布数</option>
-          </select>
-        </label>
+      <div className="mb-2 flex flex-wrap justify-end gap-2">
+        <select value={chartMode} onChange={(e) => setChartMode(e.target.value as ChartMode)}>
+          <option value="time">時間別売上</option>
+          <option value="bundle">バンドル別頒布数</option>
+          <option value="item">頒布物別頒布数</option>
+        </select>
 
         {chartMode === "item" && (
-          <label>
-            内訳：
-            <select value={itemMode} onChange={(e) => setItemMode(e.target.value as ItemMode)}>
-              <option value="single">単品のみ</option>
-              <option value="bundle">バンドルのみ</option>
-              <option value="total">合計</option>
-            </select>
-          </label>
+          <select value={itemMode} onChange={(e) => setItemMode(e.target.value as ItemMode)}>
+            <option value="single">単品のみ</option>
+            <option value="bundle">バンドルのみ</option>
+            <option value="total">合計</option>
+          </select>
         )}
         {chartMode === "time" && (
-          <label>
-            単位：
-            <select value={timeMode} onChange={(e) => setTimeMode(e.target.value as TimeMode)}>
-              <option value="hour">時間</option>
-              <option value="half hour">30分</option>
-              <option value="quarter hour">15分</option>
-            </select>
-          </label>
+          <select value={timeMode} onChange={(e) => setTimeMode(e.target.value as TimeMode)}>
+            <option value="hour">1時間ごと</option>
+            <option value="half hour">30分ごと</option>
+            <option value="quarter hour">15分ごと</option>
+          </select>
         )}
       </div>
 
-      <div className="mt-3">
+      <div>
         {/* ★ 渡すデータを hourlyData から 新しく作った timeChartData に変更 */}
         {chartMode === "time" && (
           <EventSalesBarChart data={timeChartData} unit="円" />
